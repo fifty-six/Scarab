@@ -4,11 +4,11 @@ namespace Modinstaller2.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public ModList List { get; }
+        public ModListViewModel List { get; }
 
         public MainWindowViewModel(Database db)
         {
-            List = new ModList(db.GetItems());
+            List = new ModListViewModel(db.GetItems());
         }
     }
 }

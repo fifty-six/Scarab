@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Modinstaller2.Views
 {
-    public class Modlist : UserControl
+    public class ModListView : UserControl
     {
-        public Modlist()
+        public ModListView()
         {
             this.InitializeComponent();
         }

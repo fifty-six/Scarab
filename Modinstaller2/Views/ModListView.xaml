@@ -1,0 +1,34 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="550"
+             x:Class="Modinstaller2.Views.ModListView">
+  <DockPanel>
+    <Button DockPanel.Dock="Bottom">Click me daddy</Button>
+    <ItemsControl Items="{Binding Items}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <Grid ColumnDefinitions="*,*,*" Margin="4">
+            <TextBlock Grid.Column="0" Text="{Binding Name}"/>
+            <CheckBox
+              Grid.Column="1"
+              Margin="4"
+              Command="{Binding OnEnable}"
+              IsChecked="{Binding Enabled}"
+              IsEnabled="{Binding Installed}"
+              Content= "Enabled?"
+              />
+            <CheckBox
+               Grid.Column="2"
+               Margin="4"
+               Command="{Binding OnInstall}"
+               IsChecked="{Binding Installed}"
+               Content= "Installed?"
+              />
+          </Grid>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </DockPanel>
+</UserControl>

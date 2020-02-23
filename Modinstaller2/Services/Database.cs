@@ -9,7 +9,8 @@ namespace Modinstaller2.Services
     {
         public IEnumerable<ModItem> GetItems() => new[]
         {
-            new ModItem { Enabled = true, Installed = true, Name = "QoL" }
+            new ModItem { Enabled = true, Installed = true, Name = "QoL" },
+            new ModItem { Enabled = null, Installed = false, Name = "Enemy HP Bars" }
         };
     }
 }

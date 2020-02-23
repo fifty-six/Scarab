@@ -6,11 +6,11 @@ using System.Text;
 
 namespace Modinstaller2.ViewModels
 {
-    public class ModList : ViewModelBase
+    public class ModListViewModel : ViewModelBase
     {
         public ObservableCollection<ModItem> Items { get; }
 
-        public ModList(IEnumerable<ModItem> list)
+        public ModListViewModel(IEnumerable<ModItem> list)
         {
             Items = new ObservableCollection<ModItem>(list);
         }

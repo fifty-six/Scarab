@@ -13,10 +13,10 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
-    <AvaloniaResource Remove="Views\Modlist.xaml" />
+    <AvaloniaResource Remove="Views\ModListView.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Views\Modlist.xaml" />
+    <None Remove="Views\ModListView.xaml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.9.0" />
@@ -24,8 +24,13 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.0" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\Modlist.xaml">
+    <EmbeddedResource Include="Views\ModListView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Views\ModListView.xaml.cs">
+      <DependentUpon>ModListView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>
