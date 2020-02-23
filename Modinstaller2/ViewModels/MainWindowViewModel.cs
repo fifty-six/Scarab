@@ -1,4 +1,5 @@
-﻿using Modinstaller2.Services;
+﻿using Modinstaller2.Models;
+using Modinstaller2.Services;
 
 namespace Modinstaller2.ViewModels
 {

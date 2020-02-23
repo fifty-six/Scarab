@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using Modinstaller2.Services;
 using Modinstaller2.ViewModels;
 using Modinstaller2.Views;
+using System;
 
 namespace Modinstaller2
 {
@@ -20,11 +21,14 @@ namespace Modinstaller2
             {
                 var db = new Database();
 
+                // hey moron make the disabled folder
+
                 desktop.MainWindow = new MainWindow
                 {
                     DataContext = new MainWindowViewModel(db),
                 };
             }
+            else throw new NotImplementedException();
 
             base.OnFrameworkInitializationCompleted();
         }
