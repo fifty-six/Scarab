@@ -2,12 +2,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="550"
              x:Class="Modinstaller2.Views.Modlist">
   <DockPanel>
     <Button DockPanel.Dock="Bottom">Click me daddy</Button>
-    <StackPanel>
-      <CheckBox>Hello</CheckBox>
-    </StackPanel>
+    <ItemsControl Items="{Binding Items}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <CheckBox Margin="4"
+                    IsChecked="{Binding IsChecked}"
+                    Content= "{Binding Name}"
+          />
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
   </DockPanel>
 </UserControl>

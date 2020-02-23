@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Modinstaller2.Services;
 
 namespace Modinstaller2.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public string Greeting => "TEST!";
+        public ModList List { get; }
+
+        public MainWindowViewModel(Database db)
+        {
+            List = new ModList(db.GetItems());
+        }
     }
 }
