@@ -7,7 +7,7 @@
         Width="550" Height="450"
         x:Class="Modinstaller2.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Content="{Binding List}"
+        Content="{Binding Content}"
         Title="Modinstaller2">
   <views:ModListView/>
 </Window>

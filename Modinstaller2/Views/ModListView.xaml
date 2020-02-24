@@ -5,7 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="660" d:DesignHeight="550"
              x:Class="Modinstaller2.Views.ModListView">
   <DockPanel>
-    <Button DockPanel.Dock="Bottom">Click me daddy</Button>
+    <Button DockPanel.Dock="Bottom">Button</Button>
     <ScrollViewer>     
       <ItemsControl Items="{Binding Items}">
       <ItemsControl.ItemTemplate>

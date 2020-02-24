@@ -5,6 +5,7 @@ using Modinstaller2.Services;
 using Modinstaller2.ViewModels;
 using Modinstaller2.Views;
 using System;
+using System.IO;
 
 namespace Modinstaller2
 {
@@ -21,7 +22,10 @@ namespace Modinstaller2
             {
                 var db = new Database();
 
-                // hey moron make the disabled folder
+#warning TODO: Move to after Settings initialization (MainWindowViewModel?)
+                // TODO: This should be done after prompting the user, otherwise it *will* throw.
+                // if (!Directory.Exists(InstallerSettings.Instance.DisabledFolder))
+                //    Directory.CreateDirectory(InstallerSettings.Instance.DisabledFolder);
 
                 desktop.MainWindow = new MainWindow
                 {

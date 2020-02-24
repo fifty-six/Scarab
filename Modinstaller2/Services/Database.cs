@@ -39,17 +39,18 @@ namespace Modinstaller2.Services
                     files.Add(file["Name"].InnerText);
                 }
 
-                item.Installed = Enumerable.All
+#warning TODO: Set this up to initialize after the settings. Probably in MainWindowViewModel.
+                item.Installed = false; /* Enumerable.All
                 (
                     files, (f) => File.Exists(Path.Combine(InstallerSettings.Instance.ModsFolder, f))
                                || File.Exists(Path.Combine(InstallerSettings.Instance.DisabledFolder, f))
-                );
+                ); */
 
-                item.Enabled = item.Installed ? (bool?) Enumerable.All
+                item.Enabled = false; /* item.Installed ? (bool?) Enumerable.All
                 (
                     files, (f) => File.Exists(Path.Combine(InstallerSettings.Instance.ModsFolder, f))
                 ) 
-                : null;
+                : null; */
 
                 item._link = modlink["Link"].InnerText;
 

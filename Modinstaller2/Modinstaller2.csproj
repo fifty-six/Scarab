@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RuntimeIdentifiers>win10-x64;osx.10.12-x64</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="**\*.xaml.cs">
@@ -14,9 +15,11 @@
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Remove="Views\ModListView.xaml" />
+    <AvaloniaResource Remove="Views\SelectPathView.xaml" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Views\ModListView.xaml" />
+    <None Remove="Views\SelectPathView.xaml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.9.0" />
@@ -24,11 +27,17 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.0" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Views\SelectPathView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\ModListView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\ModListView - Copy.xaml.cs">
+      <DependentUpon>ModListView.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\ModListView.xaml.cs">
       <DependentUpon>ModListView.xaml</DependentUpon>
     </Compile>

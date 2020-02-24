@@ -114,7 +114,14 @@ namespace Modinstaller2.Models
                 {
                     if (entry.FullName.EndsWith("dll"))
                     {
-                        entry.ExtractToFile(Path.Combine(InstallerSettings.Instance.ModsFolder, entry.Name), true);
+                        if (entry.Name.StartsWith("Assembly-CSharp"))
+                        { 
+                            entry.ExtractToFile(Path.Combine(InstallerSettings.Instance.ManagedFolder, entry.Name), true);
+                        }
+                        else
+                        {
+                            entry.ExtractToFile(Path.Combine(InstallerSettings.Instance.ModsFolder, entry.Name), true);
+                        }
                     }
                     else if (entry.Name.StartsWith("README"))
                     {
