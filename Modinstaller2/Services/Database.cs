@@ -1,10 +1,10 @@
-﻿using Modinstaller2.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Xml;
+using Modinstaller2.Models;
 
 namespace Modinstaller2.Services
 {
@@ -39,18 +39,18 @@ namespace Modinstaller2.Services
                     files.Add(file["Name"].InnerText);
                 }
 
-#warning TODO: Set this up to initialize after the settings. Probably in MainWindowViewModel.
-                item.Installed = false; /* Enumerable.All
+// #warning TODO: Set this up to initialize after the settings. Probably in MainWindowViewModel.
+                item.Installed = Enumerable.All
                 (
                     files, (f) => File.Exists(Path.Combine(InstallerSettings.Instance.ModsFolder, f))
                                || File.Exists(Path.Combine(InstallerSettings.Instance.DisabledFolder, f))
-                ); */
+                );
 
-                item.Enabled = false; /* item.Installed ? (bool?) Enumerable.All
+                item.Enabled = item.Installed ? (bool?) Enumerable.All
                 (
                     files, (f) => File.Exists(Path.Combine(InstallerSettings.Instance.ModsFolder, f))
                 ) 
-                : null; */
+                : null;
 
                 item._link = modlink["Link"].InnerText;
 

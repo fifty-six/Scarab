@@ -1,24 +1,26 @@
-﻿using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using ReactiveUI;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using MessageBox.Avalonia;
+using ReactiveUI;
+using SPath = System.IO.Path;
 
 namespace Modinstaller2.ViewModels
 {
-    public class SelectPathViewModel : ViewModelBase 
+    public class SelectPathViewModel : ViewModelBase
     {
         internal string _path;
 
-        internal string Path 
-        { 
+        internal string Path
+        {
             get => _path;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _path, value);
-            }
+            set => this.RaiseAndSetIfChanged(ref _path, value);
         }
 
         public ReactiveCommand<Unit, Unit> SelectCommand { get; }
@@ -30,53 +32,76 @@ namespace Modinstaller2.ViewModels
 
         private async Task Select()
         {
-            System.Diagnostics.Debug.WriteLine("Selecting path...");
+            Debug.WriteLine("Selecting path...");
 
-            Window parent = (Avalonia.Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+            Window parent = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 var dialog = new OpenFileDialog
                 {
                     Title = "Select your Hollow Knight app.",
+                    AllowMultiple = false
                 };
 
-                dialog.AllowMultiple = false;
+                dialog.Filters.Add(new FileDialogFilter {Extensions = {".app"}});
 
-                dialog.Filters.Add(new FileDialogFilter() { Extensions = { ".app" } });
+                string[] result;
 
-                var result = await dialog.ShowAsync(parent);
+                do
+                {
+                    result = await dialog.ShowAsync(parent);
 
-                // Same todo as below lmao
-                // Also note, .app is *technically* a folder, should this be actually using OpenFolderDialog for both?
+                    if (result == null)
+                    {
+                        await MessageBoxManager.GetMessageBoxStandardWindow("Path", "Please select your Hollow Knight App.").Show();
+                    }
+                    else if (!IsValid(result.First()))
+                    {
+                        result = null;
 
-                System.Diagnostics.Debug.WriteLine($"Got .app path: {result}");
+                        await MessageBoxManager.GetMessageBoxStandardWindow("Path", "Invalid Hollow Knight App. Assembly-CSharp missing.").Show();
+                    }
+                }
+                while (result == null);
 
                 Path = result.First();
             }
-            else 
+            else
             {
-                var dialog = new OpenFolderDialog()
+                string result;
+
+                var dialog = new OpenFolderDialog
                 {
                     Title = "Select your Hollow Knight folder."
                 };
 
-                var result = await dialog.ShowAsync(parent);
-
-#warning TODO: Validation of paths and confirm for result.
-
-                if (result == null)
+                do
                 {
-                    // TODO: Handle this.
-                    // Might just loop.
+                    result = await dialog.ShowAsync(parent);
+
+                    if (result == null)
+                    {
+                        await MessageBoxManager.GetMessageBoxStandardWindow("Path", "Please select your Hollow Knight Path.").Show();
+                    }
+                    else if (!IsValid(result))
+                    {
+                        result = null;
+
+                        await MessageBoxManager.GetMessageBoxStandardWindow("Path", "Invalid Hollow Knight Path. Select the Hollow Knight folder containing hollow_knight_Data.").Show();
+                    }
                 }
-
-                // Should also do validation.
-
-                System.Diagnostics.Debug.WriteLine($"Got path: {result}");
+                while (result == null);
 
                 Path = result;
             }
+        }
+
+        private bool IsValid(string result)
+        {
+            return Directory.Exists(result)
+                && Directory.Exists(SPath.Combine(result, InstallerSettings.OSManagedSuffix))
+                && File.Exists(SPath.Combine(result, InstallerSettings.OSManagedSuffix, "Assembly-CSharp.dll"));
         }
     }
 }

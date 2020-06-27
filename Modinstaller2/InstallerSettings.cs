@@ -1,16 +1,18 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
-using System.Text.Json;
 using System.Linq;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
+using System.Text.Json;
 
 namespace Modinstaller2
 {
     internal class InstallerSettings
     {
+        internal static string OSManagedSuffix = GenManagedSuffix();
+
         private static readonly ImmutableList<string> STATIC_PATHS = new List<string>
         {
             "Program Files/Steam/steamapps/common/Hollow Knight",
@@ -20,16 +22,17 @@ namespace Modinstaller2
             "Steam/steamapps/common/Hollow Knight",
             "GOG Galaxy/Games/Hollow Knight"
         }
-        .Select(path => path.Replace('/', Path.DirectorySeparatorChar)).SelectMany(path => DriveInfo.GetDrives().Select(d => Path.Combine(d.Name, path))).ToImmutableList();
+        .Select(path => path.Replace('/', Path.DirectorySeparatorChar)).SelectMany(path => DriveInfo.GetDrives().Select(d => Path.Combine(d.Name, path, OSManagedSuffix))).ToImmutableList();
 
-        private static readonly ImmutableList<string> USER_SUFFIX_PATHS = new List<string>()
+        private static readonly ImmutableList<string> USER_SUFFIX_PATHS = new List<string>
         {
             ".local/.share/Steam/steamapps/common/Hollow Knight",
-            ".local/.share/Steam/steamapps/common/Hollow Knight",
+            ".local/.share/Steam/steamapps/common/Hollow Knight"
         }
-        .Select(path => path.Replace('/', Path.DirectorySeparatorChar)).ToImmutableList();
+        .Select(path => path.Replace('/', Path.DirectorySeparatorChar)).Select(path => Path.Combine(path, OSManagedSuffix)).ToImmutableList();
 
         internal readonly string ManagedFolder;
+
         internal string ModsFolder     => Path.Combine(ManagedFolder, "Mods");
         internal string DisabledFolder => Path.Combine(ModsFolder, "Disabled");
 
@@ -51,31 +54,24 @@ namespace Modinstaller2
             path = STATIC_PATHS.FirstOrDefault(Directory.Exists);
 
             // If that's valid, use it.
-            if (!string.IsNullOrEmpty(path)) 
-            {
+            if (!string.IsNullOrEmpty(path))
                 return true;
-            }
 
             // Otherwise, we go through the user profile suffixes.
             string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
             path = USER_SUFFIX_PATHS.Select(suffix => Path.Combine(home, suffix)).FirstOrDefault(Directory.Exists);
 
-#warning TODO: Append the actual OS-dependant path to Managed based on the found path if there is one
-
             return !string.IsNullOrEmpty(path);
         }
 
-        internal static string OSManagedSuffix;
-
-        static InstallerSettings()
+        private static string GenManagedSuffix()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                OSManagedSuffix = Path.Combine("hollow_knight_Data", "Managed");
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                OSManagedSuffix = Path.Combine("Contents", "Resources", "Data", "Managed");
-            else
-                throw new NotSupportedException();
+                return Path.Combine("hollow_knight_Data", "Managed");
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                return Path.Combine("Contents", "Resources", "Data", "Managed");
+            throw new NotSupportedException();
         }
 
         private static InstallerSettings LoadInstance()
@@ -83,9 +79,16 @@ namespace Modinstaller2
             if (!File.Exists(ConfigPath))
                 throw new FileNotFoundException();
 
+            Debug.WriteLine("ConfigPath: File @ {ConfigPath} exists.");
+
             string content = File.ReadAllText(ConfigPath);
 
             return _instance = JsonSerializer.Deserialize<InstallerSettings>(content);
+        }
+
+        public static InstallerSettings CreateInstance(string path)
+        {
+            return _instance = new InstallerSettings(Path.Combine(path, OSManagedSuffix));
         }
 
         internal static void SaveInstance()

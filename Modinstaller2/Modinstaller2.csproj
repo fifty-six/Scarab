@@ -1,8 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RuntimeIdentifiers>win10-x64;osx.10.12-x64</RuntimeIdentifiers>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="**\*.xaml.cs">
@@ -22,9 +23,10 @@
     <None Remove="Views\SelectPathView.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.9.0" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.9.0" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.0" />
+    <PackageReference Include="Avalonia" Version="0.9.1" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.9.1" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.1" />
+    <PackageReference Include="MessageBox.Avalonia" Version="0.9.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Views\SelectPathView.xaml">

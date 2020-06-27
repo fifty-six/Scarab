@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Mime;
-using System.IO.Compression;
 
 namespace Modinstaller2.Models
 {
@@ -66,7 +67,7 @@ namespace Modinstaller2.Models
                 }
             }
 
-            System.Diagnostics.Debug.WriteLine($"Enabled: {Enabled}, Installed: {Installed}");
+            Debug.WriteLine($"Enabled: {Enabled}, Installed: {Installed}");
         }
 
         public void OnInstall()

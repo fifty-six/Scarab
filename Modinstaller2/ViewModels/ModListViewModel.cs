@@ -1,8 +1,6 @@
-﻿using Modinstaller2.Models;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
+using Modinstaller2.Models;
 
 namespace Modinstaller2.ViewModels
 {

@@ -1,13 +1,10 @@
-﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using ReactiveUI;
-using System;
-using System.Reactive;
-using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace Modinstaller2.Views
 {
+    [UsedImplicitly]
     public class SelectPathView : UserControl
     {
         public SelectPathView()
