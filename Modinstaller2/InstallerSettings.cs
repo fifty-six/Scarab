@@ -22,12 +22,12 @@ namespace Modinstaller2
             "Steam/steamapps/common/Hollow Knight",
             "GOG Galaxy/Games/Hollow Knight"
         }
-        .Select(path => path.Replace('/', Path.DirectorySeparatorChar)).SelectMany(path => DriveInfo.GetDrives().Select(d => Path.Combine(d.Name, path, OSManagedSuffix))).ToImmutableList();
+        .Select(path => path.Replace('/', Path.DirectorySeparatorChar)).SelectMany(path => DriveInfo.GetDrives().Select(d => Path.Combine(d.Name, path))).ToImmutableList();
 
         private static readonly ImmutableList<string> USER_SUFFIX_PATHS = new List<string>
         {
             ".local/.share/Steam/steamapps/common/Hollow Knight",
-            ".local/.share/Steam/steamapps/common/Hollow Knight"
+            "Library/Application Support/Steam/steamapps/Hollow Knight/hollow_knight.app"
         }
         .Select(path => path.Replace('/', Path.DirectorySeparatorChar)).Select(path => Path.Combine(path, OSManagedSuffix)).ToImmutableList();
 

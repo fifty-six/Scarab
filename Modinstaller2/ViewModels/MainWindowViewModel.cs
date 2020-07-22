@@ -13,7 +13,7 @@ namespace Modinstaller2.ViewModels
         private ViewModelBase Content
         {
             get => _content;
-            set { this.RaiseAndSetIfChanged(ref _content, value); }
+            set => this.RaiseAndSetIfChanged(ref _content, value);
         }
 
         public MainWindowViewModel()
@@ -44,7 +44,7 @@ namespace Modinstaller2.ViewModels
 
                 _db = new Database();
 
-                Content = new ModListViewModel(_db.GetItems());
+                Content = new ModListViewModel(_db.Items);
             }
         }
 
@@ -63,7 +63,7 @@ namespace Modinstaller2.ViewModels
 
                 _db = new Database();
 
-                Content = new ModListViewModel(_db.GetItems());
+                Content = new ModListViewModel(_db.Items);
             }
         }
     }

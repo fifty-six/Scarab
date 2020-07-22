@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,17 +13,24 @@ namespace Modinstaller2.Services
     {
         private const string MODLINKS_URI = "https://raw.githubusercontent.com/Ayugradow/ModInstaller/master/modlinks.xml";
 
-        public IEnumerable<ModItem> GetItems() => _items;
+        public IEnumerable<ModItem> Items => _items;
 
         private readonly List<ModItem> _items = new List<ModItem>();
 
         public Database()
         {
+            string[] enabled_paths = {
+                InstallerSettings.Instance.ModsFolder,
+                InstallerSettings.Instance.ManagedFolder,
+            };
+            
+            string[] paths = enabled_paths.Append(InstallerSettings.Instance.DisabledFolder).ToArray();
+
             using var wc = new WebClient();
 
             string xmlString = wc.DownloadString(new Uri(MODLINKS_URI));
 
-            XmlDocument doc = new XmlDocument();
+            var doc = new XmlDocument();
 
             doc.LoadXml(xmlString);
 
@@ -30,33 +38,33 @@ namespace Modinstaller2.Services
 
             foreach (XmlNode modlink in list.ChildNodes)
             {
-                ModItem item = new ModItem();
+                List<string> files = modlink["Files"].ChildNodes.Cast<XmlNode>().Select(file => file["Name"].InnerText).ToList();
 
-                List<string> files = new List<string>();
-
-                foreach (XmlNode file in modlink["Files"].ChildNodes)
+                var item = new ModItem
                 {
-                    files.Add(file["Name"].InnerText);
-                }
+                    Installed = files.All
+                    (
+                        f => paths.Select(path => Path.Join(path, f)).Any(File.Exists)
+                    ),
 
-// #warning TODO: Set this up to initialize after the settings. Probably in MainWindowViewModel.
-                item.Installed = Enumerable.All
-                (
-                    files, (f) => File.Exists(Path.Combine(InstallerSettings.Instance.ModsFolder, f))
-                               || File.Exists(Path.Combine(InstallerSettings.Instance.DisabledFolder, f))
-                );
+                    Link = modlink["Link"].InnerText,
 
-                item.Enabled = item.Installed ? (bool?) Enumerable.All
+                    Files = files.ToArray(),
+
+                    Name = modlink["Name"].InnerText,
+
+                    Db = this,
+
+                    Dependencies = modlink["Dependencies"].ChildNodes.Cast<XmlNode>().Select(x => x.InnerText).ToArray()
+                };
+
+                Debug.WriteLine($"{item.Name}: {string.Join(" ", item.Dependencies)}");
+
+                item.Enabled = item.Installed ? (bool?) files.All
                 (
-                    files, (f) => File.Exists(Path.Combine(InstallerSettings.Instance.ModsFolder, f))
+                    f => enabled_paths.Select(path => Path.Join(path, f)).Any(File.Exists)
                 ) 
                 : null;
-
-                item._link = modlink["Link"].InnerText;
-
-                item._files = files.ToArray();
-
-                item.Name = modlink["Name"].InnerText;
 
                 _items.Add(item);
             }

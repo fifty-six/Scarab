@@ -3,19 +3,35 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Net.Mime;
+using Modinstaller2.Services;
 
 namespace Modinstaller2.Models
 {
     public class ModItem : INotifyPropertyChanged
     {
         internal bool? _enabled;
+
         internal bool _installed;
-        internal string[] _files;
-        internal string _link;
+
+        public string[] Dependencies { get; set; }
+
+        public string[] Files { get; set; }
+
+        public string Link { get; set; }
+
+        public Database Db { get; set; }
 
         public string Name { get; set; }
+
+        private static readonly string[] BLACKLIST =
+        {
+            "hollow_Knight_Data/",
+            "Managed/",
+            "Mods/"
+        };
 
         public bool? Enabled
         {
@@ -45,7 +61,7 @@ namespace Modinstaller2.Models
         {
             if (!(Enabled is bool enabled)) throw new NotImplementedException();
 
-            foreach (string file in _files)
+            foreach (string file in Files)
             {
                 string disabledPath = Path.Combine(InstallerSettings.Instance.ModsFolder, "Disabled", file);
                 string enabledPath = Path.Combine(InstallerSettings.Instance.ModsFolder, file);
@@ -91,15 +107,26 @@ namespace Modinstaller2.Models
 
         private void Install()
         {
+            foreach (ModItem dep in Dependencies.Select(x => Db.Items.FirstOrDefault(i => i.Name == x)).Where(x => x != null))
+            {
+                if (dep.Installed) 
+                    continue;
+
+                dep.Install();
+
+                dep.Installed = true;
+                dep.Enabled = true;
+            }
+            
             var dl = new WebClient();
 
-            byte[] data = dl.DownloadData(new Uri(_link));
+            byte[] data = dl.DownloadData(new Uri(Link));
 
             string filename = string.Empty;
 
             if (!string.IsNullOrEmpty(dl.ResponseHeaders["Content-Disposition"]))
             {
-                ContentDisposition disposition = new ContentDisposition(dl.ResponseHeaders["Content-Disposition"]);
+                var disposition = new ContentDisposition(dl.ResponseHeaders["Content-Disposition"]);
 
                 filename = disposition.FileName;
             }
@@ -107,47 +134,94 @@ namespace Modinstaller2.Models
             if (string.IsNullOrEmpty(filename))
                 throw new Exception($"Filename unknown for Mod {Name}!");
 
-            if (filename.EndsWith(".zip", StringComparison.InvariantCultureIgnoreCase))
-            {
-                using ZipArchive archive = new ZipArchive(new MemoryStream(data));
+            string ext = Path.GetExtension(filename.ToLower());
 
-                foreach (ZipArchiveEntry entry in archive.Entries)
+            var settings = InstallerSettings.Instance;
+            
+            switch (ext)
+            {
+                case ".zip":
                 {
-                    if (entry.FullName.EndsWith("dll"))
+                    using var archive = new ZipArchive(new MemoryStream(data));
+
+                    foreach (ZipArchiveEntry entry in archive.Entries)
                     {
-                        if (entry.Name.StartsWith("Assembly-CSharp"))
-                        { 
-                            entry.ExtractToFile(Path.Combine(InstallerSettings.Instance.ManagedFolder, entry.Name), true);
-                        }
-                        else
+                        if (entry.FullName.EndsWith("dll"))
                         {
-                            entry.ExtractToFile(Path.Combine(InstallerSettings.Instance.ModsFolder, entry.Name), true);
+                            entry.ExtractToFile
+                            (
+                                entry.Name.StartsWith
+                                    ("Assembly-CSharp")
+                                    ? Path.Combine(settings.ManagedFolder, entry.Name)
+                                    : Path.Combine(settings.ModsFolder, entry.Name),
+                                true
+                            );
+                        }
+                        else if (entry.Name.StartsWith("README"))
+                        {
+                            // TODO: Handle README
+                        }
+                        // Folder, ignore if it's one of the base direcetories.
+                        else if (string.IsNullOrEmpty(entry.Name) && BLACKLIST.All(i => !entry.FullName.EndsWith(i, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            // If we're using the full zip structure, remove the prev directories.
+                            string dirPath = entry.FullName.Replace("hollow_knight_Data/Managed/Mods/", "");
+
+                            Directory.CreateDirectory(Path.Combine(settings.ModsFolder, dirPath));
+                        }
+                        // Any other file, we place it according to the normal structure
+                        else if (entry.Name != string.Empty)
+                        {
+                            // Once again, ignore the first few folders of zip structure.
+                            string path = entry.FullName.Replace("hollow_knight_Data/Managed/Mods/", "");
+
+                            entry.ExtractToFile(Path.Combine(settings.ModsFolder, path), true);
                         }
                     }
-                    else if (entry.Name.StartsWith("README"))
-                    {
-                        // Handle README
-                    }
+
+                    break;
                 }
-            }
-            else if (filename.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
-            {
-                File.WriteAllBytes(Path.Combine(InstallerSettings.Instance.ModsFolder, filename), data);
-            }
-            else
-            {
-                throw new NotImplementedException($"Unknown file type for mod download: {filename}");
+
+                case ".dll":
+                {
+                    File.WriteAllBytes(Path.Combine(settings.ModsFolder, filename), data);
+
+                    break;
+                }
+
+                default:
+                {
+                    throw new NotImplementedException($"Unknown file type for mod download: {filename}");
+                }
             }
         }
 
         private void Uninstall()
         {
-            foreach (string file in _files)
+            foreach (string file in Files)
             {
-                string path = Path.Combine(InstallerSettings.Instance.ModsFolder, file);
+                string path = Path.Combine
+                (
+                    Enabled ?? true 
+                        ? InstallerSettings.Instance.ModsFolder
+                        : InstallerSettings.Instance.DisabledFolder,
+                    file
+                );
 
                 if (File.Exists(path))
                     File.Delete(path);
+            }
+
+            foreach (ModItem dep in Dependencies.Select(x => Db.Items.FirstOrDefault(i => x == i.Name)).Where(x => x != null))
+            {
+                // Make sure no other mods depend on it
+                if (Db.Items.Where(x => x.Installed && x != this).Any(x => x.Dependencies.Contains(dep.Name)))
+                    continue;
+
+                dep.Uninstall();
+
+                dep.Installed = false;
+                dep.Enabled = null;
             }
         }
     }
