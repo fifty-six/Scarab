@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Mime;
-using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
-using Modinstaller2.Services;
 
 namespace Modinstaller2.Models
 {
@@ -108,15 +105,10 @@ namespace Modinstaller2.Models
                     File.Move(disabledPath, enabledPath);
                 }
             }
-
-            Debug.WriteLine($"Enabled: {Enabled}, Installed: {Installed}");
         }
 
         public void OnInstall(IList<ModItem> items)
         {
-            Debug.WriteLine(Installed);
-            Debug.WriteLine(Updated?.ToString() ?? "null");
-            
             // NOTE: Condition is taken *after* Installed is set to its new state.
             // So if it's not installed, it truly is not installed
             // And if it's "installed", we should install it.
@@ -128,12 +120,8 @@ namespace Modinstaller2.Models
 
                     Updated = true;
 
-                    Debug.WriteLine(Installed);
-
                     // Have to set it explicitly, because null toggles to false.
                     Installed = true;
-
-                    Debug.WriteLine(Installed);
                 }
                 else
                 {

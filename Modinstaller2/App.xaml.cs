@@ -2,7 +2,6 @@ using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Modinstaller2.Services;
 using Modinstaller2.ViewModels;
 using Modinstaller2.Views;
 
