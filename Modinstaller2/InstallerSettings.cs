@@ -9,8 +9,11 @@ using System.Text.Json;
 
 namespace Modinstaller2
 {
+    [Serializable]
     internal class InstallerSettings
     {
+        public string ManagedFolder { get; set; }
+
         internal static string OSManagedSuffix = GenManagedSuffix();
 
         private static readonly ImmutableList<string> STATIC_PATHS = new List<string>
@@ -31,8 +34,6 @@ namespace Modinstaller2
         }
         .Select(path => path.Replace('/', Path.DirectorySeparatorChar)).Select(path => Path.Combine(path, OSManagedSuffix)).ToImmutableList();
 
-        internal readonly string ManagedFolder;
-
         internal string ModsFolder     => Path.Combine(ManagedFolder, "Mods");
         internal string DisabledFolder => Path.Combine(ModsFolder, "Disabled");
 
@@ -48,6 +49,8 @@ namespace Modinstaller2
         {
             ManagedFolder = path;
         }
+
+        private InstallerSettings() {}
 
         internal static bool TryAutoDetect(out string path)
         {

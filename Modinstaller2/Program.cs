@@ -1,4 +1,5 @@
-﻿using Avalonia;
+using Avalonia;
+using Avalonia.Logging.Serilog;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 

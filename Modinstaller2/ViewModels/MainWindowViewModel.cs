@@ -1,10 +1,9 @@
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Controls.Primitives;
+using Avalonia.Threading;
+using MessageBox.Avalonia.BaseWindows;
+using MessageBox.Avalonia.DTO;
+using MessageBox.Avalonia.Enums;
 using Modinstaller2.Services;
 using ReactiveUI;
 
@@ -24,33 +23,63 @@ namespace Modinstaller2.ViewModels
         public MainWindowViewModel()
         {
             string path = null;
-            
+
             if (!InstallerSettings.SettingsExists && !InstallerSettings.TryAutoDetect(out path))
             {
-                // Swap view to SelectPathView, but only if we can't autodetect it..
-                Debug.WriteLine("Going to SelectPathViewModel.");
-
-                Content = new SelectPathViewModel();
-
-                Content.PropertyChanged += SelectPathChanged;
+                SelectPath();
             }
             else
             {
-                if (!InstallerSettings.SettingsExists)
-                {
-                    Debug.WriteLine($"Settings doesn't exist. Creating it at detected path {path}.");
+                if (InstallerSettings.SettingsExists) return;
 
-                    InstallerSettings.CreateInstance(path);
-                } 
-                else
-                {
-                    Debug.WriteLine("Settings exists.");
-                }
+                Debug.WriteLine($"Settings doesn't exist. Creating it at detected path {path}.");
 
-                _db = new Database();
+                IMsBoxWindow<ButtonResult> window = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow
+                (
+                    new MessageBoxStandardParams
+                    {
+                        ContentHeader = "Detected path!",
+                        ContentMessage = $"Detected Hollow Knight install at {path}. Is this correct?",
+                        ButtonDefinitions = ButtonEnum.YesNo
+                    }
+                );
 
-                Content = new ModListViewModel(_db.Items);
+                Dispatcher.UIThread.InvokeAsync
+                (
+                    async () =>
+                    {
+                        ButtonResult res = await window.Show();
+
+                        if (res == ButtonResult.Yes)
+                        {
+                            InstallerSettings.CreateInstance(path);
+
+                            SwapToModlist();
+                        }
+                        else
+                        {
+                            SelectPath();
+                        }
+                    }
+                );
             }
+        }
+
+        public void SelectPath()
+        {
+            // Swap view to SelectPathView, but only if we can't autodetect it..
+            Debug.WriteLine("Going to SelectPathViewModel.");
+
+            Content = new SelectPathViewModel();
+
+            Content.PropertyChanged += SelectPathChanged;
+        }
+
+        public void SwapToModlist()
+        {
+            _db = new Database();
+
+            Content = new ModListViewModel(_db.Items);
         }
 
         private void SelectPathChanged(object sender, PropertyChangedEventArgs e)
@@ -58,18 +87,16 @@ namespace Modinstaller2.ViewModels
             Debug.WriteLine($"e: {e}");
             Debug.WriteLine($"e.PropertyName: {e.PropertyName}");
 
-            if (e.PropertyName == "Path" && Content is SelectPathViewModel content)
-            {
-                Content.PropertyChanged -= SelectPathChanged;
+            if (e.PropertyName != "Path" || !(Content is SelectPathViewModel content))
+                return;
 
-                Debug.WriteLine($"Content: {content.Path}");
+            Content.PropertyChanged -= SelectPathChanged;
 
-                InstallerSettings.CreateInstance(content.Path);
+            Debug.WriteLine($"Content: {content.Path}");
 
-                _db = new Database();
+            InstallerSettings.CreateInstance(content.Path);
 
-                Content = new ModListViewModel(_db.Items);
-            }
+            SwapToModlist();
         }
     }
 }

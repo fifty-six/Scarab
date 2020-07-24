@@ -23,18 +23,18 @@
     <None Remove="Views\SelectPathView.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.0-preview1" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.0-preview1" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0-preview1" />
-    <PackageReference Include="MessageBox.Avalonia" Version="0.9.0" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Views\SelectPathView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\ModListView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.9.11" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.9.11" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.11" />
+    <PackageReference Include="MessageBox.Avalonia" Version="0.9.6.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Views\ModListView - Copy.xaml.cs">
