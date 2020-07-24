@@ -88,7 +88,12 @@ namespace Modinstaller2
 
         public static InstallerSettings CreateInstance(string path)
         {
-            return _instance = new InstallerSettings(Path.Combine(path, OSManagedSuffix));
+            // Create from ManagedPath.
+            _instance = new InstallerSettings(Path.Combine(path, OSManagedSuffix));
+
+            SaveInstance();
+
+            return _instance;
         }
 
         internal static void SaveInstance()

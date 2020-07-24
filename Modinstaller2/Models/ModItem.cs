@@ -16,8 +16,6 @@ namespace Modinstaller2.Models
 
         internal bool _installed;
 
-        public ModItem This => this;
-
         public string[] Dependencies { get; set; }
 
         public string[] Files { get; set; }

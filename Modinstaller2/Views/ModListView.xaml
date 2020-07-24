@@ -23,7 +23,7 @@
                             <CheckBox
                                Grid.Column="2"
                                Command="{Binding $parent[UserControl].DataContext.OnInstall}"
-                               CommandParameter="{Binding This}"
+                               CommandParameter="{Binding .}"
                                IsChecked="{Binding InstalledAndUpdated}"
                                Content="{Binding InstallText}"
                             >
