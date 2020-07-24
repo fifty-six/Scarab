@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
              mc:Ignorable="d" d:DesignWidth="660" d:DesignHeight="550"
              x:Class="Modinstaller2.Views.ModListView">
     <DockPanel>
@@ -21,14 +22,15 @@
                             />
                             <CheckBox
                                Grid.Column="2"
-                               Command="{Binding OnInstall}"
-                               IsChecked="{Binding Installed}"
-                               Content="Installed?">
-                                <CheckBox.Styles>
-                                    <Style Selector="CheckBox /template/ Path#checkMark">
-                                        <Setter Property="Fill" Value="Orange" />
-                                    </Style>
-                                </CheckBox.Styles>
+                               Command="{Binding $parent[UserControl].DataContext.OnInstall}"
+                               CommandParameter="{Binding This}"
+                               IsChecked="{Binding InstalledAndUpdated}"
+                               Content="{Binding InstallText}"
+                            >
+                                <CheckBox.Resources>
+                                    <SolidColorBrush x:Key="HighlightBrush" Color="{Binding Color}"/>
+                                    <sys:Double x:Key="ThemeDisabledOpacity">1</sys:Double>
+                                </CheckBox.Resources>
                             </CheckBox>
                         </Grid>
                     </DataTemplate>

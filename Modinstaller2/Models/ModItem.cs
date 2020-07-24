@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -6,6 +7,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Mime;
+using Avalonia.Markup.Xaml.MarkupExtensions;
+using Avalonia.Media;
 using Modinstaller2.Services;
 
 namespace Modinstaller2.Models
@@ -16,13 +19,13 @@ namespace Modinstaller2.Models
 
         internal bool _installed;
 
+        public ModItem This => this;
+
         public string[] Dependencies { get; set; }
 
         public string[] Files { get; set; }
 
         public string Link { get; set; }
-
-        public Database Db { get; set; }
 
         public string Name { get; set; }
 
@@ -44,6 +47,23 @@ namespace Modinstaller2.Models
             }
         }
 
+        public bool? InstalledAndUpdated
+        {
+            // Indeterminate state to indicate update required.
+            get => Updated ?? true ? _installed : (bool?) null;
+
+            set
+            {
+                // ReSharper disable once PossibleInvalidOperationException
+                _installed = (bool) value;
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Installed)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InstalledAndUpdated)));
+            }
+        }
+
+        public Color Color => Color.Parse(Updated ?? true ? "#ff086f9e" : "#f49107");
+
         public bool Installed
         {
             get => _installed;
@@ -51,9 +71,15 @@ namespace Modinstaller2.Models
             set
             {
                 _installed = value;
+
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Installed)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InstalledAndUpdated)));
             }
         }
+
+        public string InstallText => Updated ?? true ? "Installed?" : "Out of date!";
+
+        public bool? Updated { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -86,33 +112,52 @@ namespace Modinstaller2.Models
             Debug.WriteLine($"Enabled: {Enabled}, Installed: {Installed}");
         }
 
-        public void OnInstall()
+        public void OnInstall(IList<ModItem> items)
         {
+            Debug.WriteLine(Installed);
+            Debug.WriteLine(Updated?.ToString() ?? "null");
+            
             // NOTE: Condition is taken *after* Installed is set to its new state.
             // So if it's not installed, it truly is not installed
             // And if it's "installed", we should install it.
             if (!Installed)
             {
-                Uninstall();
+                if (Updated is bool updated && !updated)
+                {
+                    Install(items);
 
-                Enabled = null;
+                    Updated = true;
+
+                    Debug.WriteLine(Installed);
+
+                    // Have to set it explicitly, because null toggles to false.
+                    Installed = true;
+
+                    Debug.WriteLine(Installed);
+                }
+                else
+                {
+                    Uninstall(items);
+
+                    Enabled = null;
+                }
             }
             else
             {
-                Install();
-
                 Enabled = true;
+
+                Install(items);
             }
         }
 
-        private void Install()
+        private void Install(IList<ModItem> items)
         {
-            foreach (ModItem dep in Dependencies.Select(x => Db.Items.FirstOrDefault(i => i.Name == x)).Where(x => x != null))
+            foreach (ModItem dep in Dependencies.Select(x => items.FirstOrDefault(i => i.Name == x)).Where(x => x != null))
             {
                 if (dep.Installed) 
                     continue;
 
-                dep.Install();
+                dep.Install(items);
 
                 dep.Installed = true;
                 dep.Enabled = true;
@@ -132,11 +177,17 @@ namespace Modinstaller2.Models
             }
 
             if (string.IsNullOrEmpty(filename))
-                throw new Exception($"Filename unknown for Mod {Name}!");
+            {
+                filename = Link.Substring(Link.LastIndexOf("/") + 1);
+            }
 
             string ext = Path.GetExtension(filename.ToLower());
 
             var settings = InstallerSettings.Instance;
+
+            string mod_folder = Enabled ?? throw new NullReferenceException("Mod missing enabled status!")
+                ? settings.ModsFolder
+                : settings.DisabledFolder;
             
             switch (ext)
             {
@@ -153,7 +204,7 @@ namespace Modinstaller2.Models
                                 entry.Name.StartsWith
                                     ("Assembly-CSharp")
                                     ? Path.Combine(settings.ManagedFolder, entry.Name)
-                                    : Path.Combine(settings.ModsFolder, entry.Name),
+                                    : Path.Combine(mod_folder, entry.Name),
                                 true
                             );
                         }
@@ -184,7 +235,7 @@ namespace Modinstaller2.Models
 
                 case ".dll":
                 {
-                    File.WriteAllBytes(Path.Combine(settings.ModsFolder, filename), data);
+                    File.WriteAllBytes(Path.Combine(mod_folder, filename), data);
 
                     break;
                 }
@@ -196,7 +247,7 @@ namespace Modinstaller2.Models
             }
         }
 
-        private void Uninstall()
+        private void Uninstall(IList<ModItem> items)
         {
             foreach (string file in Files)
             {
@@ -212,13 +263,13 @@ namespace Modinstaller2.Models
                     File.Delete(path);
             }
 
-            foreach (ModItem dep in Dependencies.Select(x => Db.Items.FirstOrDefault(i => x == i.Name)).Where(x => x != null))
+            foreach (ModItem dep in Dependencies.Select(x => items.FirstOrDefault(i => x == i.Name)).Where(x => x != null))
             {
                 // Make sure no other mods depend on it
-                if (Db.Items.Where(x => x.Installed && x != this).Any(x => x.Dependencies.Contains(dep.Name)))
+                if (items.Where(x => x.Installed && x != this).Any(x => x.Dependencies.Contains(dep.Name)))
                     continue;
 
-                dep.Uninstall();
+                dep.Uninstall(items);
 
                 dep.Installed = false;
                 dep.Enabled = null;
