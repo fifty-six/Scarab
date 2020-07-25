@@ -171,7 +171,8 @@ namespace Modinstaller2.Models
 
             var settings = InstallerSettings.Instance;
 
-            string mod_folder = Enabled ?? throw new NullReferenceException("Mod missing enabled status!")
+            // Default to enabling
+            string mod_folder = Enabled ?? true
                 ? settings.ModsFolder
                 : settings.DisabledFolder;
             

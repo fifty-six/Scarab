@@ -30,7 +30,12 @@ namespace Modinstaller2.ViewModels
             }
             else
             {
-                if (InstallerSettings.SettingsExists) return;
+                if (InstallerSettings.SettingsExists)
+                {
+                    SwapToModlist();
+                    
+                    return;
+                }
 
                 Debug.WriteLine($"Settings doesn't exist. Creating it at detected path {path}.");
 
