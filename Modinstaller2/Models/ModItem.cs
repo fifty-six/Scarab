@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -203,7 +204,7 @@ namespace Modinstaller2.Models
                         else if (string.IsNullOrEmpty(entry.Name) && BLACKLIST.All(i => !entry.FullName.EndsWith(i, StringComparison.OrdinalIgnoreCase)))
                         {
                             // If we're using the full zip structure, remove the prev directories.
-                            string dirPath = entry.FullName.Replace("hollow_knight_Data/Managed/Mods/", "");
+                            string dirPath = entry.FullName.Replace("hollow_knight_Data/Managed/Mods/", string.Empty);
 
                             Directory.CreateDirectory(Path.Combine(settings.ModsFolder, dirPath));
                         }
@@ -211,9 +212,26 @@ namespace Modinstaller2.Models
                         else if (entry.Name != string.Empty)
                         {
                             // Once again, ignore the first few folders of zip structure.
-                            string path = entry.FullName.Replace("hollow_knight_Data/Managed/Mods/", "");
+                            string path = entry.FullName.Replace("hollow_knight_Data/Managed/Mods/", string.Empty);
 
-                            entry.ExtractToFile(Path.Combine(settings.ModsFolder, path), true);
+                            // Something higher up than mods, annoying.
+                            if (path.StartsWith("hollow_knight_Data"))
+                            {
+                                path = entry.FullName.Replace("hollow_knight_Data/Managed/", string.Empty);
+
+                                try
+                                {
+                                    entry.ExtractToFile(Path.Combine(settings.ManagedFolder, path), true);
+                                }
+                                catch (DirectoryNotFoundException)
+                                {
+                                    Debug.WriteLine($"Unable to find directory in path {path}");
+                                }
+                            }
+                            else
+                            {
+                                entry.ExtractToFile(Path.Combine(settings.ModsFolder, path), true);
+                            }
                         }
                     }
 

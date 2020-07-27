@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:sys="clr-namespace:System;assembly=netstandard"
-             mc:Ignorable="d" d:DesignWidth="660" d:DesignHeight="550"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
              x:Class="Modinstaller2.Views.ModListView">
     <DockPanel>
         <Button DockPanel.Dock="Bottom">Button</Button>
