@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using JetBrains.Annotations;
 using MessageBox.Avalonia;
 using ReactiveUI;
 using SPath = System.IO.Path;
@@ -15,14 +16,15 @@ namespace Modinstaller2.ViewModels
 {
     public class SelectPathViewModel : ViewModelBase
     {
-        internal string _path;
+        private string _path;
 
         internal string Path
         {
             get => _path;
-            set => this.RaiseAndSetIfChanged(ref _path, value);
+            private set => this.RaiseAndSetIfChanged(ref _path, value);
         }
 
+        [UsedImplicitly]
         public ReactiveCommand<Unit, Unit> SelectCommand { get; }
 
         public SelectPathViewModel()
@@ -44,7 +46,7 @@ namespace Modinstaller2.ViewModels
                     AllowMultiple = false
                 };
 
-                dialog.Filters.Add(new FileDialogFilter {Extensions = {".app"}});
+                dialog.Filters.Add(new FileDialogFilter { Extensions = { "app" } });
 
                 string[] result;
 
@@ -56,11 +58,22 @@ namespace Modinstaller2.ViewModels
                     {
                         await MessageBoxManager.GetMessageBoxStandardWindow("Path", "Please select your Hollow Knight App.").Show();
                     }
+                    else if (result.Length == 0)
+                    {
+                        result = null;
+
+                        await MessageBoxManager.GetMessageBoxStandardWindow("Path", "Nothing selected. Select your Hollow Knight App.").Show();
+                    }
                     else if (!IsValid(result.First()))
                     {
                         result = null;
 
-                        await MessageBoxManager.GetMessageBoxStandardWindow("Path", "Invalid Hollow Knight App. Assembly-CSharp missing.").Show();
+                        await MessageBoxManager.GetMessageBoxStandardWindow
+                                               (
+                                                   "Path",
+                                                   "Invalid Hollow Knight App. Assembly-CSharp or Managed folder missing."
+                                               )
+                                               .Show();
                     }
                 }
                 while (result == null);
@@ -88,7 +101,12 @@ namespace Modinstaller2.ViewModels
                     {
                         result = null;
 
-                        await MessageBoxManager.GetMessageBoxStandardWindow("Path", "Invalid Hollow Knight Path. Select the Hollow Knight folder containing hollow_knight_Data.").Show();
+                        await MessageBoxManager.GetMessageBoxStandardWindow
+                                               (
+                                                   "Path",
+                                                   "Invalid Hollow Knight Path. Select the Hollow Knight folder containing hollow_knight_Data."
+                                               )
+                                               .Show();
                     }
                 }
                 while (result == null);
@@ -97,7 +115,7 @@ namespace Modinstaller2.ViewModels
             }
         }
 
-        private bool IsValid(string result)
+        private static bool IsValid(string result)
         {
             return Directory.Exists(result)
                 && Directory.Exists(SPath.Combine(result, InstallerSettings.OSManagedSuffix))

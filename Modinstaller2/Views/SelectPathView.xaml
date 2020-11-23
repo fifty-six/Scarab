@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="660" d:DesignHeight="550"
              x:Class="Modinstaller2.Views.SelectPathView">
-  <DockPanel>
+    <DockPanel>
     <Button DockPanel.Dock="Bottom" Command="{Binding SelectCommand}">Select your Hollow Knight file Path!</Button>
   </DockPanel>
 </UserControl>

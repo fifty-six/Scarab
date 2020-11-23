@@ -70,7 +70,7 @@ namespace Modinstaller2.ViewModels
             }
         }
 
-        public void SelectPath()
+        private void SelectPath()
         {
             // Swap view to SelectPathView, but only if we can't autodetect it..
             Debug.WriteLine("Going to SelectPathViewModel.");
