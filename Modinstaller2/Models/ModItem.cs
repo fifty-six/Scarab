@@ -25,6 +25,8 @@ namespace Modinstaller2.Models
         public string Link { get; set; }
 
         public string Name { get; set; }
+        
+        public string Description { get; set; }
 
         private static readonly string[] BLACKLIST =
         {
@@ -264,7 +266,7 @@ namespace Modinstaller2.Models
                         : InstallerSettings.Instance.DisabledFolder,
                     file
                 );
-
+                
                 if (File.Exists(path))
                     File.Delete(path);
             }
