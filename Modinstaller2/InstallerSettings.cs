@@ -32,7 +32,7 @@ namespace Modinstaller2
             ".local/.share/Steam/steamapps/common/Hollow Knight",
             "Library/Application Support/Steam/steamapps/Hollow Knight/hollow_knight.app"
         }
-        .Select(path => path.Replace('/', Path.DirectorySeparatorChar)).Select(path => Path.Combine(path, OSManagedSuffix)).ToImmutableList();
+        .Select(path => path.Replace('/', Path.DirectorySeparatorChar)).ToImmutableList();
 
         internal string ModsFolder     => Path.Combine(ManagedFolder, "Mods");
         internal string DisabledFolder => Path.Combine(ModsFolder, "Disabled");
@@ -41,7 +41,7 @@ namespace Modinstaller2
 
         internal static InstallerSettings Instance => _instance ?? LoadInstance();
 
-        private static string ConfigPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Settings.json");
+        private static string ConfigPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "HKInstallerSettings.json");
 
         internal static bool SettingsExists => File.Exists(ConfigPath);
 
@@ -82,7 +82,7 @@ namespace Modinstaller2
             if (!File.Exists(ConfigPath))
                 throw new FileNotFoundException();
 
-            Debug.WriteLine("ConfigPath: File @ {ConfigPath} exists.");
+            Debug.WriteLine($"ConfigPath: File @ {ConfigPath} exists.");
 
             string content = File.ReadAllText(ConfigPath);
 
@@ -102,6 +102,11 @@ namespace Modinstaller2
         internal static void SaveInstance()
         {
             string content = JsonSerializer.Serialize(_instance);
+            
+            string dir = Path.GetDirectoryName(ConfigPath);
+
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
 
             File.WriteAllText(ConfigPath, content);
         }
