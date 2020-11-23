@@ -6,7 +6,7 @@
         xmlns:views="clr-namespace:Modinstaller2.Views"
         Width="670" Height="450"
         x:Class="Modinstaller2.Views.MainWindow"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/omegamaggotprime.ico"
         Content="{Binding Content}"
         Title="Modinstaller2">
   <views:ModListView/>
