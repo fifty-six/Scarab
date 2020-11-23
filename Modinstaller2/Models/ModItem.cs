@@ -7,15 +7,16 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Mime;
+using System.Threading.Tasks;
 using Avalonia.Media;
 
 namespace Modinstaller2.Models
 {
     public class ModItem : INotifyPropertyChanged
     {
-        internal bool? _enabled;
+        private bool? _enabled;
 
-        internal bool _installed;
+        private bool _installed;
 
         public string[] Dependencies { get; set; }
 
@@ -106,7 +107,7 @@ namespace Modinstaller2.Models
             }
         }
 
-        public void OnInstall(IList<ModItem> items)
+        public async Task OnInstall(IList<ModItem> items)
         {
             // NOTE: Condition is taken *after* Installed is set to its new state.
             // So if it's not installed, it truly is not installed
@@ -115,7 +116,7 @@ namespace Modinstaller2.Models
             {
                 if (Updated is bool updated && !updated)
                 {
-                    Install(items);
+                    await Install(items);
 
                     Updated = true;
 
@@ -133,26 +134,26 @@ namespace Modinstaller2.Models
             {
                 Enabled = true;
 
-                Install(items);
+                await Install(items);
             }
         }
 
-        private void Install(IList<ModItem> items)
+        private async Task Install(IList<ModItem> items)
         {
             foreach (ModItem dep in Dependencies.Select(x => items.FirstOrDefault(i => i.Name == x)).Where(x => x != null))
             {
                 if (dep.Installed) 
                     continue;
 
-                dep.Install(items);
+                await dep.Install(items);
 
                 dep.Installed = true;
                 dep.Enabled = true;
             }
             
             var dl = new WebClient();
-
-            byte[] data = dl.DownloadData(new Uri(Link));
+            
+            byte[] data = await dl.DownloadDataTaskAsync(new Uri(Link));
 
             string filename = string.Empty;
 
@@ -240,7 +241,7 @@ namespace Modinstaller2.Models
 
                 case ".dll":
                 {
-                    File.WriteAllBytes(Path.Combine(mod_folder, filename), data);
+                    await File.WriteAllBytesAsync(Path.Combine(mod_folder, filename), data);
 
                     break;
                 }
