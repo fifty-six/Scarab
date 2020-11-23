@@ -80,9 +80,9 @@ namespace Modinstaller2.ViewModels
             Content.PropertyChanged += SelectPathChanged;
         }
 
-        public void SwapToModlist()
+        private void SwapToModlist()
         {
-            _db = new Database();
+            _db = Database.FromUrl(Database.MODLINKS_URI);
 
             Content = new ModListViewModel(_db.Items);
         }

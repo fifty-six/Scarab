@@ -4,43 +4,36 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
-using System.Xml;
+using System.Xml.Serialization;
 using Modinstaller2.Models;
 
 namespace Modinstaller2.Services
 {
     public class Database
     {
-        private const string MODLINKS_URI = "https://raw.githubusercontent.com/Ayugradow/ModInstaller/master/modlinks.xml";
+        public const string MODLINKS_URI = "https://raw.githubusercontent.com/Ayugradow/ModInstaller/master/modlinks.xml";
 
         public IEnumerable<ModItem> Items => _items;
 
         private readonly List<ModItem> _items = new List<ModItem>();
 
-        public Database()
+        private Database(ModLinks ml)
         {
-            string[] enabled_paths = {
+            string[] enabled_paths =
+            {
                 InstallerSettings.Instance.ModsFolder,
                 InstallerSettings.Instance.ManagedFolder,
             };
-            
+
             string[] paths = enabled_paths.Append(InstallerSettings.Instance.DisabledFolder).ToArray();
 
-            using var wc = new WebClient();
+            ModList list = ml.ModList;
 
-            string xmlString = wc.DownloadString(new Uri(MODLINKS_URI));
-
-            var doc = new XmlDocument();
-
-            doc.LoadXml(xmlString);
-
-            XmlElement list = doc["ModLinks"]["ModList"];
-
-            foreach (XmlNode modlink in list.ChildNodes)
+            foreach (ModLink mod in list.ModLinks)
             {
-                string[] files = modlink["Files"].ChildNodes.Cast<XmlNode>().Select(file => file["Name"].InnerText).ToArray();
+                string[] files = mod.Files.Value.Select(x => x.Name).ToArray();
 
-                Dictionary<string, string> hashes = modlink["Files"].ChildNodes.Cast<XmlNode>().ToDictionary(file => file["Name"].InnerText, file => file["SHA1"].InnerText);
+                Dictionary<string, string> hashes = mod.Files.Value.ToDictionary(file => file.Name, file => file.SHA1);
 
                 var item = new ModItem
                 {
@@ -49,23 +42,23 @@ namespace Modinstaller2.Services
                         f => paths.Select(path => Path.Join(path, f)).Any(File.Exists)
                     ),
 
-                    Link = modlink["Link"].InnerText,
+                    Link = mod.Link,
 
                     Files = files,
 
-                    Name = modlink["Name"].InnerText,
+                    Name = mod.Name,
 
-                    Dependencies = modlink["Dependencies"].ChildNodes.Cast<XmlNode>().Select(x => x.InnerText).ToArray(),
+                    Description = mod.Description ?? "This mod has no description.",
+
+                    Dependencies = mod.Dependencies.String.ToArray(),
                 };
 
                 item.Updated = item.Installed ? CheckFileHashes(files, paths, hashes) : (bool?) null;
 
 
-                item.Enabled = item.Installed ? (bool?) files.All
-                (
-                    f => enabled_paths.Select(path => Path.Join(path, f)).Any(File.Exists)
-                ) 
-                : null;
+                item.Enabled = item.Installed
+                    ? (bool?) files.All(f => enabled_paths.Select(path => Path.Join(path, f)).Any(File.Exists))
+                    : null;
 
                 _items.Add(item);
             }
@@ -73,19 +66,34 @@ namespace Modinstaller2.Services
             _items.Sort((a, b) => string.Compare(a.Name, b.Name));
         }
 
-        public string GetHash(string path)
+        public static Database FromUrl(string uri)
         {
-                using var sha1 = SHA1.Create();
-                using FileStream stream = File.OpenRead(path);
+            using var wc = new WebClient();
 
-                byte[] hashBytes = sha1.ComputeHash(stream);
+            string xmlString = wc.DownloadString(new Uri(uri));
 
-                string f_hash = BitConverter.ToString(hashBytes).Replace("-", string.Empty);
+            var serializer = new XmlSerializer(typeof(ModLinks));
 
-                return f_hash;
+            using TextReader reader = new StringReader(xmlString);
+
+            var ml = (ModLinks) serializer.Deserialize(reader);
+
+            return new Database(ml);
         }
 
-        public bool CheckFileHashes(string[] files, string[] paths, Dictionary<string, string> hashes)
+        private static string GetHash(string path)
+        {
+            using var sha1 = SHA1.Create();
+            using FileStream stream = File.OpenRead(path);
+
+            byte[] hashBytes = sha1.ComputeHash(stream);
+
+            string f_hash = BitConverter.ToString(hashBytes).Replace("-", string.Empty);
+
+            return f_hash;
+        }
+
+        private static bool CheckFileHashes(IEnumerable<string> files, string[] paths, IReadOnlyDictionary<string, string> hashes)
         {
             // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (string file in files)
