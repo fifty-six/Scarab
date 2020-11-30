@@ -179,6 +179,9 @@ namespace Modinstaller2.Models
             string mod_folder = Enabled ?? true
                 ? settings.ModsFolder
                 : settings.DisabledFolder;
+
+            if (!Directory.Exists(mod_folder))
+                Directory.CreateDirectory(mod_folder);
             
             switch (ext)
             {
