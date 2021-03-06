@@ -11,10 +11,8 @@ namespace Modinstaller2
         
         public void SortBy(Func<T, T, int> comparer)
         {
-            if (!(Items is List<T> items))
-            {
+            if (Items is not List<T> items)
                 throw new InvalidOperationException("The backing field type is not List<T> on Collection<T>.");
-            }
 
             items.Sort((x, y) => comparer(x, y));
 

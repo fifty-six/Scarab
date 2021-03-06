@@ -37,7 +37,9 @@
                                 IsChecked="{Binding InstalledAndUpdated}"
                                 Content="{Binding InstallText}">
                                 <CheckBox.Resources>
+                                    <!-- ReSharper disable once Xaml.RedundantResource -->
                                     <SolidColorBrush x:Key="HighlightBrush" Color="{Binding Color}" />
+                                    <!-- ReSharper disable once Xaml.RedundantResource -->
                                     <sys:Double x:Key="ThemeDisabledOpacity">1</sys:Double>
                                 </CheckBox.Resources>
                             </CheckBox>
