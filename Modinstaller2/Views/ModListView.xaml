@@ -4,60 +4,81 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:sys="clr-namespace:System;assembly=netstandard"
              xmlns:models="clr-namespace:Modinstaller2.Models"
+             xmlns:viewModels="clr-namespace:Modinstaller2.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
-             x:Class="Modinstaller2.Views.ModListView">
+             x:Class="Modinstaller2.Views.ModListView"
+             d:DataContext="{d:DesignInstance viewModels:ModListViewModel}">
     <DockPanel>
-        <ProgressBar 
+        <ProgressBar
             DockPanel.Dock="Bottom"
-            
+
             MaxHeight="8"
             MinHeight="8"
-            
+
             IsVisible="{Binding ProgressBarVisible}"
-            
+
             Minimum="0"
             Maximum="100"
-            Value="{Binding Progress}"
-        />
-        <ScrollViewer>
-            <ItemsControl Items="{Binding Items}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="models:ModItem">
-                        <Grid Margin="4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" MaxWidth="260"/>
-                                <ColumnDefinition Width="*" MaxWidth="260"/>
-                                <ColumnDefinition Width="*" MaxWidth="260"/>
-                            </Grid.ColumnDefinitions>
-                            <Expander Grid.Column="0">
-                                <Expander.Header>
-                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" MaxWidth="180" />
-                                </Expander.Header>
-                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" MaxWidth="180"/>
-                            </Expander>
-                            <CheckBox
-                                Grid.Column="1"
-                                Command="{Binding OnEnable}"
-                                IsChecked="{Binding Enabled}"
-                                IsEnabled="{Binding Installed}"
-                                Content="Enabled?" />
-                            <CheckBox
-                                Grid.Column="2"
-                                Command="{Binding $parent[UserControl].DataContext.OnInstall}"
-                                CommandParameter="{Binding .}"
-                                IsChecked="{Binding InstalledAndUpdated}"
-                                Content="{Binding InstallText}">
-                                <CheckBox.Resources>
-                                    <!-- ReSharper disable once Xaml.RedundantResource -->
-                                    <SolidColorBrush x:Key="HighlightBrush" Color="{Binding Color}" />
-                                    <!-- ReSharper disable once Xaml.RedundantResource -->
-                                    <sys:Double x:Key="ThemeDisabledOpacity">1</sys:Double>
-                                </CheckBox.Resources>
-                            </CheckBox>
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+            Value="{Binding Progress}" />
+        <!-- For some reason, TextBoxc doesn't have the TextChanged event. -->
+        <AutoCompleteBox
+            x:Name="Search"
+            Watermark="Mod Search"
+            DockPanel.Dock="Top"
+            BorderThickness="0"
+            TextChanged="OnSearchTextChanged" />
+        <Separator
+            DockPanel.Dock="Top"
+            BorderThickness=".5"
+            BorderBrush="#a9a9a9" />
+        <ListBox Items="{Binding FilteredItems}" BorderThickness="0">
+            <!-- ItemsControl would be preferable, but ListBox has virtualization which we need for search -->
+            <!-- To make up for this, we disable the brushes which get used for selection, making this look -->
+            <!-- and feel like an ItemsControl. -->
+            <ListBox.Resources>
+                <!-- ReSharper disable Xaml.RedundantResource -->
+                <SolidColorBrush x:Key="ThemeControlHighlightMidBrush" Color="Transparent" />
+                <SolidColorBrush x:Key="ThemeAccentBrush4" Color="Transparent" />
+                <SolidColorBrush x:Key="ThemeAccentBrush3" Color="Transparent" />
+                <SolidColorBrush x:Key="ThemeAccentBrush2" Color="Transparent" />
+                <!-- ReSharper enable Xaml.RedundantResource -->
+            </ListBox.Resources>
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="models:ModItem">
+                    <Grid Margin="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" MaxWidth="260" />
+                            <ColumnDefinition Width="*" MaxWidth="260" />
+                            <ColumnDefinition Width="*" MaxWidth="260" />
+                        </Grid.ColumnDefinitions>
+                        <Expander Grid.Column="0">
+                            <Expander.Header>
+                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" MaxWidth="180" />
+                            </Expander.Header>
+                            <TextBlock Text="{Binding Description}" TextWrapping="Wrap" MaxWidth="180" />
+                        </Expander>
+                        <CheckBox
+                            Grid.Column="1"
+                            Command="{Binding OnEnable}"
+                            IsChecked="{Binding Enabled}"
+                            IsEnabled="{Binding Installed}"
+                            Content="Enabled?" />
+                        <CheckBox
+                            Grid.Column="2"
+                            Command="{Binding $parent[UserControl].DataContext.OnInstall}"
+                            CommandParameter="{Binding .}"
+                            IsChecked="{Binding InstalledAndUpdated}"
+                            Content="{Binding InstallText}">
+                            <CheckBox.Resources>
+                                <!-- ReSharper disable once Xaml.RedundantResource -->
+                                <SolidColorBrush x:Key="HighlightBrush" Color="{Binding Color}" />
+                                <!-- ReSharper disable once Xaml.RedundantResource -->
+                                <sys:Double x:Key="ThemeDisabledOpacity">1</sys:Double>
+                            </CheckBox.Resources>
+                        </CheckBox>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </DockPanel>
 </UserControl>
