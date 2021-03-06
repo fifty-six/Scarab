@@ -37,11 +37,6 @@ namespace Modinstaller2.Services
 
                 var item = new ModItem
                 {
-                    Installed = files.All
-                    (
-                        f => paths.Select(path => Path.Join(path, f)).Any(File.Exists)
-                    ),
-
                     Link = mod.Link,
 
                     Files = files,
@@ -53,17 +48,23 @@ namespace Modinstaller2.Services
                     Dependencies = mod.Dependencies.String.ToArray(),
                 };
 
-                item.Updated = item.Installed ? CheckFileHashes(files, paths, hashes) : (bool?) null;
-
-
-                item.Enabled = item.Installed
-                    ? (bool?) files.All(f => enabled_paths.Select(path => Path.Join(path, f)).Any(File.Exists))
-                    : null;
-
+                item.State = files.All(f => paths.Select(path => Path.Join(path, f)).Any(File.Exists))
+                    ? new InstalledMod
+                    (
+                        Updated: CheckFileHashes(files, paths, hashes),
+                        Enabled: CheckEnabled(files, enabled_paths)
+                    )
+                    : new NotInstalledMod();
+                
                 _items.Add(item);
             }
 
             _items.Sort((a, b) => string.Compare(a.Name, b.Name));
+        }
+
+        private static bool CheckEnabled(IEnumerable<string> files, string[] enabledPaths)
+        {
+            return files.All(f => enabledPaths.Select(path => Path.Join(path, f)).Any(File.Exists));
         }
 
         public static Database FromUrl(string uri)

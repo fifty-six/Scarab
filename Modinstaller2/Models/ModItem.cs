@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -8,27 +7,13 @@ using System.Linq;
 using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
-using Avalonia.Logging;
 using Avalonia.Media;
+using ReactiveUI;
 
 namespace Modinstaller2.Models
 {
-    public class ModItem : INotifyPropertyChanged
+    public class ModItem : ReactiveObject
     {
-        private bool? _enabled;
-
-        private bool _installed;
-
-        public string[] Dependencies { get; set; }
-
-        public string[] Files { get; set; }
-
-        public string Link { get; set; }
-
-        public string Name { get; set; }
-        
-        public string Description { get; set; }
-
         private static readonly string[] BLACKLIST =
         {
             "hollow_Knight_Data/",
@@ -36,64 +21,72 @@ namespace Modinstaller2.Models
             "Mods/"
         };
 
-        public bool? Enabled
-        {
-            get => _enabled;
+        public string[] Dependencies { get; init; }
 
+        public string[] Files { get; init; }
+
+        public string Link { get; init; }
+
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+
+        private ModState _state;
+
+        public ModState State
+        {
+            get => _state;
             set
             {
-                _enabled = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Enabled)));
+                _state = value;
+                
+                this.RaisePropertyChanged(nameof(State));
+                this.RaisePropertyChanged(nameof(InstalledIsChecked));
+                this.RaisePropertyChanged(nameof(EnabledIsChecked));
+                this.RaisePropertyChanged(nameof(Color));
+                this.RaisePropertyChanged(nameof(Installed));
             }
         }
 
-        public bool? InstalledAndUpdated
+        public bool EnabledIsChecked => State switch
         {
-            // Indeterminate state to indicate update required.
-            get => Updated ?? true ? _installed : (bool?) null;
+            InstalledMod { Enabled: var x } => x,
+            
+            // Can't enable what isn't installed.
+            _ => false
+        };
 
-            set
-            {
-                // ReSharper disable once PossibleInvalidOperationException
-                _installed = (bool) value;
-
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Installed)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InstalledAndUpdated)));
-            }
-        }
-
-        public Color Color => Color.Parse(Updated ?? true ? "#ff086f9e" : "#f49107");
-
-        public bool Installed
+        // 
+        // Update required -> null
+        // Installed -> true
+        // Not installed -> false
+        //
+        // We use null for updates so we get 
+        // a box in the UI, which is a nice indicator.
+        public bool? InstalledIsChecked => State switch
         {
-            get => _installed;
+            InstalledMod { Updated: true } => true,
+            InstalledMod { Updated: false } => null,
+            _ => false
+        };
 
-            set
-            {
-                _installed = value;
+        public Color Color => Color.Parse(State is InstalledMod { Updated : true } ? "#ff086f9e" : "#f49107");
 
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Installed)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InstalledAndUpdated)));
-            }
-        }
+        public string InstallText => State is InstalledMod { Updated: false } ? "Out of date!" : "Installed?";
 
-        public string InstallText => Updated ?? true ? "Installed?" : "Out of date!";
-
-        public bool? Updated { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
+        public bool Installed => State is InstalledMod;
 
         public void OnEnable()
         {
-            if (!(Enabled is bool enabled)) throw new NotImplementedException();
+            if (State is not InstalledMod state)
+                throw new InvalidOperationException("Cannot enable mod which is not installed!");
 
             foreach (string file in Files)
             {
                 string disabledPath = Path.Combine(InstallerSettings.Instance.ModsFolder, "Disabled", file);
                 string enabledPath = Path.Combine(InstallerSettings.Instance.ModsFolder, file);
 
-                // The variable just changed so this logic looks weird, but it's right.
-                if (!enabled)
+                if (state.Enabled)
                 {
                     if (File.Exists(disabledPath))
                         File.Delete(disabledPath);
@@ -108,78 +101,73 @@ namespace Modinstaller2.Models
                     File.Move(disabledPath, enabledPath);
                 }
             }
+
+            State = state with { Enabled = !state.Enabled };
         }
 
         public async Task OnInstall(IList<ModItem> items, Action<bool> setProgressBar, Action<double> setProgress)
         {
-            // NOTE: Condition is taken *after* Installed is set to its new state.
-            // So if it's not installed, it truly is not installed
-            // And if it's "installed", we should install it.
-            if (!Installed)
+            if (State is InstalledMod state)
             {
-                if (Updated is bool updated && !updated)
+                // If we're not updated, update
+                if (!state.Updated)
                 {
                     setProgressBar(true);
-                    
-                    await Install(items, setProgress);
-                    
+
+                    await Install(items, setProgress, false);
+
                     setProgressBar(false);
-
-                    Updated = true;
-
-                    // Have to set it explicitly, because null toggles to false.
-                    Installed = true;
+                    
+                    State = state with { Updated = true };
                 }
+                // Otherwise the user wanted to uninstall.
                 else
                 {
                     Uninstall(items);
 
-                    Enabled = null;
+                    State = new NotInstalledMod();
                 }
             }
             else
             {
-                Enabled = true;
-
                 setProgressBar(true);
 
-                await Install(items, setProgress);
-                
+                await Install(items, setProgress, true);
+
                 setProgressBar(false);
+
+                State = new InstalledMod(Updated : true, Enabled : true );
             }
         }
 
-        private async Task Install(IList<ModItem> items, Action<double> setProgress)
+        private async Task Install(IList<ModItem> items, Action<double> setProgress, bool enable)
         {
             foreach (ModItem dep in Dependencies.Select(x => items.FirstOrDefault(i => i.Name == x)).Where(x => x != null))
             {
-                if (dep.Installed && (dep.Updated ?? true)) 
+                if (dep.State is InstalledMod { Updated: true })
                     continue;
 
-                bool installed_prev = dep.Installed;
+                ModState prev_state = dep.State;
 
-                await dep.Install(items, _ => {});
+                // Enable the dependencies' dependencies if we're enabling this mod
+                // Or if the dependency was previously not installed.
+                await dep.Install(items, _ => { }, enable || dep.State is NotInstalledMod);
 
-                dep.Installed = true;
-                dep.Updated = true;
-
-                if (!installed_prev)
-                {
-                    dep.Enabled = true;
-                }
+                // If we were disabled before, keep the enabled state of the dependency
+                if (!enable && prev_state is InstalledMod installed)
+                    dep.State = installed with { Updated = true };
+                else
+                    dep.State = new InstalledMod(true, true);
             }
-            
+
             var dl = new WebClient();
 
             setProgress(0);
 
-            dl.DownloadProgressChanged += (_, args) =>
-            {
-                setProgress(100 * args.BytesReceived / (double) args.TotalBytesToReceive);
-            };
-            
+            dl.DownloadProgressChanged += (_, args) => { setProgress(100 * args.BytesReceived / (double) args.TotalBytesToReceive); };
+
             byte[] data = await dl.DownloadDataTaskAsync(new Uri(Link));
-            
+
             string filename = string.Empty;
 
             if (!string.IsNullOrEmpty(dl.ResponseHeaders["Content-Disposition"]))
@@ -199,7 +187,7 @@ namespace Modinstaller2.Models
             var settings = InstallerSettings.Instance;
 
             // Default to enabling
-            string mod_folder = Enabled ?? true
+            string mod_folder = enable
                 ? settings.ModsFolder
                 : settings.DisabledFolder;
 
@@ -296,12 +284,12 @@ namespace Modinstaller2.Models
             {
                 string path = Path.Combine
                 (
-                    Enabled ?? true 
+                    State is InstalledMod { Enabled: true }
                         ? InstallerSettings.Instance.ModsFolder
                         : InstallerSettings.Instance.DisabledFolder,
                     file
                 );
-                
+
                 if (File.Exists(path))
                     File.Delete(path);
             }
@@ -309,13 +297,12 @@ namespace Modinstaller2.Models
             foreach (ModItem dep in Dependencies.Select(x => items.FirstOrDefault(i => x == i.Name)).Where(x => x != null))
             {
                 // Make sure no other mods depend on it
-                if (items.Where(x => x.Installed && x != this).Any(x => x.Dependencies.Contains(dep.Name)))
+                if (items.Where(x => x.State is InstalledMod && x != this).Any(x => x.Dependencies.Contains(dep.Name)))
                     continue;
 
                 dep.Uninstall(items);
 
-                dep.Installed = false;
-                dep.Enabled = null;
+                dep.State = new NotInstalledMod();
             }
         }
     }

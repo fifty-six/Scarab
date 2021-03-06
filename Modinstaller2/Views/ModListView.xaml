@@ -60,14 +60,14 @@
                         <CheckBox
                             Grid.Column="1"
                             Command="{Binding OnEnable}"
-                            IsChecked="{Binding Enabled}"
+                            IsChecked="{Binding EnabledIsChecked}"
                             IsEnabled="{Binding Installed}"
                             Content="Enabled?" />
                         <CheckBox
                             Grid.Column="2"
                             Command="{Binding $parent[UserControl].DataContext.OnInstall}"
                             CommandParameter="{Binding .}"
-                            IsChecked="{Binding InstalledAndUpdated}"
+                            IsChecked="{Binding InstalledIsChecked}"
                             Content="{Binding InstallText}">
                             <CheckBox.Resources>
                                 <!-- ReSharper disable once Xaml.RedundantResource -->

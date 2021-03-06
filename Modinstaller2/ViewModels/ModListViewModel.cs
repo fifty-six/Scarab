@@ -49,10 +49,17 @@ namespace Modinstaller2.ViewModels
         
         [UsedImplicitly]
         public ReactiveCommand<ModItem, Task> OnInstall { get; }
+
+        private static (int priority, string name) ModToOrderedTuple(ModItem m) =>
+        (
+            m.State is InstalledMod { Updated : false } ? -1 : 1,
+            m.Name
+        );
+        
         
         public ModListViewModel(IEnumerable<ModItem> list)
         {
-            Items = new SortableObservableCollection<ModItem>(list.OrderBy(x => (x.Updated ?? true ? 1 : -1, x.Name)));
+            Items = new SortableObservableCollection<ModItem>(list.OrderBy(ModToOrderedTuple));
 
             FilteredItems = Items;
 
@@ -64,7 +71,7 @@ namespace Modinstaller2.ViewModels
         {
             await item.OnInstall(Items, val => ProgressBarVisible = val, progress => Progress = progress);
 
-            static int Comparer(ModItem x, ModItem y) => (x.Updated ?? true ? 1 : -1, x.Name).CompareTo((y.Updated ?? true ? 1 : -1, y.Name));
+            static int Comparer(ModItem x, ModItem y) => ModToOrderedTuple(x).CompareTo(ModToOrderedTuple(y));
             
             Items.SortBy(Comparer);
         }
