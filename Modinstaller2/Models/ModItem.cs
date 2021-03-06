@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using Avalonia.Logging;
 using Avalonia.Media;
 
 namespace Modinstaller2.Models
@@ -109,7 +110,7 @@ namespace Modinstaller2.Models
             }
         }
 
-        public async Task OnInstall(IList<ModItem> items)
+        public async Task OnInstall(IList<ModItem> items, Action<bool> setProgressBar, Action<double> setProgress)
         {
             // NOTE: Condition is taken *after* Installed is set to its new state.
             // So if it's not installed, it truly is not installed
@@ -118,7 +119,11 @@ namespace Modinstaller2.Models
             {
                 if (Updated is bool updated && !updated)
                 {
-                    await Install(items);
+                    setProgressBar(true);
+                    
+                    await Install(items, setProgress);
+                    
+                    setProgressBar(false);
 
                     Updated = true;
 
@@ -136,27 +141,45 @@ namespace Modinstaller2.Models
             {
                 Enabled = true;
 
-                await Install(items);
+                setProgressBar(true);
+
+                await Install(items, setProgress);
+                
+                setProgressBar(false);
             }
         }
 
-        private async Task Install(IList<ModItem> items)
+        private async Task Install(IList<ModItem> items, Action<double> setProgress)
         {
             foreach (ModItem dep in Dependencies.Select(x => items.FirstOrDefault(i => i.Name == x)).Where(x => x != null))
             {
-                if (dep.Installed) 
+                if (dep.Installed && (dep.Updated ?? true)) 
                     continue;
 
-                await dep.Install(items);
+                bool installed_prev = dep.Installed;
+
+                await dep.Install(items, _ => {});
 
                 dep.Installed = true;
-                dep.Enabled = true;
+                dep.Updated = true;
+
+                if (!installed_prev)
+                {
+                    dep.Enabled = true;
+                }
             }
             
             var dl = new WebClient();
+
+            setProgress(0);
+
+            dl.DownloadProgressChanged += (_, args) =>
+            {
+                setProgress(100 * args.BytesReceived / (double) args.TotalBytesToReceive);
+            };
             
             byte[] data = await dl.DownloadDataTaskAsync(new Uri(Link));
-
+            
             string filename = string.Empty;
 
             if (!string.IsNullOrEmpty(dl.ResponseHeaders["Content-Disposition"]))
@@ -182,7 +205,7 @@ namespace Modinstaller2.Models
 
             if (!Directory.Exists(mod_folder))
                 Directory.CreateDirectory(mod_folder);
-            
+
             switch (ext)
             {
                 case ".zip":
@@ -236,7 +259,16 @@ namespace Modinstaller2.Models
                             }
                             else
                             {
-                                entry.ExtractToFile(Path.Combine(settings.ModsFolder, path), true);
+                                if (!Directory.Exists(Path.GetDirectoryName(path)))
+                                {
+                                    Debug.WriteLine($"[WARN] Directory sub-path does not exist, extracting to Managed. {path}");
+
+                                    entry.ExtractToFile(Path.Combine(settings.ModsFolder, Path.GetFileName(path)), true);
+                                }
+                                else
+                                {
+                                    entry.ExtractToFile(Path.Combine(settings.ModsFolder, path), true);
+                                }
                             }
                         }
                     }

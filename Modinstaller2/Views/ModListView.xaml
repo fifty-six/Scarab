@@ -7,7 +7,18 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
              x:Class="Modinstaller2.Views.ModListView">
     <DockPanel>
-        <Button DockPanel.Dock="Bottom" Command="{Binding Donate}">Donate</Button>
+        <ProgressBar 
+            DockPanel.Dock="Bottom"
+            
+            MaxHeight="8"
+            MinHeight="8"
+            
+            IsVisible="{Binding ProgressBarVisible}"
+            
+            Minimum="0"
+            Maximum="100"
+            Value="{Binding Progress}"
+        />
         <ScrollViewer>
             <ItemsControl Items="{Binding Items}">
                 <ItemsControl.ItemTemplate>

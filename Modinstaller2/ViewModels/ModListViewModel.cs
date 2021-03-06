@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,8 +11,26 @@ namespace Modinstaller2.ViewModels
 {
     public class ModListViewModel : ViewModelBase
     {
-        internal SortableObservableCollection<ModItem> Items { get; }
+        private bool _pbVisible;
+        
+        public bool ProgressBarVisible
+        {
+            get => _pbVisible;
+            
+            private set => this.RaiseAndSetIfChanged(ref _pbVisible, value);
+        }
 
+        private double _pbProgress;
+
+        public double Progress
+        {
+            get => _pbProgress;
+
+            private set => this.RaiseAndSetIfChanged(ref _pbProgress, value);
+        }
+        
+        internal SortableObservableCollection<ModItem> Items { get; }
+        
         [UsedImplicitly]
         public ReactiveCommand<ModItem, Task> OnInstall { get; }
 
@@ -25,12 +44,9 @@ namespace Modinstaller2.ViewModels
         [UsedImplicitly]
         public async Task OnInstallAsync(ModItem item)
         {
-            await item.OnInstall(Items);
+            await item.OnInstall(Items, val => ProgressBarVisible = val, progress => Progress = progress);
 
             Items.SortBy((x, y) => (x.Updated ?? true ? 1 : -1, x.Name).CompareTo((y.Updated ?? true ? 1 : -1, y.Name)));
         }
-
-        [UsedImplicitly]
-        private void Donate() => Process.Start(new ProcessStartInfo { FileName = "http://paypal.me/ybham", UseShellExecute = true});
     }
 }
