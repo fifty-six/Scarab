@@ -2,7 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:Modinstaller2.ViewModels"
              mc:Ignorable="d" d:DesignWidth="660" d:DesignHeight="550"
+             d:DataContext="{d:DesignInstance viewModels:SelectPathViewModel}"
              x:Class="Modinstaller2.Views.SelectPathView">
     <DockPanel>
     <Button DockPanel.Dock="Bottom" Command="{Binding SelectCommand}">Select your Hollow Knight file Path!</Button>
