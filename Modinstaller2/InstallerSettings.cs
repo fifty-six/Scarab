@@ -30,7 +30,7 @@ namespace Modinstaller2
         private static readonly ImmutableList<string> USER_SUFFIX_PATHS = new List<string>
         {
             ".local/.share/Steam/steamapps/common/Hollow Knight",
-            "Library/Application Support/Steam/steamapps/Hollow Knight/hollow_knight.app"
+            "Library/Application Support/Steam/steamapps/common/Hollow Knight/hollow_knight.app"
         }
         .Select(path => path.Replace('/', Path.DirectorySeparatorChar)).ToImmutableList();
 
@@ -41,7 +41,15 @@ namespace Modinstaller2
 
         internal static InstallerSettings Instance => _instance ?? LoadInstance();
 
-        private static string ConfigPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "HKInstallerSettings.json");
+        private static string ConfigPath => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "HKInstallerSettings.json"
+        );
+
+        private static string GetOrCreateConfigPath() => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create),
+            "HKInstallerSettings.json"
+        );
 
         internal static bool SettingsExists => File.Exists(ConfigPath);
 
@@ -103,12 +111,9 @@ namespace Modinstaller2
         {
             string content = JsonSerializer.Serialize(_instance);
             
-            string dir = Path.GetDirectoryName(ConfigPath);
-
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            File.WriteAllText(ConfigPath, content);
+            string path = GetOrCreateConfigPath();
+            
+            File.WriteAllText(path, content);
         }
     }
 }

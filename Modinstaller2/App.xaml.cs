@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Modinstaller2.ViewModels;
 using Modinstaller2.Views;
+using ReactiveUI;
 
 namespace Modinstaller2
 {
@@ -13,7 +14,7 @@ namespace Modinstaller2
         {
             AvaloniaXamlLoader.Load(this);
         }
-
+        
         public override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

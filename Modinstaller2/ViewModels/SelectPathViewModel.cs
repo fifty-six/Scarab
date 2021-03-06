@@ -54,15 +54,11 @@ namespace Modinstaller2.ViewModels
                 {
                     result = await dialog.ShowAsync(parent);
 
-                    if (result == null)
-                    {
-                        await MessageBoxManager.GetMessageBoxStandardWindow("Path", "Please select your Hollow Knight App.").Show();
-                    }
-                    else if (result.Length == 0)
+                    if (result == null || result.Length == 0)
                     {
                         result = null;
-
-                        await MessageBoxManager.GetMessageBoxStandardWindow("Path", "Nothing selected. Select your Hollow Knight App.").Show();
+                        
+                        await MessageBoxManager.GetMessageBoxStandardWindow("Path", "Please select your Hollow Knight App.").Show();
                     }
                     else if (!IsValid(result.First()))
                     {

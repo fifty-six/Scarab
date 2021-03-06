@@ -9,5 +9,4 @@
         Icon="/Assets/omegamaggotprime.ico"
         Content="{Binding Content}"
         Title="Modinstaller2">
-  <views:ModListView/>
 </Window>
