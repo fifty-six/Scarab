@@ -68,6 +68,7 @@
                             Command="{Binding $parent[UserControl].DataContext.OnInstall}"
                             CommandParameter="{Binding .}"
                             IsChecked="{Binding InstalledIsChecked}"
+                            IsEnabled="{Binding !Installing}"
                             Content="{Binding InstallText}">
                             <CheckBox.Resources>
                                 <!-- ReSharper disable once Xaml.RedundantResource -->

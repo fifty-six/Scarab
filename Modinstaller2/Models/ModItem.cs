@@ -6,9 +6,14 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Mime;
+using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Logging;
 using Avalonia.Media;
+using MessageBox.Avalonia;
+using MessageBox.Avalonia.DTO;
 using ReactiveUI;
+using Splat;
 
 namespace Modinstaller2.Models
 {
@@ -20,6 +25,8 @@ namespace Modinstaller2.Models
             "Managed/",
             "Mods/"
         };
+
+        private static readonly SemaphoreSlim _InstallSem = new (1);
 
         public string[] Dependencies { get; init; }
 
@@ -60,6 +67,7 @@ namespace Modinstaller2.Models
         // Update required -> null
         // Installed -> true
         // Not installed -> false
+        // Installing -> true, but different color.
         //
         // We use null for updates so we get 
         // a box in the UI, which is a nice indicator.
@@ -67,8 +75,11 @@ namespace Modinstaller2.Models
         {
             InstalledMod { Updated: true } => true,
             InstalledMod { Updated: false } => null,
+            NotInstalledMod { Installing: true } => true,
             _ => false
         };
+
+        public bool Installing => State is NotInstalledMod m && m.Installing;
 
         public Color Color => Color.Parse(State is InstalledMod { Updated : true } ? "#ff086f9e" : "#f49107");
 
@@ -114,7 +125,16 @@ namespace Modinstaller2.Models
                 {
                     setProgressBar(true);
 
-                    await Install(items, setProgress, false);
+                    await _InstallSem.WaitAsync();
+
+                    try
+                    {
+                        await Install(items, setProgress, false);
+                    }
+                    finally
+                    {
+                        _InstallSem.Release();
+                    }
 
                     setProgressBar(false);
                     
@@ -130,9 +150,20 @@ namespace Modinstaller2.Models
             }
             else
             {
+                State = (NotInstalledMod) State with { Installing = true };
+                
                 setProgressBar(true);
 
-                await Install(items, setProgress, true);
+                await _InstallSem.WaitAsync();
+
+                try
+                {
+                    await Install(items, setProgress, true);
+                }
+                finally
+                {
+                    _InstallSem.Release();
+                }
 
                 setProgressBar(false);
 
@@ -190,7 +221,7 @@ namespace Modinstaller2.Models
             string mod_folder = enable
                 ? settings.ModsFolder
                 : settings.DisabledFolder;
-
+            
             if (!Directory.Exists(mod_folder))
                 Directory.CreateDirectory(mod_folder);
 
