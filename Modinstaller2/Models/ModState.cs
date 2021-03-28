@@ -1,4 +1,4 @@
-namespace Modinstaller2
+namespace Modinstaller2.Models
 {
     public abstract record ModState { }
 
