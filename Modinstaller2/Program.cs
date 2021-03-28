@@ -1,6 +1,7 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Logging.Serilog;
 using Avalonia.ReactiveUI;
@@ -18,12 +19,43 @@ namespace Modinstaller2
         {
             AppDomain.CurrentDomain.UnhandledException += (_, eArgs) =>
             {
+                Console.WriteLine(eArgs.ExceptionObject.ToString());
+                
                 // Can't open a UI as this is going to crash, so we'll save to a log file.
-                File.WriteAllText($"ModInstaller_Error_{DateTime.Now:s}.log", eArgs.ExceptionObject.ToString());
+                WriteExceptionToLog((Exception) eArgs.ExceptionObject);
             };
 
-            BuildAvaloniaApp()
-                .StartWithClassicDesktopLifetime(args);
+            TaskScheduler.UnobservedTaskException += (_, eArgs) =>
+            {
+                WriteExceptionToLog(eArgs.Exception);
+            };
+
+            Console.WriteLine("Launching...");
+
+            try
+            {
+                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            }
+            catch (Exception e)
+            {
+                WriteExceptionToLog(e);
+            }
+        }
+
+        private static void WriteExceptionToLog(Exception e)
+        {
+            string date = DateTime.Now.ToString("yy-MM-dd HH-mm-ss");
+
+            var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+
+            string dir = dirName switch
+            {
+                // ModInstaller.app/Contents/MacOS/Executable
+                "MacOS" => "../../../",
+                _ => string.Empty
+            };
+            
+            File.WriteAllText(dir + $"ModInstaller_Error_{date}.log", e.ToString());
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.
