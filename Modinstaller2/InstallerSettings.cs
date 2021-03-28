@@ -45,19 +45,29 @@ namespace Modinstaller2
 
         private static string ConfigPath => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "HKModInstaller",
             "HKInstallerSettings.json"
         );
-
-        private static string GetOrCreateConfigPath() => Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create),
-            "HKInstallerSettings.json"
-        );
-
-        internal static bool SettingsExists => File.Exists(ConfigPath);
 
         internal InstallerSettings(string path)
         {
             ManagedFolder = path;
+        }
+
+        // Used by serializer.
+        private InstallerSettings()
+        {
+            ManagedFolder = null!;
+        }
+        
+        public static string GetOrCreateDirPath()
+        {
+            string dirPath = Path.GetDirectoryName(ConfigPath) ?? throw new InvalidOperationException();
+            
+            // No-op if path already exists.
+            Directory.CreateDirectory(dirPath);
+
+            return dirPath;
         }
 
         internal static bool TryAutoDetect([MaybeNullWhen(false)] out string path)
@@ -112,8 +122,10 @@ namespace Modinstaller2
         internal static void SaveInstance()
         {
             string content = JsonSerializer.Serialize(_instance);
+
+            GetOrCreateDirPath();
             
-            string path = GetOrCreateConfigPath();
+            string path = ConfigPath;
             
             File.WriteAllText(path, content);
         }
