@@ -16,7 +16,7 @@ namespace Modinstaller2.Views
         {
             AvaloniaXamlLoader.Load(this);
         }
-
+        
         private void OnSearchTextChanged(object sender, EventArgs e)
         {
             var acb = (AutoCompleteBox) sender;

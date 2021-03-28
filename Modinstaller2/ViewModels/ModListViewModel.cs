@@ -11,12 +11,12 @@ namespace Modinstaller2.ViewModels
     public class ModListViewModel : ViewModelBase
     {
         private bool _pbVisible;
-        
+
         [UsedImplicitly]
         public bool ProgressBarVisible
         {
             get => _pbVisible;
-            
+
             private set => this.RaiseAndSetIfChanged(ref _pbVisible, value);
         }
 
@@ -31,22 +31,34 @@ namespace Modinstaller2.ViewModels
         }
 
         private SortableObservableCollection<ModItem> Items { get; }
-        
-        private IEnumerable<ModItem> FilteredItems
-        {
-            get;
-            set;
+
+        private IEnumerable<ModItem> _selectedItems;
+
+        private IEnumerable<ModItem> SelectedItems 
+        { 
+            get => _selectedItems;
+            set
+            {
+                _selectedItems = value;
+                this.RaisePropertyChanged(nameof(FilteredItems));
+            }
+
         }
+
+        private string _search;
+
+        private IEnumerable<ModItem> FilteredItems =>
+            string.IsNullOrEmpty(_search)
+                ? SelectedItems
+                : SelectedItems.Where(x => x.Name.Contains(_search, StringComparison.OrdinalIgnoreCase));
 
         public void FilterItems(string search)
         {
-            FilteredItems = string.IsNullOrEmpty(search) 
-                ? Items 
-                : Items.Where(x => x.Name.Contains(search, StringComparison.OrdinalIgnoreCase));
+            _search = search;
 
             this.RaisePropertyChanged(nameof(FilteredItems));
         }
-        
+
         [UsedImplicitly]
         public ReactiveCommand<ModItem, Task> OnInstall { get; }
 
@@ -55,13 +67,18 @@ namespace Modinstaller2.ViewModels
             m.State is InstalledMod { Updated : false } ? -1 : 1,
             m.Name
         );
-        
-        
+
+        public void SelectAll() => SelectedItems = Items;
+
+        public void SelectUnupdated() => SelectedItems = Items.Where(x => x.State is InstalledMod { Updated: false });
+
+        public void SelectInstalled() => SelectedItems = Items.Where(x => x.Installed);
+
         public ModListViewModel(IEnumerable<ModItem> list)
         {
             Items = new SortableObservableCollection<ModItem>(list.OrderBy(ModToOrderedTuple));
 
-            FilteredItems = Items;
+            SelectedItems = Items;
 
             OnInstall = ReactiveCommand.Create<ModItem, Task>(OnInstallAsync);
         }
@@ -72,7 +89,7 @@ namespace Modinstaller2.ViewModels
             await item.OnInstall(Items, val => ProgressBarVisible = val, progress => Progress = progress);
 
             static int Comparer(ModItem x, ModItem y) => ModToOrderedTuple(x).CompareTo(ModToOrderedTuple(y));
-            
+
             Items.SortBy(Comparer);
         }
     }
