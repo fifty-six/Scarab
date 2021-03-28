@@ -24,9 +24,6 @@
     <None Remove="Views\SelectPathView.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\SelectPathView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
     <EmbeddedResource Include="Views\ModListView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>

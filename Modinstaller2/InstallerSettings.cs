@@ -1,7 +1,9 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -37,9 +39,9 @@ namespace Modinstaller2
         internal string ModsFolder     => Path.Combine(ManagedFolder, "Mods");
         internal string DisabledFolder => Path.Combine(ModsFolder, "Disabled");
 
-        private static InstallerSettings _instance;
+        private static InstallerSettings? _instance;
 
-        internal static InstallerSettings Instance => _instance ?? LoadInstance();
+        internal static InstallerSettings? Instance => _instance ?? LoadInstance();
 
         private static string ConfigPath => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -58,9 +60,7 @@ namespace Modinstaller2
             ManagedFolder = path;
         }
 
-        private InstallerSettings() {}
-
-        internal static bool TryAutoDetect(out string path)
+        internal static bool TryAutoDetect([MaybeNullWhen(false)] out string path)
         {
             path = STATIC_PATHS.FirstOrDefault(Directory.Exists);
 
@@ -71,7 +71,9 @@ namespace Modinstaller2
             // Otherwise, we go through the user profile suffixes.
             string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-            path = USER_SUFFIX_PATHS.Select(suffix => Path.Combine(home, suffix)).FirstOrDefault(Directory.Exists);
+            path = USER_SUFFIX_PATHS
+                   .Select(suffix => Path.Combine(home, suffix))
+                   .FirstOrDefault(Directory.Exists);
 
             return !string.IsNullOrEmpty(path);
         }
@@ -85,10 +87,10 @@ namespace Modinstaller2
             throw new NotSupportedException();
         }
 
-        private static InstallerSettings LoadInstance()
+        private static InstallerSettings? LoadInstance()
         {
             if (!File.Exists(ConfigPath))
-                throw new FileNotFoundException();
+                return _instance = null;
 
             Debug.WriteLine($"ConfigPath: File @ {ConfigPath} exists.");
 

@@ -1,7 +1,8 @@
-using System;
-using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Threading;
+using JetBrains.Annotations;
 using MessageBox.Avalonia.BaseWindows;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
@@ -15,6 +16,7 @@ namespace Modinstaller2.ViewModels
         private ViewModelBase _content;
         private Database _db;
 
+        [UsedImplicitly]
         private ViewModelBase Content
         {
             get => _content;
@@ -23,30 +25,23 @@ namespace Modinstaller2.ViewModels
 
         public MainWindowViewModel()
         {
-            string path = null;
-
-            if (!InstallerSettings.SettingsExists && !InstallerSettings.TryAutoDetect(out path))
+            if (InstallerSettings.Instance is not null)
             {
-                SelectPath();
+                SwapToModlist();
+
+                return;
             }
-            else
+
+            bool autoDetected = InstallerSettings.TryAutoDetect(out string path);
+
+            if (!autoDetected)
             {
-                if (InstallerSettings.SettingsExists)
-                {
-                    SwapToModlist();
-                    
-                    return;
-                }
-
-                Debug.WriteLine($"Settings doesn't exist. Creating it at detected path {path}.");
-
-                IMsBoxWindow<ButtonResult> window = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow
+                IMsBoxWindow<ButtonResult> info = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow
                 (
                     new MessageBoxStandardParams
                     {
-                        ContentHeader = "Detected path!",
-                        ContentMessage = $"Detected Hollow Knight install at {path}. Is this correct?",
-                        ButtonDefinitions = ButtonEnum.YesNo
+                        ContentHeader = "Info",
+                        ContentMessage = "Unable to detect your Hollow Knight installation. Please select it."
                     }
                 );
 
@@ -54,31 +49,53 @@ namespace Modinstaller2.ViewModels
                 (
                     async () =>
                     {
-                        ButtonResult res = await window.Show();
-
-                        if (res == ButtonResult.Yes)
-                        {
-                            InstallerSettings.CreateInstance(path);
-
-                            SwapToModlist();
-                        }
-                        else
-                        {
-                            SelectPath();
-                        }
+                        await info.Show();
+                        await SelectPath();
                     }
                 );
+
+                return;
             }
+
+            Debug.WriteLine($"Settings doesn't exist. Creating it at detected path {path}.");
+
+            IMsBoxWindow<ButtonResult> window = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow
+            (
+                new MessageBoxStandardParams
+                {
+                    ContentHeader = "Detected path!",
+                    ContentMessage = $"Detected Hollow Knight install at {path}. Is this correct?",
+                    ButtonDefinitions = ButtonEnum.YesNo
+                }
+            );
+
+            Dispatcher.UIThread.InvokeAsync
+            (
+                async () =>
+                {
+                    ButtonResult res = await window.Show();
+
+                    if (res == ButtonResult.Yes)
+                    {
+                        InstallerSettings.CreateInstance(path);
+
+                        SwapToModlist();
+                    }
+                    else
+                    {
+                        await SelectPath();
+                    }
+                }
+            );
         }
 
-        private void SelectPath()
+        private async Task SelectPath()
         {
-            // Swap view to SelectPathView, but only if we can't autodetect it..
-            Debug.WriteLine("Going to SelectPathViewModel.");
+            string path = await SelectPathUtil.SelectPath();
 
-            Content = new SelectPathViewModel();
+            InstallerSettings.CreateInstance(path);
 
-            Content.PropertyChanged += SelectPathChanged;
+            SwapToModlist();
         }
 
         private void SwapToModlist()
@@ -86,23 +103,6 @@ namespace Modinstaller2.ViewModels
             _db = Database.FromUrl(Database.MODLINKS_URI);
 
             Content = new ModListViewModel(_db.Items);
-        }
-
-        private void SelectPathChanged(object sender, PropertyChangedEventArgs e)
-        {
-            Debug.WriteLine($"e: {e}");
-            Debug.WriteLine($"e.PropertyName: {e.PropertyName}");
-
-            if (e.PropertyName != "Path" || !(Content is SelectPathViewModel content))
-                return;
-
-            Content.PropertyChanged -= SelectPathChanged;
-
-            Debug.WriteLine($"Content: {content.Path}");
-
-            InstallerSettings.CreateInstance(content.Path);
-
-            SwapToModlist();
         }
     }
 }
