@@ -42,9 +42,14 @@ with ZipFile(zip_name, 'w', ZIP_DEFLATED) as zip_f:
         with open(exe, 'rb') as exe_f:
             exe_bytes = exe_f.read()
 
-        info = ZipInfo(str(Path(root, mac_os, exe.name)))
+        info = ZipInfo(str(Path(root, mac_os, exe.name[:-1])))
         info.date_time = localtime()
         info.external_attr = 0o100755 << 16
+        # UNIX host
+        info.create_system = 3
+
+        print(oct(info.external_attr))
+        print(info)
         
         zip_f.writestr(info, exe_bytes, ZIP_DEFLATED)
         
