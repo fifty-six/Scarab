@@ -8,7 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using MessageBox.Avalonia;
 
-namespace Modinstaller2.ViewModels
+namespace Modinstaller2.Util
 {
     public static class SelectPathUtil
     {

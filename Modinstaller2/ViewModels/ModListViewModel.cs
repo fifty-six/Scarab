@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Modinstaller2.Models;
+using Modinstaller2.Util;
 using ReactiveUI;
 
 namespace Modinstaller2.ViewModels

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 
-namespace Modinstaller2
+namespace Modinstaller2.Util
 {
     internal class SortableObservableCollection<T> : ObservableCollection<T>
     {

@@ -6,6 +6,7 @@ using MessageBox.Avalonia.BaseWindows;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 using Modinstaller2.Services;
+using Modinstaller2.Util;
 using ReactiveUI;
 
 namespace Modinstaller2.ViewModels
