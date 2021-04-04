@@ -35,6 +35,8 @@
             <MenuItem Header="-" />
             <MenuItem Header="Installed" Command="{Binding SelectInstalled}" />
             <MenuItem Header="-" />
+            <MenuItem Header="Enabled" Command="{Binding SelectEnabled}" />
+            <MenuItem Header="-" />
             <MenuItem Header="Out of date" Command="{Binding SelectUnupdated}" />
             <MenuItem Header="-" />
         </Menu>

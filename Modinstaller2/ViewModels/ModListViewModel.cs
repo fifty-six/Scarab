@@ -69,10 +69,12 @@ namespace Modinstaller2.ViewModels
         );
 
         public void SelectAll() => SelectedItems = Items;
+        
+        public void SelectInstalled() => SelectedItems = Items.Where(x => x.Installed);
 
         public void SelectUnupdated() => SelectedItems = Items.Where(x => x.State is InstalledMod { Updated: false });
 
-        public void SelectInstalled() => SelectedItems = Items.Where(x => x.Installed);
+        public void SelectEnabled() => SelectedItems = Items.Where(x => x.State is InstalledMod { Enabled: true });
 
         public ModListViewModel(IEnumerable<ModItem> list)
         {
