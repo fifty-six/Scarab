@@ -83,7 +83,7 @@ namespace Modinstaller2.Models
 
         public bool Installed => State is InstalledMod;
         
-        public Settings Config { get; set; }
+        public Settings Config { get; init; }
 
         public void OnEnable()
         {

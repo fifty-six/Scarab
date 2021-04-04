@@ -38,26 +38,26 @@ namespace Modinstaller2.Services
                 var item = new ModItem
                 {
                     Link = mod.Link,
-
+                    
                     Files = files,
-
+                    
                     Name = mod.Name,
-
+                    
                     Description = mod.Description ?? "This mod has no description.",
-
+                    
                     Dependencies = mod.Dependencies.String.ToArray(),
                     
-                    Config = config
+                    Config = config,
+                    
+                    State = files.All(f => paths.Select(path => Path.Join(path, f)).Any(File.Exists))
+                        ? new InstalledMod
+                        (
+                            Updated: CheckFileHashes(files, paths, hashes),
+                            Enabled: CheckEnabled(files, enabled_paths)
+                        )
+                        : new NotInstalledMod()
                 };
 
-                item.State = files.All(f => paths.Select(path => Path.Join(path, f)).Any(File.Exists))
-                    ? new InstalledMod
-                    (
-                        Updated: CheckFileHashes(files, paths, hashes),
-                        Enabled: CheckEnabled(files, enabled_paths)
-                    )
-                    : new NotInstalledMod();
-                
                 _items.Add(item);
             }
 

@@ -2,7 +2,5 @@ using ReactiveUI;
 
 namespace Modinstaller2.ViewModels
 {
-    public class ViewModelBase : ReactiveObject
-    {
-    }
+    public class ViewModelBase : ReactiveObject { }
 }
