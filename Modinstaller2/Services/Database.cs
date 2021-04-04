@@ -17,15 +17,15 @@ namespace Modinstaller2.Services
 
         private readonly List<ModItem> _items = new List<ModItem>();
 
-        private Database(ModLinks ml)
+        private Database(ModLinks ml, Settings config)
         {
             string[] enabled_paths =
             {
-                InstallerSettings.Instance.ModsFolder,
-                InstallerSettings.Instance.ManagedFolder,
+                config.ModsFolder,
+                config.ManagedFolder,
             };
 
-            string[] paths = enabled_paths.Append(InstallerSettings.Instance.DisabledFolder).ToArray();
+            string[] paths = enabled_paths.Append(config.DisabledFolder).ToArray();
 
             ModList list = ml.ModList;
 
@@ -46,6 +46,8 @@ namespace Modinstaller2.Services
                     Description = mod.Description ?? "This mod has no description.",
 
                     Dependencies = mod.Dependencies.String.ToArray(),
+                    
+                    Config = config
                 };
 
                 item.State = files.All(f => paths.Select(path => Path.Join(path, f)).Any(File.Exists))
@@ -67,7 +69,7 @@ namespace Modinstaller2.Services
             return files.All(f => enabledPaths.Select(path => Path.Join(path, f)).Any(File.Exists));
         }
 
-        public static Database FromUrl(string uri)
+        public static Database FromUrl(string uri, Settings config)
         {
             using var wc = new WebClient();
 
@@ -79,7 +81,7 @@ namespace Modinstaller2.Services
 
             var ml = (ModLinks) serializer.Deserialize(reader);
 
-            return new Database(ml);
+            return new Database(ml, config);
         }
 
         private static string GetHash(string path)

@@ -12,7 +12,7 @@ using System.Text.Json;
 namespace Modinstaller2
 {
     [Serializable]
-    internal class InstallerSettings
+    public class Settings
     {
         public string ManagedFolder { get; set; }
 
@@ -39,23 +39,19 @@ namespace Modinstaller2
         internal string ModsFolder     => Path.Combine(ManagedFolder, "Mods");
         internal string DisabledFolder => Path.Combine(ModsFolder, "Disabled");
 
-        private static InstallerSettings? _instance;
-
-        internal static InstallerSettings? Instance => _instance ?? LoadInstance();
-
         private static string ConfigPath => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "HKModInstaller",
             "HKInstallerSettings.json"
         );
 
-        internal InstallerSettings(string path)
+        internal Settings(string path)
         {
             ManagedFolder = path;
         }
 
         // Used by serializer.
-        private InstallerSettings()
+        private Settings()
         {
             ManagedFolder = null!;
         }
@@ -97,31 +93,31 @@ namespace Modinstaller2
             throw new NotSupportedException();
         }
 
-        private static InstallerSettings? LoadInstance()
+        public static Settings? Load()
         {
             if (!File.Exists(ConfigPath))
-                return _instance = null;
+                return null;
 
             Debug.WriteLine($"ConfigPath: File @ {ConfigPath} exists.");
 
             string content = File.ReadAllText(ConfigPath);
 
-            return _instance = JsonSerializer.Deserialize<InstallerSettings>(content);
+            return JsonSerializer.Deserialize<Settings>(content);
         }
 
-        public static InstallerSettings CreateInstance(string path)
+        public static Settings Create(string path)
         {
             // Create from ManagedPath.
-            _instance = new InstallerSettings(Path.Combine(path, OSManagedSuffix));
+            var settings = new Settings(Path.Combine(path, OSManagedSuffix));
 
-            SaveInstance();
+            settings.Save();
 
-            return _instance;
+            return settings;
         }
 
-        internal static void SaveInstance()
+        internal void Save()
         {
-            string content = JsonSerializer.Serialize(_instance);
+            string content = JsonSerializer.Serialize(this);
 
             GetOrCreateDirPath();
             

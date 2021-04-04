@@ -22,7 +22,7 @@ namespace Modinstaller2
             (
                 Path.Combine
                 (
-                    InstallerSettings.GetOrCreateDirPath(),
+                    Settings.GetOrCreateDirPath(),
                     "ModInstaller.log"
                 )
             );

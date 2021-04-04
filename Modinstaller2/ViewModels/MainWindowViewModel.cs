@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Avalonia.Controls;
 using Avalonia.Threading;
 using JetBrains.Annotations;
 using MessageBox.Avalonia.BaseWindows;
@@ -25,14 +24,16 @@ namespace Modinstaller2.ViewModels
 
         public MainWindowViewModel()
         {
-            if (InstallerSettings.Instance is not null)
+            Settings settings = Settings.Load();
+            
+            if (settings is not null)
             {
-                SwapToModlist();
+                SwapToModlist(settings);
 
                 return;
             }
 
-            bool autoDetected = InstallerSettings.TryAutoDetect(out string path);
+            bool autoDetected = Settings.TryAutoDetect(out string path);
 
             if (!autoDetected)
             {
@@ -77,9 +78,7 @@ namespace Modinstaller2.ViewModels
 
                     if (res == ButtonResult.Yes)
                     {
-                        InstallerSettings.CreateInstance(path);
-
-                        SwapToModlist();
+                        SwapToModlist(Settings.Create(path));
                     }
                     else
                     {
@@ -93,14 +92,12 @@ namespace Modinstaller2.ViewModels
         {
             string path = await SelectPathUtil.SelectPath();
 
-            InstallerSettings.CreateInstance(path);
-
-            SwapToModlist();
+            SwapToModlist(Settings.Create(path));
         }
 
-        private void SwapToModlist()
+        private void SwapToModlist(Settings settings)
         {
-            _db = Database.FromUrl(Database.MODLINKS_URI);
+            _db = Database.FromUrl(Database.MODLINKS_URI, settings);
 
             Content = new ModListViewModel(_db.Items);
         }

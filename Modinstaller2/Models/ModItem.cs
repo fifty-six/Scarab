@@ -8,12 +8,8 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Logging;
 using Avalonia.Media;
-using MessageBox.Avalonia;
-using MessageBox.Avalonia.DTO;
 using ReactiveUI;
-using Splat;
 
 namespace Modinstaller2.Models
 {
@@ -86,6 +82,8 @@ namespace Modinstaller2.Models
         public string InstallText => State is InstalledMod { Updated: false } ? "Out of date!" : "Installed?";
 
         public bool Installed => State is InstalledMod;
+        
+        public Settings Config { get; set; }
 
         public void OnEnable()
         {
@@ -94,8 +92,8 @@ namespace Modinstaller2.Models
 
             foreach (string file in Files)
             {
-                string disabledPath = Path.Combine(InstallerSettings.Instance.ModsFolder, "Disabled", file);
-                string enabledPath = Path.Combine(InstallerSettings.Instance.ModsFolder, file);
+                string disabledPath = Path.Combine(Config.ModsFolder, "Disabled", file);
+                string enabledPath = Path.Combine(Config.ModsFolder, file);
 
                 if (state.Enabled)
                 {
@@ -215,7 +213,7 @@ namespace Modinstaller2.Models
 
             string ext = Path.GetExtension(filename.ToLower());
 
-            var settings = InstallerSettings.Instance;
+            var settings = Config;
 
             // Default to enabling
             string mod_folder = enable
@@ -316,8 +314,8 @@ namespace Modinstaller2.Models
                 string path = Path.Combine
                 (
                     State is InstalledMod { Enabled: true }
-                        ? InstallerSettings.Instance.ModsFolder
-                        : InstallerSettings.Instance.DisabledFolder,
+                        ? Config.ModsFolder
+                        : Config.DisabledFolder,
                     file
                 );
 

@@ -100,8 +100,8 @@ namespace Modinstaller2.ViewModels
         private static bool IsValid(string result)
         {
             return Directory.Exists(result)
-                && Directory.Exists(Path.Combine(result, InstallerSettings.OSManagedSuffix))
-                && File.Exists(Path.Combine(result, InstallerSettings.OSManagedSuffix, "Assembly-CSharp.dll"));
+                && Directory.Exists(Path.Combine(result, Settings.OSManagedSuffix))
+                && File.Exists(Path.Combine(result, Settings.OSManagedSuffix, "Assembly-CSharp.dll"));
         }
     }
 }
