@@ -127,7 +127,7 @@ namespace Modinstaller2.Models
 
                     try
                     {
-                        await Install(items, setProgress, false);
+                        await Install(items, setProgress, state.Enabled);
                     }
                     finally
                     {
