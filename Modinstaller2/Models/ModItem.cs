@@ -208,17 +208,15 @@ namespace Modinstaller2.Models
 
             if (string.IsNullOrEmpty(filename))
             {
-                filename = Link.Substring(Link.LastIndexOf("/") + 1);
+                filename = Link[(Link.LastIndexOf("/") + 1)..];
             }
 
             string ext = Path.GetExtension(filename.ToLower());
 
-            var settings = Config;
-
             // Default to enabling
             string mod_folder = enable
-                ? settings.ModsFolder
-                : settings.DisabledFolder;
+                ? Config.ModsFolder
+                : Config.DisabledFolder;
             
             if (!Directory.Exists(mod_folder))
                 Directory.CreateDirectory(mod_folder);
@@ -237,7 +235,7 @@ namespace Modinstaller2.Models
                             (
                                 entry.Name.StartsWith
                                     ("Assembly-CSharp")
-                                    ? Path.Combine(settings.ManagedFolder, entry.Name)
+                                    ? Path.Combine(Config.ManagedFolder, entry.Name)
                                     : Path.Combine(mod_folder, entry.Name),
                                 true
                             );
@@ -252,7 +250,7 @@ namespace Modinstaller2.Models
                             // If we're using the full zip structure, remove the prev directories.
                             string dirPath = entry.FullName.Replace("hollow_knight_Data/Managed/Mods/", string.Empty);
 
-                            Directory.CreateDirectory(Path.Combine(settings.ModsFolder, dirPath));
+                            Directory.CreateDirectory(Path.Combine(Config.ModsFolder, dirPath));
                         }
                         // Any other file, we place it according to the normal structure
                         else if (entry.Name != string.Empty)
@@ -267,7 +265,7 @@ namespace Modinstaller2.Models
 
                                 try
                                 {
-                                    entry.ExtractToFile(Path.Combine(settings.ManagedFolder, path), true);
+                                    entry.ExtractToFile(Path.Combine(Config.ManagedFolder, path), true);
                                 }
                                 catch (DirectoryNotFoundException)
                                 {
@@ -280,11 +278,11 @@ namespace Modinstaller2.Models
                                 {
                                     Debug.WriteLine($"[WARN] Directory sub-path does not exist, extracting to Managed. {path}");
 
-                                    entry.ExtractToFile(Path.Combine(settings.ModsFolder, Path.GetFileName(path)), true);
+                                    entry.ExtractToFile(Path.Combine(Config.ModsFolder, Path.GetFileName(path)), true);
                                 }
                                 else
                                 {
-                                    entry.ExtractToFile(Path.Combine(settings.ModsFolder, path), true);
+                                    entry.ExtractToFile(Path.Combine(Config.ModsFolder, path), true);
                                 }
                             }
                         }

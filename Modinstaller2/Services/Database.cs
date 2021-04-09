@@ -15,7 +15,7 @@ namespace Modinstaller2.Services
 
         public IEnumerable<ModItem> Items => _items;
 
-        private readonly List<ModItem> _items = new List<ModItem>();
+        private readonly List<ModItem> _items = new();
 
         private Database(ModLinks ml, Settings config)
         {
@@ -29,6 +29,7 @@ namespace Modinstaller2.Services
 
             ModList list = ml.ModList;
 
+            // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
             foreach (ModLink mod in list.ModLinks)
             {
                 string[] files = mod.Files.Value.Select(x => x.Name).ToArray();
