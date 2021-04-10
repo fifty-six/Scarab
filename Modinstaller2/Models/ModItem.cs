@@ -42,7 +42,7 @@ namespace Modinstaller2.Models
             set
             {
                 _state = value;
-                
+
                 this.RaisePropertyChanged(nameof(State));
                 this.RaisePropertyChanged(nameof(InstalledIsChecked));
                 this.RaisePropertyChanged(nameof(EnabledIsChecked));
@@ -82,7 +82,7 @@ namespace Modinstaller2.Models
         public string InstallText => State is InstalledMod { Updated: false } ? "Out of date!" : "Installed?";
 
         public bool Installed => State is InstalledMod;
-        
+
         public Settings Config { get; init; }
 
         public void OnEnable()
@@ -135,7 +135,7 @@ namespace Modinstaller2.Models
                     }
 
                     setProgressBar(false);
-                    
+
                     State = state with { Updated = true };
                 }
                 // Otherwise the user wanted to uninstall.
@@ -149,7 +149,7 @@ namespace Modinstaller2.Models
             else
             {
                 State = (NotInstalledMod) State with { Installing = true };
-                
+
                 setProgressBar(true);
 
                 await _InstallSem.WaitAsync();
@@ -165,7 +165,7 @@ namespace Modinstaller2.Models
 
                 setProgressBar(false);
 
-                State = new InstalledMod(Updated : true, Enabled : true );
+                State = new InstalledMod(Updated: true, Enabled: true);
             }
         }
 
@@ -193,9 +193,19 @@ namespace Modinstaller2.Models
 
             setProgress(0);
 
-            dl.DownloadProgressChanged += (_, args) => { setProgress(100 * args.BytesReceived / (double) args.TotalBytesToReceive); };
+            dl.DownloadProgressChanged += (_, args) =>
+            {
+                if (args.TotalBytesToReceive < 0)
+                {
+                    setProgress(-1);
 
-            byte[] data = await dl.DownloadDataTaskAsync(new Uri(Link));
+                    return;
+                }
+
+                setProgress(100 * args.BytesReceived / (double) args.TotalBytesToReceive);
+            };
+
+            byte[] data =await dl.DownloadDataTaskAsync(new Uri(Link));
 
             string filename = string.Empty;
 
@@ -217,7 +227,7 @@ namespace Modinstaller2.Models
             string mod_folder = enable
                 ? Config.ModsFolder
                 : Config.DisabledFolder;
-            
+
             if (!Directory.Exists(mod_folder))
                 Directory.CreateDirectory(mod_folder);
 

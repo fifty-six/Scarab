@@ -100,10 +100,10 @@ namespace Modinstaller2.ViewModels
         {
             await item.OnInstall(Items, val => ProgressBarVisible = val, progress =>
                 {
-                    if (Progress >= 0)
+                    ProgressBarIndeterminate = progress < 0;
+                    
+                    if (progress >= 0)
                         Progress = progress;
-                    else
-                        ProgressBarIndeterminate = true;
                 }
             );
 
