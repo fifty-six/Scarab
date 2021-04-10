@@ -21,6 +21,15 @@ namespace Modinstaller2.ViewModels
             private set => this.RaiseAndSetIfChanged(ref _pbVisible, value);
         }
 
+        private bool _pbIndeterminate;
+
+        public bool ProgressBarIndeterminate
+        {
+            get => _pbIndeterminate;
+
+            private set => this.RaiseAndSetIfChanged(ref _pbIndeterminate, value);
+        }
+
         private double _pbProgress;
 
         [UsedImplicitly]
@@ -89,7 +98,14 @@ namespace Modinstaller2.ViewModels
         [UsedImplicitly]
         public async Task OnInstallAsync(ModItem item)
         {
-            await item.OnInstall(Items, val => ProgressBarVisible = val, progress => Progress = progress);
+            await item.OnInstall(Items, val => ProgressBarVisible = val, progress =>
+                {
+                    if (Progress >= 0)
+                        Progress = progress;
+                    else
+                        ProgressBarIndeterminate = true;
+                }
+            );
 
             static int Comparer(ModItem x, ModItem y) => ModToOrderedTuple(x).CompareTo(ModToOrderedTuple(y));
 

@@ -53,6 +53,8 @@
             MinHeight="8"
 
             IsVisible="{Binding ProgressBarVisible}"
+            
+            IsIndeterminate="{Binding ProgressBarIndeterminate}"
 
             Minimum="0"
             Maximum="100"
