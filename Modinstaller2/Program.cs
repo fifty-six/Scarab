@@ -4,7 +4,6 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia;
-using Avalonia.Logging.Serilog;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 
@@ -75,7 +74,7 @@ namespace Modinstaller2
         private static AppBuilder BuildAvaloniaApp() =>
             AppBuilder.Configure<App>()
                       .UsePlatformDetect()
-                      .LogToDebug()
+                      .LogToTrace()
                       .UseReactiveUI();
     }
 }
