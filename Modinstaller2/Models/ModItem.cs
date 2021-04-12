@@ -205,7 +205,7 @@ namespace Modinstaller2.Models
                 setProgress(100 * args.BytesReceived / (double) args.TotalBytesToReceive);
             };
 
-            byte[] data =await dl.DownloadDataTaskAsync(new Uri(Link));
+            byte[] data = await dl.DownloadDataTaskAsync(new Uri(Link));
 
             string filename = string.Empty;
 
