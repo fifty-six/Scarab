@@ -49,18 +49,15 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    - name: Setup Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: |
         dotnet publish -r osx-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
-        python make_app.py ModInstaller.app Modinstaller2/bin/Release/netcoreapp3.1/osx-x64/publish/Modinstaller2
+        mv Modinstaller2/bin/Release/netcoreapp3.1/osx-x64/publish/Modinstaller2 ModInstaller.app/Contents/MacOS/ModInstaller
+        chmod +x ModInstaller.app/Contents/MacOS/ModInstaller
     - name: Upload Binary
       uses: actions/upload-artifact@v2
       with:
         name: ModInstaller-MacOS
-        path: ModInstaller.zip
+        path: ModInstaller.app
