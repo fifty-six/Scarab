@@ -49,7 +49,6 @@ with ZipFile(zip_name, 'w', ZIP_DEFLATED) as zip_f:
         info.create_system = 3
 
         print(oct(info.external_attr))
-        print(info)
         
         zip_f.writestr(info, exe_bytes, ZIP_DEFLATED)
         

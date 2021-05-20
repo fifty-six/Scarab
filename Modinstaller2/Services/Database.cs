@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Cache;
 using System.Security.Cryptography;
 using System.Xml.Serialization;
 using Modinstaller2.Models;
@@ -72,7 +73,10 @@ namespace Modinstaller2.Services
 
         public static Database FromUrl(string uri, Settings config)
         {
-            using var wc = new WebClient();
+            using var wc = new WebClient
+            {
+                CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
+            };
 
             string xmlString = wc.DownloadString(new Uri(uri));
 

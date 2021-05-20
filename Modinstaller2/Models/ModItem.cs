@@ -90,9 +90,12 @@ namespace Modinstaller2.Models
             if (State is not InstalledMod state)
                 throw new InvalidOperationException("Cannot enable mod which is not installed!");
 
+            if (!Directory.Exists(Config.DisabledFolder))
+                Directory.CreateDirectory(Config.DisabledFolder);
+
             foreach (string file in Files)
             {
-                string disabledPath = Path.Combine(Config.ModsFolder, "Disabled", file);
+                string disabledPath = Path.Combine(Config.DisabledFolder, file);
                 string enabledPath = Path.Combine(Config.ModsFolder, file);
 
                 if (state.Enabled)
