@@ -8,10 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
@@ -21,4 +18,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet publish -r win-x64 -p:PublishSingleFile=true --self-contained true
+    - name: Upload Binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows-build
+        path: Modinstaller2/bin/Modinstaller2/Release/netcoreapp3.1/win-x64/publish
