@@ -8,9 +8,7 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        runs-on: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: [windows-latest, ubuntu-latest, macos-latest]
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
