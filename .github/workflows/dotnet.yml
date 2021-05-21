@@ -1,0 +1,64 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet publish -r win-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
+    - name: Upload Binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: ModInstaller-Windows
+        path: Modinstaller2/bin/Release/netcoreapp3.1/win-x64/publish/
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet publish -r linux-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
+    - name: Upload Binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: ModInstaller-Linux
+        path: Modinstaller2/bin/Release/netcoreapp3.1/linux-x64/publish/
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: |
+        dotnet publish -r osx-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
+        mkdir ModInstaller.app/Contents/MacOS
+        mv Modinstaller2/bin/Release/netcoreapp3.1/osx-x64/publish/Modinstaller2 ModInstaller.app/Contents/MacOS/ModInstaller
+        chmod +x ModInstaller.app/Contents/MacOS/ModInstaller
+    - name: Upload Binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: ModInstaller-MacOS
+        path: ModInstaller.app
