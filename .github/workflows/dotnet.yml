@@ -21,7 +21,7 @@ jobs:
         path: ~/.nuget/packages
         key: win-nuget-cache-${{ hashFiles('**/*.csproj') }}
         restore-keys: |
-          ${{ runner.os }}-nuget-cache-
+          win-nuget-cache-
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
