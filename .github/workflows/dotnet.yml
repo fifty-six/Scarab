@@ -15,14 +15,15 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
+    - name: Cache NuGet Packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.nuget/packages
+        key: win-nuget-cache-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-cache-
     - name: Restore dependencies
       run: dotnet restore
-    - uses: actions/cache@v2
-      with:
-        path: "%userprofile%/.nuget/packages"
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
     - name: Build
       run: dotnet publish -r win-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
     - name: Upload Binary
@@ -40,12 +41,6 @@ jobs:
         dotnet-version: 5.0.x
     - name: Restore dependencies
       run: dotnet restore
-    - uses: actions/cache@v2
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
     - name: Build
       run: dotnet publish -r linux-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
     - name: Upload Binary
@@ -63,16 +58,10 @@ jobs:
         dotnet-version: 5.0.x
     - name: Restore dependencies
       run: dotnet restore
-    - uses: actions/cache@v2
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
     - name: Build
       run: |
         dotnet publish -r osx-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
-        python3 make_app.py ModInstaller.app Modinstaller2/bin/Debug/netcoreapp3.1/osx-x64/publish/Modinstaller2
+        python3 make_app.py ModInstaller.app Modinstaller2/bin/Release/netcoreapp3.1/osx-x64/publish/Modinstaller2
     - name: Upload Binary
       uses: actions/upload-artifact@v2
       with:

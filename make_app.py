@@ -18,10 +18,10 @@ if app_dir.suffix != ".app":
     exit(-1)
 
 if not app_dir.exists():
-    raise FileNotFoundError(errorno.ENOENT, strerror(ENOENT), app_dir)
+    raise FileNotFoundError(ENOENT, strerror(ENOENT), app_dir)
 
 if not exe.exists():
-    raise FileNotFoundError(errorno.ENOENT, strerror(ENOENT), app_dir)
+    raise FileNotFoundError(ENOENT, strerror(ENOENT), exe)
 
 zip_name = app_dir.stem + ".zip"
 
