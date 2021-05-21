@@ -15,13 +15,6 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    - name: Cache NuGet Packages
-      uses: actions/cache@v2
-      with:
-        path: ~/.nuget/packages
-        key: win-nuget-cache-${{ hashFiles('**/*.csproj') }}
-        restore-keys: |
-          win-nuget-cache-
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
