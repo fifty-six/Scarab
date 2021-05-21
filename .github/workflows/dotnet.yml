@@ -19,7 +19,7 @@ jobs:
       run: dotnet restore
     - uses: actions/cache@v2
       with:
-        path: %userprofile%/.nuget/packages
+        path: "%userprofile%/.nuget/packages"
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
           ${{ runner.os }}-nuget-
@@ -42,7 +42,7 @@ jobs:
       run: dotnet restore
     - uses: actions/cache@v2
       with:
-        path: %userprofile%/.nuget/packages
+        path: ~/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
           ${{ runner.os }}-nuget-
@@ -65,7 +65,7 @@ jobs:
       run: dotnet restore
     - uses: actions/cache@v2
       with:
-        path: %userprofile%/.nuget/packages
+        path: ~/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
           ${{ runner.os }}-nuget-
