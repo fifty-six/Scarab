@@ -39,6 +39,9 @@
             <MenuItem Header="-" />
             <MenuItem Header="Out of date" Command="{Binding SelectUnupdated}" />
             <MenuItem Header="-" />
+            <MenuItem Command="{Binding OpenModsDirectory}" Header="Open Mods" />
+            <MenuItem Header="-" />
+
         </Menu>
 
         <Separator

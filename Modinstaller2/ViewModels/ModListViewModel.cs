@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -81,6 +83,13 @@ namespace Modinstaller2.ViewModels
         public void SelectAll() => SelectedItems = Items;
         
         public void SelectInstalled() => SelectedItems = Items.Where(x => x.Installed);
+
+        public void OpenModsDirectory() {
+            Settings settings = Settings.Load();
+            var startInfo = new ProcessStartInfo(Path.Combine(settings.ManagedFolder, "Mods"));
+            startInfo.UseShellExecute = true;
+            Process.Start(startInfo);
+        }
 
         public void SelectUnupdated() => SelectedItems = Items.Where(x => x.State is InstalledMod { Updated: false });
 

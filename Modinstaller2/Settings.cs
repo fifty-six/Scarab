@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using Modinstaller2.Services;
 
 namespace Modinstaller2
 {
@@ -15,6 +16,8 @@ namespace Modinstaller2
     public class Settings
     {
         public string ManagedFolder { get; set; }
+        public string Modlinks { get; set; }
+
 
         internal static string OSManagedSuffix = GenManagedSuffix();
 
@@ -48,12 +51,14 @@ namespace Modinstaller2
         internal Settings(string path)
         {
             ManagedFolder = path;
+            Modlinks = Database.MODLINKS_URI;
         }
 
         // Used by serializer.
         private Settings()
         {
             ManagedFolder = null!;
+            Modlinks = null!;
         }
         
         public static string GetOrCreateDirPath()
@@ -102,7 +107,13 @@ namespace Modinstaller2
 
             string content = File.ReadAllText(ConfigPath);
 
-            return JsonSerializer.Deserialize<Settings>(content);
+            var settings = JsonSerializer.Deserialize<Settings>(content);
+
+            if (settings.Modlinks == null) {
+                settings.Modlinks = Database.MODLINKS_URI;
+                settings.Save();
+            }
+            return settings;
         }
 
         public static Settings Create(string path)

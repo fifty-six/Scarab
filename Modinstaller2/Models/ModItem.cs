@@ -287,7 +287,7 @@ namespace Modinstaller2.Models
                             }
                             else
                             {
-                                if (!Directory.Exists(Path.GetDirectoryName(path)))
+                                if (!Directory.Exists(Path.GetDirectoryName(path)) && Path.GetFileName(path).EndsWith(".dll"))
                                 {
                                     Debug.WriteLine($"[WARN] Directory sub-path does not exist, extracting to Managed. {path}");
 

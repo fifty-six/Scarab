@@ -99,7 +99,7 @@ namespace Modinstaller2.ViewModels
 
         private void SwapToModlist(Settings settings)
         {
-            _db = Database.FromUrl(Database.MODLINKS_URI, settings);
+            _db = Database.FromConfig(settings);
 
             Content = new ModListViewModel(_db.Items);
         }

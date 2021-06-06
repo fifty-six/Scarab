@@ -71,14 +71,23 @@ namespace Modinstaller2.Services
             return files.All(f => enabledPaths.Select(path => Path.Join(path, f)).Any(File.Exists));
         }
 
-        public static Database FromUrl(string uri, Settings config)
+        public static Database FromConfig(Settings config)
         {
+            string xmlString;
+            string uri = config.Modlinks;
+            if (uri.StartsWith("file://"))
+            {
+                string path = uri.Substring(7);
+                xmlString = File.ReadAllText(path);
+            } else {
+
             using var wc = new WebClient
             {
                 CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
             };
 
-            string xmlString = wc.DownloadString(new Uri(uri));
+                xmlString = wc.DownloadString(new Uri(uri));
+            }
 
             var serializer = new XmlSerializer(typeof(ModLinks));
 
