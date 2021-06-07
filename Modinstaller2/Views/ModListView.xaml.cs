@@ -24,7 +24,7 @@ namespace Modinstaller2.Views
             var acb = (AutoCompleteBox) sender;
             var model = (ModListViewModel) acb.DataContext;
             
-            model.FilterItems(acb.Text);
+            model!.FilterItems(acb.Text);
         }
     }
 }

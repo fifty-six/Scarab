@@ -13,6 +13,8 @@ namespace Modinstaller2.ViewModels
 {
     public class ModListViewModel : ViewModelBase
     {
+        private Settings Settings { get; }
+        
         private bool _pbVisible;
 
         [UsedImplicitly]
@@ -84,19 +86,25 @@ namespace Modinstaller2.ViewModels
         
         public void SelectInstalled() => SelectedItems = Items.Where(x => x.Installed);
 
-        public void OpenModsDirectory() {
-            Settings settings = Settings.Load();
-            var startInfo = new ProcessStartInfo(Path.Combine(settings.ManagedFolder, "Mods"));
-            startInfo.UseShellExecute = true;
-            Process.Start(startInfo);
+        public void OpenModsDirectory()
+        {
+            Process.Start
+            (
+                new ProcessStartInfo(Path.Combine(Settings.ManagedFolder, "Mods"))
+                {
+                    UseShellExecute = true
+                }
+            );
         }
 
         public void SelectUnupdated() => SelectedItems = Items.Where(x => x.State is InstalledMod { Updated: false });
 
         public void SelectEnabled() => SelectedItems = Items.Where(x => x.State is InstalledMod { Enabled: true });
 
-        public ModListViewModel(IEnumerable<ModItem> list)
+        public ModListViewModel(Settings settings, IEnumerable<ModItem> list)
         {
+            Settings = settings;
+            
             Items = new SortableObservableCollection<ModItem>(list.OrderBy(ModToOrderedTuple));
 
             SelectedItems = Items;

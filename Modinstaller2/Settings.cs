@@ -18,7 +18,6 @@ namespace Modinstaller2
         public string ManagedFolder { get; set; }
         public string Modlinks { get; set; }
 
-
         internal static string OSManagedSuffix = GenManagedSuffix();
 
         private static readonly ImmutableList<string> STATIC_PATHS = new List<string>
@@ -58,7 +57,9 @@ namespace Modinstaller2
         private Settings()
         {
             ManagedFolder = null!;
-            Modlinks = null!;
+            
+            // Default to the modlinks uri if we're deserializing and it's unset.
+            Modlinks = Database.MODLINKS_URI;
         }
         
         public static string GetOrCreateDirPath()
@@ -109,10 +110,6 @@ namespace Modinstaller2
 
             var settings = JsonSerializer.Deserialize<Settings>(content);
 
-            if (settings.Modlinks == null) {
-                settings.Modlinks = Database.MODLINKS_URI;
-                settings.Save();
-            }
             return settings;
         }
 

@@ -101,7 +101,7 @@ namespace Modinstaller2.ViewModels
         {
             _db = Database.FromConfig(settings);
 
-            Content = new ModListViewModel(_db.Items);
+            Content = new ModListViewModel(settings, _db.Items);
         }
     }
 }

@@ -10,10 +10,10 @@
              d:DataContext="{d:DesignInstance viewModels:ModListViewModel}">
     <DockPanel>
         <!-- Sidebar -->
-        <Menu DockPanel.Dock="Left">
+        <Menu DockPanel.Dock="Left" HorizontalAlignment="Left">
             <Menu.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel Orientation="Vertical" />
+                    <DockPanel VerticalAlignment="Stretch" Dock="Top"/>
                 </ItemsPanelTemplate>
             </Menu.ItemsPanel>
 
@@ -31,17 +31,15 @@
                 </Style>
             </Menu.Styles>
 
-            <MenuItem Header="All" Command="{Binding SelectAll}" />
-            <MenuItem Header="-" />
-            <MenuItem Header="Installed" Command="{Binding SelectInstalled}" />
-            <MenuItem Header="-" />
-            <MenuItem Header="Enabled" Command="{Binding SelectEnabled}" />
-            <MenuItem Header="-" />
-            <MenuItem Header="Out of date" Command="{Binding SelectUnupdated}" />
-            <MenuItem Header="-" />
-            <MenuItem Command="{Binding OpenModsDirectory}" Header="Open Mods" />
-            <MenuItem Header="-" />
-
+            <MenuItem Header="All" Command="{Binding SelectAll}" DockPanel.Dock="Top"/>
+            <MenuItem Header="-" DockPanel.Dock="Top"/>
+            <MenuItem Header="Installed" Command="{Binding SelectInstalled}" DockPanel.Dock="Top"/>
+            <MenuItem Header="-" DockPanel.Dock="Top"/>
+            <MenuItem Header="Enabled" Command="{Binding SelectEnabled}" DockPanel.Dock="Top"/>
+            <MenuItem Header="-" DockPanel.Dock="Top"/>
+            <MenuItem Header="Out of date" Command="{Binding SelectUnupdated}" DockPanel.Dock="Top"/>
+            
+            <MenuItem Command="{Binding OpenModsDirectory}" Header="Open Mods" DockPanel.Dock="Bottom" VerticalAlignment="Bottom" />
         </Menu>
 
         <Separator

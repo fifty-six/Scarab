@@ -40,17 +40,17 @@ namespace Modinstaller2.Services
                 var item = new ModItem
                 {
                     Link = mod.Link,
-                    
+
                     Files = files,
-                    
+
                     Name = mod.Name,
-                    
+
                     Description = mod.Description ?? "This mod has no description.",
-                    
+
                     Dependencies = mod.Dependencies.String.ToArray(),
-                    
+
                     Config = config,
-                    
+
                     State = files.All(f => paths.Select(path => Path.Join(path, f)).Any(File.Exists))
                         ? new InstalledMod
                         (
@@ -74,19 +74,21 @@ namespace Modinstaller2.Services
         public static Database FromConfig(Settings config)
         {
             string xmlString;
-            string uri = config.Modlinks;
-            if (uri.StartsWith("file://"))
-            {
-                string path = uri.Substring(7);
-                xmlString = File.ReadAllText(path);
-            } else {
+            
+            var uri = new Uri(config.Modlinks);
 
-            using var wc = new WebClient
+            if (uri.IsFile)
             {
-                CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
-            };
+                xmlString = File.ReadAllText(uri.LocalPath);
+            }
+            else
+            {
+                using var wc = new WebClient
+                {
+                    CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
+                };
 
-                xmlString = wc.DownloadString(new Uri(uri));
+                xmlString = wc.DownloadString(uri);
             }
 
             var serializer = new XmlSerializer(typeof(ModLinks));
@@ -120,7 +122,7 @@ namespace Modinstaller2.Services
                 if (GetHash(path) != hashes[file].ToUpper())
                     return false;
             }
-            
+
             return true;
         }
     }
