@@ -24,15 +24,23 @@ namespace Modinstaller2.Models
 
         private static readonly SemaphoreSlim _InstallSem = new (1);
 
-        public string[] Dependencies { get; init; }
-
-        public string[] Files { get; init; }
-
-        public string Link { get; init; }
-
-        public string Name { get; set; }
-
-        public string Description { get; set; }
+        public ModItem(ModState state, string[] dependencies, string[] files, string link, string name, string description, Settings config)
+        {
+            _state = state;
+            Dependencies = dependencies;
+            Files = files;
+            Link = link;
+            Name = name;
+            Description = description;
+            Config = config;
+        }
+        
+        public string[] Dependencies { get; }
+        public string[] Files        { get; }
+        public string   Link         { get; }
+        public string   Name         { get; }
+        public string   Description  { get; }
+        public Settings Config       { get; }
 
         private ModState _state;
 
@@ -53,7 +61,7 @@ namespace Modinstaller2.Models
 
         public bool EnabledIsChecked => State switch
         {
-            InstalledMod { Enabled: var x } => x,
+            InstalledState { Enabled: var x } => x,
             
             // Can't enable what isn't installed.
             _ => false
@@ -69,25 +77,23 @@ namespace Modinstaller2.Models
         // a box in the UI, which is a nice indicator.
         public bool? InstalledIsChecked => State switch
         {
-            InstalledMod { Updated: true } => true,
-            InstalledMod { Updated: false } => null,
-            NotInstalledMod { Installing: true } => true,
+            InstalledState { Updated: true } => true,
+            InstalledState { Updated: false } => null,
+            NotInstalledState { Installing: true } => true,
             _ => false
         };
 
-        public bool Installing => State is NotInstalledMod m && m.Installing;
+        public bool Installing => State is NotInstalledState m && m.Installing;
 
-        public Color Color => Color.Parse(State is InstalledMod { Updated : true } ? "#ff086f9e" : "#f49107");
+        public Color Color => Color.Parse(State is InstalledState { Updated : true } ? "#ff086f9e" : "#f49107");
 
-        public string InstallText => State is InstalledMod { Updated: false } ? "Out of date!" : "Installed?";
+        public string InstallText => State is InstalledState { Updated: false } ? "Out of date!" : "Installed?";
 
-        public bool Installed => State is InstalledMod;
-
-        public Settings Config { get; init; }
+        public bool Installed => State is InstalledState;
 
         public void OnEnable()
         {
-            if (State is not InstalledMod state)
+            if (State is not InstalledState state)
                 throw new InvalidOperationException("Cannot enable mod which is not installed!");
 
             if (!Directory.Exists(Config.DisabledFolder))
@@ -119,7 +125,7 @@ namespace Modinstaller2.Models
 
         public async Task OnInstall(IList<ModItem> items, Action<bool> setProgressBar, Action<double> setProgress)
         {
-            if (State is InstalledMod state)
+            if (State is InstalledState state)
             {
                 // If we're not updated, update
                 if (!state.Updated)
@@ -146,12 +152,12 @@ namespace Modinstaller2.Models
                 {
                     Uninstall(items);
 
-                    State = new NotInstalledMod();
+                    State = new NotInstalledState();
                 }
             }
             else
             {
-                State = (NotInstalledMod) State with { Installing = true };
+                State = (NotInstalledState) State with { Installing = true };
 
                 setProgressBar(true);
 
@@ -168,7 +174,7 @@ namespace Modinstaller2.Models
 
                 setProgressBar(false);
 
-                State = new InstalledMod(Updated: true, Enabled: true);
+                State = new InstalledState(Updated: true, Enabled: true);
             }
         }
 
@@ -176,20 +182,20 @@ namespace Modinstaller2.Models
         {
             foreach (ModItem dep in Dependencies.Select(x => items.FirstOrDefault(i => i.Name == x)).Where(x => x != null))
             {
-                if (dep.State is InstalledMod { Updated: true })
+                if (dep.State is InstalledState { Updated: true })
                     continue;
 
                 ModState prev_state = dep.State;
 
                 // Enable the dependencies' dependencies if we're enabling this mod
                 // Or if the dependency was previously not installed.
-                await dep.Install(items, _ => { }, enable || dep.State is NotInstalledMod);
+                await dep.Install(items, _ => { }, enable || dep.State is NotInstalledState);
 
                 // If we were disabled before, keep the enabled state of the dependency
-                if (!enable && prev_state is InstalledMod installed)
+                if (!enable && prev_state is InstalledState installed)
                     dep.State = installed with { Updated = true };
                 else
-                    dep.State = new InstalledMod(true, true);
+                    dep.State = new InstalledState(true, true);
             }
 
             var dl = new WebClient();
@@ -324,7 +330,7 @@ namespace Modinstaller2.Models
             {
                 string path = Path.Combine
                 (
-                    State is InstalledMod { Enabled: true }
+                    State is InstalledState { Enabled: true }
                         ? Config.ModsFolder
                         : Config.DisabledFolder,
                     file
@@ -337,12 +343,12 @@ namespace Modinstaller2.Models
             foreach (ModItem dep in Dependencies.Select(x => items.FirstOrDefault(i => x == i.Name)).Where(x => x != null))
             {
                 // Make sure no other mods depend on it
-                if (items.Where(x => x.State is InstalledMod && x != this).Any(x => x.Dependencies.Contains(dep.Name)))
+                if (items.Where(x => x.State is InstalledState && x != this).Any(x => x.Dependencies.Contains(dep.Name)))
                     continue;
 
                 dep.Uninstall(items);
 
-                dep.State = new NotInstalledMod();
+                dep.State = new NotInstalledState();
             }
         }
     }

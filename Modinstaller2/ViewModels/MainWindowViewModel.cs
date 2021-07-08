@@ -2,10 +2,10 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using JetBrains.Annotations;
-using MessageBox.Avalonia.BaseWindows;
 using MessageBox.Avalonia.BaseWindows.Base;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
+using Microsoft.Extensions.DependencyInjection;
 using Modinstaller2.Services;
 using Modinstaller2.Util;
 using ReactiveUI;
@@ -14,8 +14,7 @@ namespace Modinstaller2.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private ViewModelBase _content;
-        private Database _db;
+        private ViewModelBase _content = null!;
 
         [UsedImplicitly]
         private ViewModelBase Content
@@ -24,20 +23,22 @@ namespace Modinstaller2.ViewModels
             set => this.RaiseAndSetIfChanged(ref _content, value);
         }
 
-        public MainWindowViewModel()
+        private async Task Impl()
         {
-            Settings settings = Settings.Load();
+            var sc = new ServiceCollection();
+
+            Settings? settings = Settings.Load();
             
             if (settings is not null)
             {
-                SwapToModlist(settings);
+                sc.AddSingleton<Settings>(_ => settings);
+            
+                SwapToModlist(sc);
 
                 return;
             }
 
-            bool autoDetected = Settings.TryAutoDetect(out string path);
-
-            if (!autoDetected)
+            if (!Settings.TryAutoDetect(out string? path))
             {
                 IMsBoxWindow<ButtonResult> info = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow
                 (
@@ -48,14 +49,8 @@ namespace Modinstaller2.ViewModels
                     }
                 );
 
-                Dispatcher.UIThread.InvokeAsync
-                (
-                    async () =>
-                    {
-                        await info.Show();
-                        await SelectPath();
-                    }
-                );
+                await info.Show();
+                await SelectPath(sc);
 
                 return;
             }
@@ -72,36 +67,30 @@ namespace Modinstaller2.ViewModels
                 }
             );
 
-            Dispatcher.UIThread.InvokeAsync
-            (
-                async () =>
-                {
-                    ButtonResult res = await window.Show();
+            ButtonResult res = await window.Show();
 
-                    if (res == ButtonResult.Yes)
-                    {
-                        SwapToModlist(Settings.Create(path));
-                    }
-                    else
-                    {
-                        await SelectPath();
-                    }
-                }
-            );
+            if (res == ButtonResult.Yes)
+                SwapToModlist(sc.AddSingleton(_ => Settings.Create(path)));
+            else
+                await SelectPath(sc);
         }
 
-        private async Task SelectPath()
+        public MainWindowViewModel() => Dispatcher.UIThread.InvokeAsync(Impl);
+
+        private async Task SelectPath(IServiceCollection sc)
         {
             string path = await SelectPathUtil.SelectPath();
 
-            SwapToModlist(Settings.Create(path));
+            SwapToModlist(sc.AddSingleton(_ => Settings.Create(path)));
         }
 
-        private void SwapToModlist(Settings settings)
+        private void SwapToModlist(IServiceCollection sc)
         {
-            _db = Database.FromConfig(settings);
+            sc
+                .AddSingleton(_ => InstalledMods.Load())
+                .AddSingleton<ModDatabase>();
 
-            Content = new ModListViewModel(settings, _db.Items);
+            Content = new ModListViewModel(sc.BuildServiceProvider());
         }
     }
 }

@@ -47,7 +47,7 @@ namespace Modinstaller2.ViewModels
         private SortableObservableCollection<ModItem> Items { get; }
 
         private IEnumerable<ModItem> _selectedItems;
-
+        
         private IEnumerable<ModItem> SelectedItems 
         { 
             get => _selectedItems;
@@ -59,7 +59,7 @@ namespace Modinstaller2.ViewModels
 
         }
 
-        private string _search;
+        private string? _search;
 
         private IEnumerable<ModItem> FilteredItems =>
             string.IsNullOrEmpty(_search)
@@ -78,7 +78,7 @@ namespace Modinstaller2.ViewModels
 
         private static (int priority, string name) ModToOrderedTuple(ModItem m) =>
         (
-            m.State is InstalledMod { Updated : false } ? -1 : 1,
+            m.State is InstalledState { Updated : false } ? -1 : 1,
             m.Name
         );
 
@@ -97,9 +97,9 @@ namespace Modinstaller2.ViewModels
             );
         }
 
-        public void SelectUnupdated() => SelectedItems = Items.Where(x => x.State is InstalledMod { Updated: false });
+        public void SelectUnupdated() => SelectedItems = Items.Where(x => x.State is InstalledState { Updated: false });
 
-        public void SelectEnabled() => SelectedItems = Items.Where(x => x.State is InstalledMod { Enabled: true });
+        public void SelectEnabled() => SelectedItems = Items.Where(x => x.State is InstalledState { Enabled: true });
 
         public ModListViewModel(Settings settings, IEnumerable<ModItem> list)
         {
@@ -107,7 +107,7 @@ namespace Modinstaller2.ViewModels
             
             Items = new SortableObservableCollection<ModItem>(list.OrderBy(ModToOrderedTuple));
 
-            SelectedItems = Items;
+            SelectedItems = _selectedItems = Items;
 
             OnInstall = ReactiveCommand.Create<ModItem, Task>(OnInstallAsync);
         }

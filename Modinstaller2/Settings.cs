@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -8,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using Modinstaller2.Services;
 
 namespace Modinstaller2
 {
@@ -16,7 +14,6 @@ namespace Modinstaller2
     public class Settings
     {
         public string ManagedFolder { get; set; }
-        public string Modlinks { get; set; }
 
         internal static string OSManagedSuffix = GenManagedSuffix();
 
@@ -47,21 +44,11 @@ namespace Modinstaller2
             "HKInstallerSettings.json"
         );
 
-        internal Settings(string path)
-        {
-            ManagedFolder = path;
-            Modlinks = Database.MODLINKS_URI;
-        }
+        internal Settings(string path) => ManagedFolder = path;
 
         // Used by serializer.
-        private Settings()
-        {
-            ManagedFolder = null!;
-            
-            // Default to the modlinks uri if we're deserializing and it's unset.
-            Modlinks = Database.MODLINKS_URI;
-        }
-        
+        public Settings() => ManagedFolder = null!;
+
         public static string GetOrCreateDirPath()
         {
             string dirPath = Path.GetDirectoryName(ConfigPath) ?? throw new InvalidOperationException();

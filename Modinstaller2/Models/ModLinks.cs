@@ -1,97 +1,161 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 
 namespace Modinstaller2.Models
 {
-    [XmlRoot(ElementName = "Installer")]
-    public class Installer
+    public static class SerializationConstants
     {
-        [XmlElement(ElementName = "Link")]
-        public string Link { get; set; }
-
-        [XmlElement(ElementName = "SHA1")]
-        public string SHA1 { get; set; }
-
-        [XmlElement(ElementName = "AULink")]
-        public string AULink { get; set; }
+        public const string NAMESPACE = "https://github.com/HollowKnight-Modding/HollowKnight.ModLinks/HollowKnight.ModManager";
     }
 
-    [XmlRoot(ElementName = "File")]
-    public class ModFile
+    [Serializable]
+    public class Manifest
     {
-        [XmlElement(ElementName = "Name")]
+        // Internally handle the Link/Links either-or divide
+        private Links? _links;
+        private Link? _link;
+
+        public VersionWrapper Version;
+
         public string Name { get; set; }
 
-        [XmlElement(ElementName = "SHA1")]
-        public string SHA1 { get; set; }
+        [XmlArray(ElementName = "Files")]
+        [XmlArrayItem(ElementName = "File")]
+        public string[] Files { get; set; }
 
-        [XmlElement(ElementName = "Patch")]
-        public string Patch { get; set; }
-    }
+        [XmlElement]
+        public Link? Link
+        {
+            get => throw new NotImplementedException("This is only for XML Serialization!");
+            set => _link = value;
+        }
 
-    [XmlRoot(ElementName = "Files")]
-    public class Files
-    {
-        [XmlElement(ElementName = "File")]
-        public List<ModFile> Value { get; set; }
-    }
+        public Links Links
+        {
+            get =>
+                _links ??= new Links
+                {
+                    Windows = _link ?? throw new InvalidDataException(nameof(_link)),
+                    Mac = _link,
+                    Linux = _link
+                };
+            set => _links = value;
+        }
 
-    [XmlRoot(ElementName = "ModLink")]
-    public class ModLink
-    {
-        [XmlElement(ElementName = "Name")]
-        public string Name { get; set; }
+        [XmlArray("Dependencies")]
+        [XmlArrayItem("Dependency")]
+        public string[] Dependencies { get; set; }
 
-        [XmlElement(ElementName = "Files")]
-        public Files Files { get; set; }
-
-        [XmlElement(ElementName = "Link")]
-        public string Link { get; set; }
-
-        [XmlElement(ElementName = "UnixLink")]
-        public string UnixLink { get; set; }
-
-        [XmlElement(ElementName = "Dependencies")]
-        public Dependencies Dependencies { get; set; }
-        
-        [XmlElement(ElementName = "Description")]
         public string Description { get; set; }
+
+        // For serializer and nullability
+        public Manifest()
+        {
+            Version = null!;
+            Name = null!;
+            Files = null!;
+            Dependencies = null!;
+            Description = null!;
+        }
+
+        public override string ToString()
+        {
+            return "{\n"
+                + $"\t{nameof(Version)}: {Version},\n"
+                + $"\t{nameof(Name)}: {Name},\n"
+                + $"\t{nameof(Files)}: {string.Join(", ", Files)},\n"
+                + $"\t{nameof(Links)}: {(object?) _link ?? Links},\n"
+                + $"\t{nameof(Dependencies)}: {string.Join(", ", Dependencies)},\n"
+                + $"\t{nameof(Description)}: {Description}\n"
+                + "}";
+        }
+    }
+
+    [Serializable]
+    public class VersionWrapper : IXmlSerializable
+    {
+        public VersionWrapper() => Value = null!;
+
+        public Version Value { get; set; }
+
+        public XmlSchema? GetSchema() => null;
+        public void ReadXml(XmlReader reader) => Value = Version.Parse(reader.ReadElementContentAsString());
+        public void WriteXml(XmlWriter writer) => writer.WriteString(Value.ToString());
         
-        [XmlElement(ElementName = "Optional")]
-        public Optional Optional { get; set; }
+        public override string ToString() => Value.ToString();
     }
 
-    [XmlRoot(ElementName = "Dependencies")]
-    public class Dependencies
+    public class Links
     {
-        [XmlElement(ElementName = "string")]
-        public List<string> String { get; set; }
+        public Link Windows = null!;
+        public Link Mac = null!;
+        public Link Linux = null!;
+
+        public override string ToString()
+        {
+            return "Links {"
+                + $"\t{nameof(Windows)} = {Windows},\n"
+                + $"\t{nameof(Mac)} = {Mac},\n"
+                + $"\t{nameof(Linux)} = {Linux}\n"
+                + "}";
+        }
     }
 
-    [XmlRoot(ElementName = "Optional")]
-    public class Optional
+    public class Link
     {
-        [XmlElement(ElementName = "string")]
-        public string String { get; set; }
+        [XmlAttribute]
+        public string SHA256 = null!;
+
+        [XmlText]
+        public string URL = null!;
+
+        public override string ToString()
+        {
+            return $"[Link: {nameof(SHA256)} = {SHA256}, {nameof(URL)}: {URL}]";
+        }
     }
 
-    [XmlRoot(ElementName = "ModList")]
-    public class ModList
+    [Serializable]
+    public class ApiManifest
     {
-        [XmlElement(ElementName = "ModLink")]
-        public List<ModLink> ModLinks { get; set; }
+        public int Version;
+
+        [XmlArray("Files")]
+        [XmlArrayItem("File")]
+        public List<string> Files { get; set; }
+
+        public Links Links { get; set; }
+
+        // For serializer and nullability
+        public ApiManifest()
+        {
+            Files = null!;
+            Links = null!;
+        }
     }
 
-    [XmlRoot(ElementName = "ModLinks")]
+    [XmlRoot(Namespace = SerializationConstants.NAMESPACE)]
+    public class ApiLinks
+    {
+        public ApiManifest Manifest { get; set; } = null!;
+    }
+
+    [XmlRoot(Namespace = SerializationConstants.NAMESPACE)]
     public class ModLinks
     {
-        [XmlElement(ElementName = "DriveLink")]
-        public string DriveLink { get; set; }
+        [XmlElement("Manifest")]
+        public Manifest[] Manifests { get; set; } = null!;
 
-        [XmlElement(ElementName = "Installer")]
-        public Installer Installer { get; set; }
-
-        [XmlElement(ElementName = "ModList")]
-        public ModList ModList { get; set; }
+        public override string ToString()
+        {
+            return "ModLinks {[\n"
+                + string.Join("\n", Manifests.Select(x => x.ToString()))
+                + "]}";
+        }
     }
 }
