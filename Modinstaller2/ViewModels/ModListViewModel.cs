@@ -5,7 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using Modinstaller2.Models;
+using Modinstaller2.Services;
 using Modinstaller2.Util;
 using ReactiveUI;
 
@@ -14,7 +16,9 @@ namespace Modinstaller2.ViewModels
     public class ModListViewModel : ViewModelBase
     {
         private Settings Settings { get; }
-        
+
+        private IServiceProvider _sp;
+
         private bool _pbVisible;
 
         [UsedImplicitly]
@@ -47,16 +51,15 @@ namespace Modinstaller2.ViewModels
         private SortableObservableCollection<ModItem> Items { get; }
 
         private IEnumerable<ModItem> _selectedItems;
-        
-        private IEnumerable<ModItem> SelectedItems 
-        { 
+
+        private IEnumerable<ModItem> SelectedItems
+        {
             get => _selectedItems;
             set
             {
                 _selectedItems = value;
                 this.RaisePropertyChanged(nameof(FilteredItems));
             }
-
         }
 
         private string? _search;
@@ -83,7 +86,7 @@ namespace Modinstaller2.ViewModels
         );
 
         public void SelectAll() => SelectedItems = Items;
-        
+
         public void SelectInstalled() => SelectedItems = Items.Where(x => x.Installed);
 
         public void OpenModsDirectory()
@@ -101,11 +104,15 @@ namespace Modinstaller2.ViewModels
 
         public void SelectEnabled() => SelectedItems = Items.Where(x => x.State is InstalledState { Enabled: true });
 
-        public ModListViewModel(Settings settings, IEnumerable<ModItem> list)
+        public ModListViewModel(IServiceProvider sp)
         {
-            Settings = settings;
-            
-            Items = new SortableObservableCollection<ModItem>(list.OrderBy(ModToOrderedTuple));
+            _sp = sp;
+
+            var db = sp.GetRequiredService<ModDatabase>();
+
+            Settings = sp.GetRequiredService<Settings>();
+
+            Items = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
 
             SelectedItems = _selectedItems = Items;
 
@@ -115,10 +122,14 @@ namespace Modinstaller2.ViewModels
         [UsedImplicitly]
         public async Task OnInstallAsync(ModItem item)
         {
-            await item.OnInstall(Items, val => ProgressBarVisible = val, progress =>
+            await item.OnInstall
+            (
+                _sp,
+                val => ProgressBarVisible = val,
+                progress =>
                 {
                     ProgressBarIndeterminate = progress < 0;
-                    
+
                     if (progress >= 0)
                         Progress = progress;
                 }

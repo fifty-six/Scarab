@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Cache;
-using System.Security.Cryptography;
 using System.Xml.Serialization;
 using Modinstaller2.Models;
 
@@ -13,11 +12,11 @@ namespace Modinstaller2.Services
     {
         private const string MODLINKS_URI = "https://raw.githubusercontent.com/hk-modding/modlinks/main/ModLinks.xml";
 
-        public IEnumerable<ModItem> Items => _items;
+        public IList<ModItem> Items => _items;
 
         private readonly List<ModItem> _items = new();
 
-        private ModDatabase(ModLinks ml, Settings config)
+        private ModDatabase(InstalledMods mods, ModLinks ml, Settings config)
         {
             foreach (var mod in ml.Manifests)
             {
@@ -32,23 +31,25 @@ namespace Modinstaller2.Services
                         var val => throw new NotSupportedException(val.ToString())
                     },
 
+                    version: mod.Version.Value,
                     files: mod.Files,
                     name: mod.Name,
                     description: mod.Description,
                     dependencies: mod.Dependencies,
                     config: config,
                     
-                    #warning TODO
-                    state: null
+                    state: mods.Mods.TryGetValue(mod.Name, out var state) 
+                        ? state 
+                        : new NotInstalledState()
                 );
-
+                
                 _items.Add(item);
             }
 
             _items.Sort((a, b) => string.Compare(a.Name, b.Name));
         }
 
-        public ModDatabase(Settings config) : this(GetModLinks(), config) { }
+        public ModDatabase(InstalledMods mods, Settings config) : this(mods, GetModLinks(), config) { }
 
         private static ModLinks GetModLinks()
         {
@@ -65,21 +66,12 @@ namespace Modinstaller2.Services
 
             using TextReader reader = new StringReader(xmlString);
 
-            var ml = (ModLinks) serializer.Deserialize(reader);
+            var ml = (ModLinks?) serializer.Deserialize(reader);
+
+            if (ml is null)
+                throw new InvalidDataException();
 
             return ml;
-        }
-
-        private static string GetHash(string path)
-        {
-            using var sha256 = SHA256.Create();
-            using FileStream stream = File.OpenRead(path);
-
-            byte[] hashBytes = sha256.ComputeHash(stream);
-
-            string f_hash = BitConverter.ToString(hashBytes).Replace("-", string.Empty);
-
-            return f_hash;
         }
     }
 }

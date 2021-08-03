@@ -22,7 +22,7 @@ namespace Modinstaller2.Views
         private void OnSearchTextChanged(object sender, EventArgs e)
         {
             var acb = (AutoCompleteBox) sender;
-            var model = (ModListViewModel) acb.DataContext;
+            var model = (ModListViewModel) acb.DataContext!;
             
             model!.FilterItems(acb.Text);
         }

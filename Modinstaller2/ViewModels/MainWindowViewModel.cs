@@ -1,5 +1,7 @@
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Threading;
 using JetBrains.Annotations;
 using MessageBox.Avalonia.BaseWindows.Base;
@@ -75,7 +77,22 @@ namespace Modinstaller2.ViewModels
                 await SelectPath(sc);
         }
 
-        public MainWindowViewModel() => Dispatcher.UIThread.InvokeAsync(Impl);
+        // public MainWindowViewModel() => Dispatcher.UIThread.InvokeAsync(Impl);
+        public MainWindowViewModel() => Task.Run(async () =>
+        {
+            try
+            {
+                await Impl();
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+
+                Environment.Exit(-1);
+                
+                throw;
+            }
+        });
 
         private async Task SelectPath(IServiceCollection sc)
         {
@@ -89,8 +106,8 @@ namespace Modinstaller2.ViewModels
             sc
                 .AddSingleton(_ => InstalledMods.Load())
                 .AddSingleton<ModDatabase>();
-
-            Content = new ModListViewModel(sc.BuildServiceProvider());
+            
+            Content = new ModListViewModel(sc.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true }));
         }
     }
 }

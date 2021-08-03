@@ -7,16 +7,14 @@ namespace Modinstaller2
 {
     public class ViewLocator : IDataTemplate
     {
-        public bool SupportsRecycling => false;
-
         public IControl Build(object data)
         {
-            var name = data.GetType().FullName?.Replace("ViewModel", "View");
+            string? name = data.GetType().FullName?.Replace("ViewModel", "View");
 
             var type = Type.GetType(name ?? throw new InvalidOperationException("Type name is null!"));
 
             if (type != null)
-                return (Control) Activator.CreateInstance(type);
+                return (Control) Activator.CreateInstance(type)!;
 
             return new TextBlock { Text = "Not Found: " + name };
         }

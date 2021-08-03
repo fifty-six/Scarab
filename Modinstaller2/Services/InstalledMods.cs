@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Modinstaller2.Models;
 
 namespace Modinstaller2.Services
@@ -11,16 +14,40 @@ namespace Modinstaller2.Services
     {
         private const string FILE_NAME = "InstalledMods.json";
 
-        public Dictionary<string, InstalledMod> Mods { get; init; } = new();
+        public Dictionary<string, InstalledState> Mods { get; init; } = new();
 
-        public static InstalledMods Load()
-        {
-            string dir = Settings.GetOrCreateDirPath();
-            string path = Path.Combine(dir, FILE_NAME);
-            
-            return File.Exists(path) 
-                ? JsonSerializer.Deserialize<InstalledMods>(path) 
+        private static readonly string ConfigPath = Path.Combine(Settings.GetOrCreateDirPath(), FILE_NAME);
+
+        public static InstalledMods Load() =>
+            File.Exists(ConfigPath)
+                ? JsonSerializer.Deserialize<InstalledMods>(File.ReadAllText(ConfigPath)) ?? throw new InvalidDataException()
                 : new InstalledMods();
+
+        public async Task RecordInstall(ModItem item)
+        {
+            Contract.Assert(item.State is InstalledState);
+
+            Mods[item.Name] = (InstalledState) item.State;
+
+            await SaveToDiskAsync();
+        }
+
+        public async Task RecordUninstall(ModItem item)
+        {
+            Contract.Assert(item.State is NotInstalledState);
+
+            Mods.Remove(item.Name);
+
+            await SaveToDiskAsync();
+        }
+
+        private async Task SaveToDiskAsync()
+        {
+            await using FileStream fs = File.Exists(ConfigPath)
+                ? new FileStream(ConfigPath, FileMode.Truncate)
+                : File.Create(ConfigPath);
+
+            await JsonSerializer.SerializeAsync(fs, this);
         }
     }
 }

@@ -26,6 +26,8 @@ namespace Modinstaller2
                 )
             );
 
+            Trace.AutoFlush = true;
+            
             Trace.Listeners.Add(fileListener);
 
             AppDomain.CurrentDomain.UnhandledException += (_, eArgs) =>
@@ -54,8 +56,8 @@ namespace Modinstaller2
         {
             string date = DateTime.Now.ToString("yy-MM-dd HH-mm-ss");
 
-            string dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
-
+            string? dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            
             string dir = dirName switch
             {
                 // ModInstaller.app/Contents/MacOS/Executable

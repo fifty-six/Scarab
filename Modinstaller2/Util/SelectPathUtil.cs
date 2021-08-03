@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -16,14 +17,15 @@ namespace Modinstaller2.Util
         {
             Debug.WriteLine("Selecting path...");
 
-            Window parent = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+            Window parent = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow 
+                ?? throw new InvalidOperationException();
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 return await SelectMacApp(parent);
             }
 
-            string result;
+            string? result;
 
             var dialog = new OpenFolderDialog
             {
@@ -68,7 +70,7 @@ namespace Modinstaller2.Util
 
             dialog.Filters.Add(new FileDialogFilter { Extensions = { "app" } });
 
-            string[] result;
+            string[]? result;
 
             do
             {
