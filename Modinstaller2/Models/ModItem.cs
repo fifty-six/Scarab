@@ -241,37 +241,7 @@ namespace Modinstaller2.Models
             {
                 case ".zip":
                 {
-                    using var archive = new ZipArchive(new MemoryStream(data));
-
-                    // Note that this will give us a good DirectoryInfo even if destinationDirectoryName exists:
-                    DirectoryInfo di = Directory.CreateDirectory(mod_folder);
-
-                    string dest_dir_path = di.FullName;
-
-                    if (!dest_dir_path.EndsWith(Path.DirectorySeparatorChar))
-                        dest_dir_path += Path.DirectorySeparatorChar;
-
-                    foreach (ZipArchiveEntry entry in archive.Entries)
-                    {
-                        string file_dest = Path.GetFullPath(Path.Combine(dest_dir_path, entry.FullName));
-
-                        if (!file_dest.StartsWith(dest_dir_path))
-                            throw new IOException("Extracts outside of directory!");
-
-                        // If it's a directory:
-                        if (Path.GetFileName(file_dest).Length == 0)
-                        {
-                            Directory.CreateDirectory(file_dest);
-                        }
-                        // File
-                        else
-                        {
-                            // Create containing directory:
-                            Directory.CreateDirectory(Path.GetDirectoryName(file_dest)!);
-
-                            entry.ExtractToFile(file_dest, true);
-                        }
-                    }
+                    ExtractZipToPath(data, mod_folder);
 
                     break;
                 }
@@ -334,6 +304,48 @@ namespace Modinstaller2.Models
 
                 dep.State = new NotInstalledState();
             }
+        }
+
+        private static void ExtractZipToPath(byte[] raw_zip_data, string root_folder)
+        {
+            using var archive = new ZipArchive(new MemoryStream(raw_zip_data));
+            
+            string dest_dir_path = CreateDirectoryPath(root_folder);
+
+            foreach (ZipArchiveEntry entry in archive.Entries)
+            {
+                string file_dest = Path.GetFullPath(Path.Combine(dest_dir_path, entry.FullName));
+
+                if (!file_dest.StartsWith(dest_dir_path))
+                    throw new IOException("Extracts outside of directory!");
+
+                // If it's a directory:
+                if (Path.GetFileName(file_dest).Length == 0)
+                {
+                    Directory.CreateDirectory(file_dest);
+                }
+                // File
+                else
+                {
+                    // Create containing directory:
+                    Directory.CreateDirectory(Path.GetDirectoryName(file_dest)!);
+
+                    entry.ExtractToFile(file_dest, true);
+                }
+            }
+        }
+
+        private static string CreateDirectoryPath(string path)
+        {
+            // Note that this will give us a good DirectoryInfo even if destinationDirectoryName exists:
+            DirectoryInfo di = Directory.CreateDirectory(path);
+
+            string dest_dir_path = di.FullName;
+
+            if (!dest_dir_path.EndsWith(Path.DirectorySeparatorChar))
+                dest_dir_path += Path.DirectorySeparatorChar;
+
+            return dest_dir_path;
         }
     }
 }
