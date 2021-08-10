@@ -6,19 +6,20 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
+using Modinstaller2.Interfaces;
 using Modinstaller2.Models;
 
 namespace Modinstaller2.Services
 {
-    public class Installer
+    public class Installer : IInstaller
     {
-        private readonly Settings _config;
-        private readonly InstalledMods _installed;
-        private readonly ModDatabase _db;
+        private readonly ISettings _config;
+        private readonly IModSource _installed;
+        private readonly IModDatabase _db;
 
         private readonly SemaphoreSlim _semaphore = new(1);
 
-        public Installer(Settings config, InstalledMods installed, ModDatabase db)
+        public Installer(ISettings config, IModSource installed, IModDatabase db)
         {
             _config = config;
             _installed = installed;

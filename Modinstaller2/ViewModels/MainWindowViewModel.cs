@@ -6,6 +6,7 @@ using MessageBox.Avalonia.BaseWindows.Base;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 using Microsoft.Extensions.DependencyInjection;
+using Modinstaller2.Interfaces;
 using Modinstaller2.Services;
 using Modinstaller2.Util;
 using ReactiveUI;
@@ -29,10 +30,10 @@ namespace Modinstaller2.ViewModels
 
             Settings settings = Settings.Load() ?? Settings.Create(await GetSettingsPath());
 
-            sc.AddSingleton(_ => settings)
-              .AddSingleton(_ => InstalledMods.Load())
-              .AddSingleton<ModDatabase>()
-              .AddSingleton<Installer>()
+            sc.AddSingleton<ISettings>(_ => settings)
+              .AddSingleton<IModSource>(_ => InstalledMods.Load())
+              .AddSingleton<IModDatabase, ModDatabase>()
+              .AddSingleton<IInstaller, Installer>()
               .AddSingleton<ModListViewModel>();
             
             ServiceProvider sp = sc.BuildServiceProvider(new ServiceProviderOptions

@@ -4,12 +4,13 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Modinstaller2.Interfaces;
 using Modinstaller2.Models;
 
 namespace Modinstaller2.Services
 {
     [Serializable]
-    public record InstalledMods
+    public record InstalledMods : IModSource
     {
         private const string FILE_NAME = "InstalledMods.json";
 

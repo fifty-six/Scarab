@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media;
+using Modinstaller2.Interfaces;
 using Modinstaller2.Services;
 using PropertyChanged.SourceGenerator;
 
@@ -20,8 +21,7 @@ namespace Modinstaller2.Models
             string[] dependencies,
             string link,
             string name,
-            string description,
-            Settings config
+            string description
         )
         {
             _state = state;
@@ -31,7 +31,6 @@ namespace Modinstaller2.Models
             Link = link;
             Name = name;
             Description = description;
-            _Config = config;
         }
         
         public  Version  Version      { get; }
@@ -39,7 +38,6 @@ namespace Modinstaller2.Models
         public  string   Link         { get; }
         public  string   Name         { get; }
         public  string   Description  { get; }
-        private Settings _Config       { get; }
 
         [Notify]
         private ModState _state;
@@ -78,7 +76,7 @@ namespace Modinstaller2.Models
 
         public bool Installed => State is InstalledState;
 
-        public async Task OnInstall(Installer inst, Action<bool> setProgressBar, Action<double> setProgress)
+        public async Task OnInstall(IInstaller inst, Action<bool> setProgressBar, Action<double> setProgress)
         {
             if (State is InstalledState(var enabled, var updated))
             {

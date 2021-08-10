@@ -4,11 +4,13 @@ using System.IO;
 using System.Net;
 using System.Net.Cache;
 using System.Xml.Serialization;
+using JetBrains.Annotations;
+using Modinstaller2.Interfaces;
 using Modinstaller2.Models;
 
 namespace Modinstaller2.Services
 {
-    public class ModDatabase
+    public class ModDatabase : IModDatabase
     {
         private const string MODLINKS_URI = "https://raw.githubusercontent.com/hk-modding/modlinks/main/ModLinks.xml";
 
@@ -16,7 +18,7 @@ namespace Modinstaller2.Services
 
         private readonly List<ModItem> _items = new();
 
-        private ModDatabase(InstalledMods mods, ModLinks ml, Settings config)
+        private ModDatabase(IModSource mods, ModLinks ml)
         {
             foreach (var mod in ml.Manifests)
             {
@@ -35,7 +37,6 @@ namespace Modinstaller2.Services
                     name: mod.Name,
                     description: mod.Description,
                     dependencies: mod.Dependencies,
-                    config: config,
                     
                     state: mods.FromManifest(mod)
                 );
@@ -46,7 +47,8 @@ namespace Modinstaller2.Services
             _items.Sort((a, b) => string.Compare(a.Name, b.Name));
         }
 
-        public ModDatabase(InstalledMods mods, Settings config) : this(mods, GetModLinks(), config) { }
+        [UsedImplicitly]
+        public ModDatabase(IModSource mods) : this(mods, GetModLinks()) { }
 
         private static ModLinks GetModLinks()
         {

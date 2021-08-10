@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Modinstaller2.Interfaces;
 using Modinstaller2.Models;
 using Modinstaller2.Services;
 using Modinstaller2.Util;
@@ -17,8 +18,8 @@ namespace Modinstaller2.ViewModels
     public partial class ModListViewModel : ViewModelBase
     {
         private readonly SortableObservableCollection<ModItem> _items;
-        private readonly Settings _settings;
-        private readonly Installer _installer;
+        private readonly ISettings _settings;
+        private readonly IInstaller _installer;
         
         [Notify("ProgressBarVisible")]
         private bool _pbVisible;
@@ -35,7 +36,7 @@ namespace Modinstaller2.ViewModels
         [Notify]
         private string? _search;
         
-        public ModListViewModel(Settings settings, ModDatabase db, Installer inst)
+        public ModListViewModel(ISettings settings, IModDatabase db, IInstaller inst)
         {
             _settings = settings;
             _installer = inst;

@@ -24,10 +24,6 @@ namespace Modinstaller2.Models
 
         public string Name { get; set; }
 
-        [XmlArray(ElementName = "Files")]
-        [XmlArrayItem(ElementName = "File")]
-        public string[] Files { get; set; }
-
         [XmlElement]
         public Link? Link
         {
@@ -58,7 +54,6 @@ namespace Modinstaller2.Models
         {
             Version = null!;
             Name = null!;
-            Files = null!;
             Dependencies = null!;
             Description = null!;
         }
@@ -68,7 +63,6 @@ namespace Modinstaller2.Models
             return "{\n"
                 + $"\t{nameof(Version)}: {Version},\n"
                 + $"\t{nameof(Name)}: {Name},\n"
-                + $"\t{nameof(Files)}: {string.Join(", ", Files)},\n"
                 + $"\t{nameof(Links)}: {(object?) _link ?? Links},\n"
                 + $"\t{nameof(Dependencies)}: {string.Join(", ", Dependencies)},\n"
                 + $"\t{nameof(Description)}: {Description}\n"

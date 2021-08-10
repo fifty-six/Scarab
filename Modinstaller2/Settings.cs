@@ -7,11 +7,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using Modinstaller2.Interfaces;
 
 namespace Modinstaller2
 {
     [Serializable]
-    public class Settings
+    public class Settings : ISettings
     {
         public string ManagedFolder { get; set; }
 
@@ -35,8 +36,8 @@ namespace Modinstaller2
         }
         .Select(path => path.Replace('/', Path.DirectorySeparatorChar)).ToImmutableList();
 
-        internal string ModsFolder     => Path.Combine(ManagedFolder, "Mods");
-        internal string DisabledFolder => Path.Combine(ModsFolder, "Disabled");
+        public string ModsFolder     => Path.Combine(ManagedFolder, "Mods");
+        public string DisabledFolder => Path.Combine(ModsFolder, "Disabled");
 
         private static string ConfigPath => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
