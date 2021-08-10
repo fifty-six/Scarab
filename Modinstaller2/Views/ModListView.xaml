@@ -5,6 +5,7 @@
              xmlns:sys="clr-namespace:System;assembly=netstandard"
              xmlns:models="clr-namespace:Modinstaller2.Models"
              xmlns:viewModels="clr-namespace:Modinstaller2.ViewModels"
+             xmlns:views="clr-namespace:Modinstaller2.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
              x:Class="Modinstaller2.Views.ModListView"
              d:DataContext="{d:DesignInstance viewModels:ModListViewModel}">
@@ -52,6 +53,8 @@
 
             MaxHeight="8"
             MinHeight="8"
+            
+            Name="Bar"
 
             IsVisible="{Binding ProgressBarVisible}"
             
@@ -61,14 +64,13 @@
             Maximum="100"
             Value="{Binding Progress}" />
 
-        <!-- For some reason, TextBox doesn't have the TextChanged event. -->
-        <AutoCompleteBox
+        <TextBox
             x:Name="Search"
             Watermark="Mod Search"
             DockPanel.Dock="Top"
             BorderThickness="0"
             Margin="6 6"
-            TextChanged="OnSearchTextChanged" />
+            Text="{Binding Search}" />
 
         <Separator
             DockPanel.Dock="Top"
@@ -106,14 +108,15 @@
 
                         <CheckBox
                             Grid.Column="1"
-                            Command="{Binding OnEnable}"
+                            Command="{Binding $parent[views:ModListView].DataContext.OnEnable}"
+                            CommandParameter="{Binding .}"
                             IsChecked="{Binding EnabledIsChecked}"
                             IsEnabled="{Binding Installed}"
                             Content="Enabled?" />
 
                         <CheckBox
                             Grid.Column="2"
-                            Command="{Binding $parent[UserControl].DataContext.OnInstall}"
+                            Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
                             CommandParameter="{Binding .}"
                             IsChecked="{Binding InstalledIsChecked}"
                             IsEnabled="{Binding !Installing}"

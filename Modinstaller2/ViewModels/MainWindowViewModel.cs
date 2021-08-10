@@ -1,8 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Threading;
 using JetBrains.Annotations;
 using MessageBox.Avalonia.BaseWindows.Base;
 using MessageBox.Avalonia.DTO;
@@ -29,17 +27,24 @@ namespace Modinstaller2.ViewModels
         {
             var sc = new ServiceCollection();
 
-            Settings? settings = Settings.Load();
+            Settings settings = Settings.Load() ?? Settings.Create(await GetSettingsPath());
+
+            sc.AddSingleton(_ => settings)
+              .AddSingleton(_ => InstalledMods.Load())
+              .AddSingleton<ModDatabase>()
+              .AddSingleton<Installer>()
+              .AddSingleton<ModListViewModel>();
             
-            if (settings is not null)
+            ServiceProvider sp = sc.BuildServiceProvider(new ServiceProviderOptions
             {
-                sc.AddSingleton<Settings>(_ => settings);
-            
-                SwapToModlist(sc);
+                ValidateOnBuild = true
+            });
 
-                return;
-            }
+            Content = sp.GetRequiredService<ModListViewModel>();
+        }
 
+        private static async Task<string> GetSettingsPath()
+        {
             if (!Settings.TryAutoDetect(out string? path))
             {
                 IMsBoxWindow<ButtonResult> info = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow
@@ -52,12 +57,11 @@ namespace Modinstaller2.ViewModels
                 );
 
                 await info.Show();
-                await SelectPath(sc);
-
-                return;
+                
+                return await SelectPathUtil.SelectPath();
             }
 
-            Debug.WriteLine($"Settings doesn't exist. Creating it at detected path {path}.");
+            Trace.WriteLine($"Settings doesn't exist. Creating it at detected path {path}.");
 
             IMsBoxWindow<ButtonResult> window = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow
             (
@@ -71,14 +75,12 @@ namespace Modinstaller2.ViewModels
 
             ButtonResult res = await window.Show();
 
-            if (res == ButtonResult.Yes)
-                SwapToModlist(sc.AddSingleton(_ => Settings.Create(path)));
-            else
-                await SelectPath(sc);
+            return res == ButtonResult.Yes
+                ? path
+                : await SelectPathUtil.SelectPath();
         }
 
-        // public MainWindowViewModel() => Dispatcher.UIThread.InvokeAsync(Impl);
-        public MainWindowViewModel() => Task.Run(async () =>
+        public MainWindowViewModel() => Task.Run(async () => 
         {
             try
             {
@@ -86,28 +88,20 @@ namespace Modinstaller2.ViewModels
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e.Message);
+                Trace.WriteLine(e.StackTrace);
+                Trace.Flush();
 
+                if (Debugger.IsAttached)
+                    Debugger.Break();
+                
                 Environment.Exit(-1);
                 
                 throw;
             }
         });
 
-        private async Task SelectPath(IServiceCollection sc)
-        {
-            string path = await SelectPathUtil.SelectPath();
-
-            SwapToModlist(sc.AddSingleton(_ => Settings.Create(path)));
-        }
-
         private void SwapToModlist(IServiceCollection sc)
         {
-            sc
-                .AddSingleton(_ => InstalledMods.Load())
-                .AddSingleton<ModDatabase>();
-            
-            Content = new ModListViewModel(sc.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true }));
         }
     }
 }

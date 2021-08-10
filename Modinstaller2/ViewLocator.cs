@@ -11,12 +11,19 @@ namespace Modinstaller2
         {
             string? name = data.GetType().FullName?.Replace("ViewModel", "View");
 
-            var type = Type.GetType(name ?? throw new InvalidOperationException("Type name is null!"));
+            if (string.IsNullOrEmpty(name))
+                throw new InvalidOperationException($"{nameof(name)}: {name}");
 
-            if (type != null)
-                return (Control) Activator.CreateInstance(type)!;
+            var type = Type.GetType(name);
 
-            return new TextBlock { Text = "Not Found: " + name };
+            if (type == null) 
+                return new TextBlock { Text = "Not Found: " + name };
+            
+            var ctrl = (Control) Activator.CreateInstance(type)!;
+            ctrl.DataContext = data;
+
+            return ctrl;
+
         }
 
         public bool Match(object data)

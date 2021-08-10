@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text.Json;
@@ -22,6 +21,19 @@ namespace Modinstaller2.Services
             File.Exists(ConfigPath)
                 ? JsonSerializer.Deserialize<InstalledMods>(File.ReadAllText(ConfigPath)) ?? throw new InvalidDataException()
                 : new InstalledMods();
+
+        public ModState FromManifest(Manifest manifest)
+        {
+            if (Mods.TryGetValue(manifest.Name, out var existing))
+            {
+                return existing with
+                {
+                    Updated = existing.Version >= manifest.Version.Value
+                };
+            }
+
+            return new NotInstalledState();
+        }
 
         public async Task RecordInstall(ModItem item)
         {

@@ -1,48 +1,51 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <!-- Windowed exe, avoids Console showing for users. -->
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-    <RuntimeIdentifiers>win10-x64;osx.10.12-x64</RuntimeIdentifiers>
-    <LangVersion>preview</LangVersion>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Update="**\*.xaml.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
-    </Compile>
-    <AvaloniaResource Include="**\*.xaml">
-      <SubType>Designer</SubType>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Assets\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <AvaloniaResource Remove="Views\ModListView.xaml" />
-    <AvaloniaResource Remove="Views\SelectPathView.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Views\ModListView.xaml" />
-    <None Remove="Views\SelectPathView.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Views\ModListView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.0" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.0" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.0" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0" />
-    <PackageReference Include="MessageBox.Avalonia" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0-preview.5.21301.5" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Views\ModListView - Copy.xaml.cs">
-      <DependentUpon>ModListView.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="Views\ModListView.xaml.cs">
-      <DependentUpon>ModListView.xaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
+    <PropertyGroup>
+        <!-- Windowed exe, avoids Console showing for users. -->
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+        <RuntimeIdentifiers>win10-x64;osx.10.12-x64</RuntimeIdentifiers>
+        <LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <Compile Update="**\*.xaml.cs">
+            <DependentUpon>%(Filename)</DependentUpon>
+        </Compile>
+        <AvaloniaResource Include="**\*.xaml">
+            <SubType>Designer</SubType>
+        </AvaloniaResource>
+        <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <AvaloniaResource Remove="Views\ModListView.xaml" />
+        <AvaloniaResource Remove="Views\SelectPathView.xaml" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <EmbeddedResource Include="Views\ModListView.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </EmbeddedResource>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="0.10.6" />
+        <PackageReference Include="Avalonia.Desktop" Version="0.10.6" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.6" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.6" />
+        <PackageReference Include="MessageBox.Avalonia" Version="1.5.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0-preview.5.21301.5" />
+        <PackageReference Include="PropertyChanged.SourceGenerator" Version="1.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" Version="12.1.4" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Compile Update="Views\ModListView.xaml.cs">
+            <DependentUpon>ModListView.xaml</DependentUpon>
+        </Compile>
+    </ItemGroup>
 </Project>

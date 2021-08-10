@@ -12,7 +12,7 @@ namespace Modinstaller2.Services
     {
         private const string MODLINKS_URI = "https://raw.githubusercontent.com/hk-modding/modlinks/main/ModLinks.xml";
 
-        public IList<ModItem> Items => _items;
+        public IEnumerable<ModItem> Items => _items;
 
         private readonly List<ModItem> _items = new();
 
@@ -32,15 +32,12 @@ namespace Modinstaller2.Services
                     },
 
                     version: mod.Version.Value,
-                    files: mod.Files,
                     name: mod.Name,
                     description: mod.Description,
                     dependencies: mod.Dependencies,
                     config: config,
                     
-                    state: mods.Mods.TryGetValue(mod.Name, out var state) 
-                        ? state 
-                        : new NotInstalledState()
+                    state: mods.FromManifest(mod)
                 );
                 
                 _items.Add(item);

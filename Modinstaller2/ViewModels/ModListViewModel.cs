@@ -3,81 +3,62 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using Modinstaller2.Models;
 using Modinstaller2.Services;
 using Modinstaller2.Util;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 namespace Modinstaller2.ViewModels
 {
-    public class ModListViewModel : ViewModelBase
+    public partial class ModListViewModel : ViewModelBase
     {
-        private Settings Settings { get; }
-
-        private IServiceProvider _sp;
-
+        private readonly SortableObservableCollection<ModItem> _items;
+        private readonly Settings _settings;
+        private readonly Installer _installer;
+        
+        [Notify("ProgressBarVisible")]
         private bool _pbVisible;
 
-        [UsedImplicitly]
-        public bool ProgressBarVisible
-        {
-            get => _pbVisible;
-
-            private set => this.RaiseAndSetIfChanged(ref _pbVisible, value);
-        }
-
+        [Notify("ProgressBarIndeterminate")]
         private bool _pbIndeterminate;
 
-        public bool ProgressBarIndeterminate
-        {
-            get => _pbIndeterminate;
-
-            private set => this.RaiseAndSetIfChanged(ref _pbIndeterminate, value);
-        }
-
+        [Notify("Progress")]
         private double _pbProgress;
 
-        [UsedImplicitly]
-        public double Progress
-        {
-            get => _pbProgress;
-
-            private set => this.RaiseAndSetIfChanged(ref _pbProgress, value);
-        }
-
-        private SortableObservableCollection<ModItem> Items { get; }
-
+        [Notify]
         private IEnumerable<ModItem> _selectedItems;
 
-        private IEnumerable<ModItem> SelectedItems
-        {
-            get => _selectedItems;
-            set
-            {
-                _selectedItems = value;
-                this.RaisePropertyChanged(nameof(FilteredItems));
-            }
-        }
-
+        [Notify]
         private string? _search;
-
-        private IEnumerable<ModItem> FilteredItems =>
-            string.IsNullOrEmpty(_search)
-                ? SelectedItems
-                : SelectedItems.Where(x => x.Name.Contains(_search, StringComparison.OrdinalIgnoreCase));
-
-        public void FilterItems(string search)
+        
+        public ModListViewModel(Settings settings, ModDatabase db, Installer inst)
         {
-            _search = search;
+            _settings = settings;
+            _installer = inst;
 
-            this.RaisePropertyChanged(nameof(FilteredItems));
+            _items = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
+
+            SelectedItems = _selectedItems = _items;
+
+            OnInstall = ReactiveCommand.CreateFromTask<ModItem>(OnInstallAsync);
         }
+
 
         [UsedImplicitly]
-        public ReactiveCommand<ModItem, Task> OnInstall { get; }
+        private IEnumerable<ModItem> FilteredItems =>
+            string.IsNullOrEmpty(Search)
+                ? SelectedItems
+                : SelectedItems.Where(x => x.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
+
+        // Needed for source generator to find it.
+        private void RaisePropertyChanged(string name) => IReactiveObjectExtensions.RaisePropertyChanged(this, name);
+
+        [UsedImplicitly]
+        public ReactiveCommand<ModItem, Unit> OnInstall { get; }
 
         private static (int priority, string name) ModToOrderedTuple(ModItem m) =>
         (
@@ -85,46 +66,32 @@ namespace Modinstaller2.ViewModels
             m.Name
         );
 
-        public void SelectAll() => SelectedItems = Items;
+        public void SelectAll() => SelectedItems = _items;
 
-        public void SelectInstalled() => SelectedItems = Items.Where(x => x.Installed);
+        public void SelectInstalled() => SelectedItems = _items.Where(x => x.Installed);
 
-        public void OpenModsDirectory()
-        {
+        public void OpenModsDirectory() =>
             Process.Start
             (
-                new ProcessStartInfo(Path.Combine(Settings.ManagedFolder, "Mods"))
+                new ProcessStartInfo(Path.Combine(_settings.ManagedFolder, "Mods"))
                 {
                     UseShellExecute = true
                 }
             );
-        }
 
-        public void SelectUnupdated() => SelectedItems = Items.Where(x => x.State is InstalledState { Updated: false });
+        public void SelectUnupdated() => SelectedItems = _items.Where(x => x.State is InstalledState { Updated: false });
 
-        public void SelectEnabled() => SelectedItems = Items.Where(x => x.State is InstalledState { Enabled: true });
+        public void SelectEnabled() => SelectedItems = _items.Where(x => x.State is InstalledState { Enabled: true });
 
-        public ModListViewModel(IServiceProvider sp)
-        {
-            _sp = sp;
-
-            var db = sp.GetRequiredService<ModDatabase>();
-
-            Settings = sp.GetRequiredService<Settings>();
-
-            Items = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
-
-            SelectedItems = _selectedItems = Items;
-
-            OnInstall = ReactiveCommand.Create<ModItem, Task>(OnInstallAsync);
-        }
+        [UsedImplicitly]
+        public void OnEnable(ModItem item) => _installer.Toggle(item);
 
         [UsedImplicitly]
         public async Task OnInstallAsync(ModItem item)
         {
             await item.OnInstall
             (
-                _sp,
+                _installer,
                 val => ProgressBarVisible = val,
                 progress =>
                 {
@@ -137,7 +104,7 @@ namespace Modinstaller2.ViewModels
 
             static int Comparer(ModItem x, ModItem y) => ModToOrderedTuple(x).CompareTo(ModToOrderedTuple(y));
 
-            Items.SortBy(Comparer);
+            _items.SortBy(Comparer);
         }
     }
 }

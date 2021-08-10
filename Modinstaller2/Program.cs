@@ -17,31 +17,8 @@ namespace Modinstaller2
         // yet and stuff might break.
         public static void Main(string[] args)
         {
-            using var fileListener = new TextWriterTraceListener
-            (
-                Path.Combine
-                (
-                    Settings.GetOrCreateDirPath(),
-                    "ModInstaller.log"
-                )
-            );
-
-            Trace.AutoFlush = true;
+            SetupLogging();
             
-            Trace.Listeners.Add(fileListener);
-
-            AppDomain.CurrentDomain.UnhandledException += (_, eArgs) =>
-            {
-                Console.WriteLine(eArgs.ExceptionObject.ToString());
-
-                // Can't open a UI as this is going to crash, so we'll save to a log file.
-                WriteExceptionToLog((Exception) eArgs.ExceptionObject);
-            };
-
-            TaskScheduler.UnobservedTaskException += (_, eArgs) => { WriteExceptionToLog(eArgs.Exception); };
-
-            Trace.WriteLine("Launching...");
-
             try
             {
                 BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
@@ -52,22 +29,51 @@ namespace Modinstaller2
             }
         }
 
+        private static void SetupLogging()
+        {
+            using var fileListener = new TextWriterTraceListener
+            (
+                Path.Combine
+                (
+                    Settings.GetOrCreateDirPath(),
+                    "ModInstaller.log"
+                )
+            );
+
+            Trace.AutoFlush = true;
+
+            Trace.Listeners.Add(fileListener);
+
+            AppDomain.CurrentDomain.UnhandledException += (_, eArgs) =>
+            {
+                // Can't open a UI as this is going to crash, so we'll save to a log file.
+                WriteExceptionToLog((Exception)eArgs.ExceptionObject);
+            };
+
+            TaskScheduler.UnobservedTaskException += (_, eArgs) => { WriteExceptionToLog(eArgs.Exception); };
+
+            Trace.WriteLine("Launching...");
+        }
+
         private static void WriteExceptionToLog(Exception e)
         {
             string date = DateTime.Now.ToString("yy-MM-dd HH-mm-ss");
 
             string? dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            
+
             string dir = dirName switch
             {
                 // ModInstaller.app/Contents/MacOS/Executable
                 "MacOS" => "../../../",
                 _ => string.Empty
             };
+            
+            if (Debugger.IsAttached)
+                Debugger.Break();
 
-            Trace.WriteLine($"Caught exception, writing to log: {e}");
+            Trace.WriteLine($"Caught exception, writing to log: {e.StackTrace}");
 
-            File.WriteAllText(dir + $"ModInstaller_Error_{date}.log", e.ToString());
+            File.WriteAllText(dir + $"ModInstaller_Error_{date}.log", e.StackTrace);
 
             Trace.Flush();
         }
