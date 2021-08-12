@@ -1,8 +1,0 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Width="670" Height="450"
-        x:Class="Modinstaller2.Views.MainWindow"
-        Icon="/Assets/omegamaggotprime.ico"
-        Content="{Binding Content}"
-        Title="Modinstaller2">
-</Window>
