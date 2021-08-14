@@ -14,7 +14,7 @@ namespace Scarab.Models
     }
 
     [Serializable]
-    public class Manifest
+    public record Manifest
     {
         // Internally handle the Link/Links either-or divide
         private Links? _links;
@@ -71,7 +71,7 @@ namespace Scarab.Models
     }
 
     [Serializable]
-    public class VersionWrapper : IXmlSerializable
+    public record VersionWrapper : IXmlSerializable
     {
         public VersionWrapper() => Value = null!;
 
@@ -80,7 +80,9 @@ namespace Scarab.Models
         public XmlSchema? GetSchema() => null;
         public void ReadXml(XmlReader reader) => Value = Version.Parse(reader.ReadElementContentAsString());
         public void WriteXml(XmlWriter writer) => writer.WriteString(Value.ToString());
-        
+
+        public static implicit operator VersionWrapper(Version v) => new() { Value = v };
+
         public override string ToString() => Value.ToString();
     }
 

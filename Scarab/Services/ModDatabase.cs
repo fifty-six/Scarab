@@ -50,6 +50,22 @@ namespace Scarab.Services
         [UsedImplicitly]
         public ModDatabase(IModSource mods) : this(mods, GetModLinks()) { }
 
+        public ModDatabase(IModSource mods, string modlinks) : this(mods, FromString(modlinks)) { }
+
+        private static ModLinks FromString(string xml)
+        {
+            var serializer = new XmlSerializer(typeof(ModLinks));
+            
+            using TextReader reader = new StringReader(xml);
+
+            var ml = (ModLinks?) serializer.Deserialize(reader);
+
+            if (ml is null)
+                throw new InvalidDataException();
+
+            return ml;
+        }
+
         private static ModLinks GetModLinks()
         {
             var uri = new Uri(MODLINKS_URI);
@@ -61,16 +77,7 @@ namespace Scarab.Services
 
             string xmlString = wc.DownloadString(uri);
 
-            var serializer = new XmlSerializer(typeof(ModLinks));
-
-            using TextReader reader = new StringReader(xmlString);
-
-            var ml = (ModLinks?) serializer.Deserialize(reader);
-
-            if (ml is null)
-                throw new InvalidDataException();
-
-            return ml;
+            return FromString(xmlString);
         }
     }
 }

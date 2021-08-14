@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.IO.Abstractions;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Scarab.Interfaces;
@@ -13,15 +14,19 @@ namespace Scarab.Services
     public record InstalledMods : IModSource
     {
         private const string FILE_NAME = "InstalledMods.json";
+        
+        internal static readonly string ConfigPath = Path.Combine(Settings.GetOrCreateDirPath(), FILE_NAME);
 
         public Dictionary<string, InstalledState> Mods { get; init; } = new();
 
-        private static readonly string ConfigPath = Path.Combine(Settings.GetOrCreateDirPath(), FILE_NAME);
+        private readonly IFileSystem _fs;
 
         public static InstalledMods Load() =>
             File.Exists(ConfigPath)
                 ? JsonSerializer.Deserialize<InstalledMods>(File.ReadAllText(ConfigPath)) ?? throw new InvalidDataException()
-                : new InstalledMods();
+                : new InstalledMods(new FileSystem());
+
+        public InstalledMods(IFileSystem fs) => _fs = fs;
 
         public ModState FromManifest(Manifest manifest)
         {
@@ -56,9 +61,9 @@ namespace Scarab.Services
 
         private async Task SaveToDiskAsync()
         {
-            await using FileStream fs = File.Exists(ConfigPath)
-                ? new FileStream(ConfigPath, FileMode.Truncate)
-                : File.Create(ConfigPath);
+            await using Stream fs = _fs.File.Exists(ConfigPath)
+                ? _fs.FileStream.Create(ConfigPath, FileMode.Truncate)
+                : _fs.File.Create(ConfigPath);
 
             await JsonSerializer.SerializeAsync(fs, this);
         }

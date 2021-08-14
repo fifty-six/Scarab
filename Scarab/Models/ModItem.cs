@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media;
@@ -10,7 +11,7 @@ using Scarab.Interfaces;
 
 namespace Scarab.Models
 {
-    public partial class ModItem : INotifyPropertyChanged
+    public partial class ModItem : INotifyPropertyChanged, IEquatable<ModItem>
     {
         private static readonly SemaphoreSlim _InstallSem = new(1);
 
@@ -108,5 +109,43 @@ namespace Scarab.Models
                 setProgressBar(false);
             }
         }
+        
+        #region Equality
+        public bool Equals(ModItem? other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            
+            return _state.Equals(other._state)
+                && Version.Equals(other.Version)
+                && Dependencies.Zip(other.Dependencies).All(tuple => tuple.First == tuple.Second)
+                && Link == other.Link
+                && Name == other.Name
+                && Description == other.Description;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            
+            return obj.GetType() == GetType() && Equals((ModItem) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Version, Dependencies, Link, Name, Description);
+        }
+
+        public static bool operator ==(ModItem? left, ModItem? right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(ModItem? left, ModItem? right)
+        {
+            return !Equals(left, right);
+        }
+        #endregion
     }
 }
