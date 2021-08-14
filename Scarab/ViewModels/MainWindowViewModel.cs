@@ -100,9 +100,5 @@ namespace Scarab.ViewModels
                 throw;
             }
         });
-
-        private void SwapToModlist(IServiceCollection sc)
-        {
-        }
     }
 }
