@@ -24,7 +24,9 @@ namespace Scarab.Services
         public static InstalledMods Load() =>
             File.Exists(ConfigPath)
                 ? JsonSerializer.Deserialize<InstalledMods>(File.ReadAllText(ConfigPath)) ?? throw new InvalidDataException()
-                : new InstalledMods(new FileSystem());
+                : new InstalledMods();
+
+        public InstalledMods() => _fs = new FileSystem();
 
         public InstalledMods(IFileSystem fs) => _fs = fs;
 
