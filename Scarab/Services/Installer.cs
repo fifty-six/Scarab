@@ -97,83 +97,22 @@ namespace Scarab.Services
                 await _Install(dep, _ => { }, enable || dep.State is NotInstalledState);
             }
 
-            var dl = new WebClient();
-
-            setProgress(0);
-
-            dl.DownloadProgressChanged += (_, args) =>
-            {
-                if (args.TotalBytesToReceive < 0)
-                {
-                    setProgress(-1);
-
-                    return;
-                }
-
-                setProgress(100 * args.BytesReceived / (double)args.TotalBytesToReceive);
-            };
-
-            byte[] data = await dl.DownloadDataTaskAsync(new Uri(mod.Link));
-
-            string filename = string.Empty;
-
-            if (!string.IsNullOrEmpty(dl.ResponseHeaders?["Content-Disposition"]))
-            {
-                var disposition = new ContentDisposition(dl.ResponseHeaders["Content-Disposition"] ?? throw new InvalidOperationException());
-
-                filename = disposition.FileName ?? throw new InvalidOperationException();
-            }
-
-            if (string.IsNullOrEmpty(filename))
-            {
-                filename = mod.Link[(mod.Link.LastIndexOf("/") + 1)..];
-            }
+            var (data, filename) = await DownloadFile(mod, setProgress);
 
             string ext = Path.GetExtension(filename.ToLower());
-            string fbase = Path.GetFileNameWithoutExtension(filename);
 
             // Default to enabling
             string base_folder = enable
                 ? _config.ModsFolder
                 : _config.DisabledFolder;
 
-            string mod_folder = Path.Combine(base_folder, fbase);
+            string mod_folder = Path.Combine(base_folder, mod.Name);
 
             switch (ext)
             {
                 case ".zip":
                 {
-                    using var archive = new ZipArchive(new MemoryStream(data));
-
-                    // Note that this will give us a good DirectoryInfo even if destinationDirectoryName exists:
-                    DirectoryInfo di = Directory.CreateDirectory(mod_folder);
-
-                    string dest_dir_path = di.FullName;
-
-                    if (!dest_dir_path.EndsWith(Path.DirectorySeparatorChar))
-                        dest_dir_path += Path.DirectorySeparatorChar;
-
-                    foreach (ZipArchiveEntry entry in archive.Entries)
-                    {
-                        string file_dest = Path.GetFullPath(Path.Combine(dest_dir_path, entry.FullName));
-
-                        if (!file_dest.StartsWith(dest_dir_path))
-                            throw new IOException("Extracts outside of directory!");
-
-                        // If it's a directory:
-                        if (Path.GetFileName(file_dest).Length == 0)
-                        {
-                            Directory.CreateDirectory(file_dest);
-                        }
-                        // File
-                        else
-                        {
-                            // Create containing directory:
-                            Directory.CreateDirectory(Path.GetDirectoryName(file_dest)!);
-
-                            entry.ExtractToFile(file_dest, true);
-                        }
-                    }
+                    ExtractZip(data, mod_folder);
 
                     break;
                 }
@@ -210,6 +149,85 @@ namespace Scarab.Services
             await _installed.RecordInstall(mod);
         }
 
+        private static async Task<(byte[] data, string filename)> DownloadFile(ModItem mod, Action<double> setProgress)
+        {
+            var dl = new WebClient();
+
+            setProgress(0);
+
+            dl.DownloadProgressChanged += (_, args) =>
+            {
+                if (args.TotalBytesToReceive < 0)
+                {
+                    setProgress(-1);
+
+                    return;
+                }
+
+                setProgress(100 * args.BytesReceived / (double) args.TotalBytesToReceive);
+            };
+
+            byte[] data = await dl.DownloadDataTaskAsync(new Uri(mod.Link));
+
+            string filename = string.Empty;
+
+            if (!string.IsNullOrEmpty(dl.ResponseHeaders?["Content-Disposition"]))
+            {
+                var disposition = new ContentDisposition(dl.ResponseHeaders["Content-Disposition"] ?? throw new InvalidOperationException());
+
+                filename = disposition.FileName ?? throw new InvalidOperationException();
+            }
+
+            if (string.IsNullOrEmpty(filename))
+            {
+                filename = mod.Link[(mod.Link.LastIndexOf("/") + 1)..];
+            }
+
+            return (data, filename);
+        }
+
+        private static void ExtractZip(byte[] data, string root)
+        {
+            using var archive = new ZipArchive(new MemoryStream(data));
+
+            string dest_dir_path = CreateDirectoryPath(root);
+
+            foreach (ZipArchiveEntry entry in archive.Entries)
+            {
+                string file_dest = Path.GetFullPath(Path.Combine(dest_dir_path, entry.FullName));
+
+                if (!file_dest.StartsWith(dest_dir_path))
+                    throw new IOException("Extracts outside of directory!");
+
+                // If it's a directory:
+                if (Path.GetFileName(file_dest).Length == 0)
+                {
+                    Directory.CreateDirectory(file_dest);
+                }
+                // File
+                else
+                {
+                    // Create containing directory:
+                    Directory.CreateDirectory(Path.GetDirectoryName(file_dest)!);
+
+                    entry.ExtractToFile(file_dest, true);
+                }
+            }
+        }
+
+        private static string CreateDirectoryPath(string path)
+        {
+            // Note that this will give us a good DirectoryInfo even if destinationDirectoryName exists:
+            DirectoryInfo di = Directory.CreateDirectory(path);
+
+            string dest_dir_path = di.FullName;
+
+            if (!dest_dir_path.EndsWith(Path.DirectorySeparatorChar))
+                dest_dir_path += Path.DirectorySeparatorChar;
+            
+            return dest_dir_path;
+        }
+
         private async Task _Uninstall(ModItem mod)
         {
             string dir = Path.Combine
@@ -220,8 +238,11 @@ namespace Scarab.Services
                 mod.Name
             );
 
-            if (Directory.Exists(dir))
+            try 
+            {
                 Directory.Delete(dir, true);
+            }
+            catch (DirectoryNotFoundException) { /* oh well, it's uninstalled anyways */ }
 
             mod.State = new NotInstalledState();
 
