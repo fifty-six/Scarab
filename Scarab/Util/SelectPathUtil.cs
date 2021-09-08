@@ -9,6 +9,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using MessageBox.Avalonia;
+using MessageBox.Avalonia.DTO;
 
 namespace Scarab.Util
 {
@@ -19,8 +20,8 @@ namespace Scarab.Util
         private const string NO_SELECT = "No path was selected!";
         private const string NO_SELECT_MAC = "No application was selected!";
         
-        private const string INVALID_PATH = "Invalid Hollow Knight path! Select the folder containing hollow_knight_Data or Hollow Knight_Data.";
-        private const string INVALID_APP = "Invalid Hollow Knight app! Missing Managed folder or Assembly-CSharp!";
+        private const string INVALID_PATH = "Invalid Hollow Knight path!\nSelect the folder containing hollow_knight_Data or Hollow Knight_Data.";
+        private const string INVALID_APP = "Invalid Hollow Knight app!\nMissing Managed folder or Assembly-CSharp!";
         
         public static async Task<string> SelectPath([DoesNotReturnIf(true)] bool fail = false)
         {
@@ -44,7 +45,11 @@ namespace Scarab.Util
                 if (result is null)
                     await MessageBoxManager.GetMessageBoxStandardWindow("Path", NO_SELECT).Show();
                 else if (!IsValid(result, out string? suffix))
-                    await MessageBoxManager.GetMessageBoxStandardWindow("Path", INVALID_PATH).Show();
+                    await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
+                        ContentTitle = "Path",
+                        ContentMessage = INVALID_PATH,
+                        MinHeight = 140
+                    }).Show();
                 else
                     return Path.Combine(result, suffix);
 
@@ -70,7 +75,11 @@ namespace Scarab.Util
                 if (result is null or { Length: 0 })
                     await MessageBoxManager.GetMessageBoxStandardWindow("Path", NO_SELECT_MAC).Show();
                 else if (!IsValid(result.First(), out string? suffix))
-                    await MessageBoxManager.GetMessageBoxStandardWindow("Path", INVALID_APP).Show();
+                    await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
+                        ContentTitle = "Path",
+                        ContentMessage = INVALID_APP,
+                        MinHeight = 140
+                    }).Show();
                 else
                     return Path.Combine(result.First(), suffix);
 
