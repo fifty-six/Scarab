@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO.Abstractions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using JetBrains.Annotations;
 using MessageBox.Avalonia.BaseWindows.Base;
 using MessageBox.Avalonia.DTO;
@@ -39,12 +40,16 @@ namespace Scarab.ViewModels
 
         private async Task Impl()
         {
+            Trace.WriteLine("Checking if up to date...");
+            
             await CheckUpToDate();
             
             var sc = new ServiceCollection();
 
+            Trace.WriteLine("Loading settings.");
             Settings settings = Settings.Load() ?? Settings.Create(await GetSettingsPath());
 
+            Trace.WriteLine("Fetching links");
             (ModLinks, ApiLinks) content = await ModDatabase.FetchContent();
             
             sc.AddSingleton<ISettings>(_ => settings)
@@ -59,6 +64,7 @@ namespace Scarab.ViewModels
                 ValidateOnBuild = true
             });
 
+            Trace.WriteLine("Displaying model");
             Content = sp.GetRequiredService<ModListViewModel>();
         }
 
@@ -147,7 +153,7 @@ namespace Scarab.ViewModels
         {
             if (!Settings.TryAutoDetect(out string? path))
             {
-                IMsBoxWindow<ButtonResult> info = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow
+                IMsBoxWindow<ButtonResult> info = MessageBoxManager.GetMessageBoxStandardWindow
                 (
                     new MessageBoxStandardParams
                     {
@@ -163,7 +169,7 @@ namespace Scarab.ViewModels
 
             Trace.WriteLine($"Settings doesn't exist. Creating it at detected path {path}.");
 
-            IMsBoxWindow<ButtonResult> window = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow
+            IMsBoxWindow<ButtonResult> window = MessageBoxManager.GetMessageBoxStandardWindow
             (
                 new MessageBoxStandardParams
                 {
@@ -180,7 +186,7 @@ namespace Scarab.ViewModels
                 : await SelectPathUtil.SelectPath();
         }
 
-        public MainWindowViewModel() => Task.Run(async () => 
+        public MainWindowViewModel() => Dispatcher.UIThread.InvokeAsync(async () => 
         {
             try
             {

@@ -73,6 +73,7 @@ namespace Scarab
             Trace.WriteLine($"Caught exception, writing to log: {e.StackTrace}");
 
             File.WriteAllText(dir + $"ModInstaller_Error_{date}.log", e.StackTrace);
+            File.WriteAllText(Path.Combine(Settings.GetOrCreateDirPath(), $"ModInstaller_Error_{date}.log"), e.StackTrace);
 
             Trace.Flush();
         }
