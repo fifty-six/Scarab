@@ -76,10 +76,19 @@ namespace Scarab.ViewModels
             return Task.CompletedTask;
             #else
             const string gh_releases = "https://api.github.com/repos/fifty-six/Scarab/releases/latest";
+
+
+            string json;
             
-            var wc = new WebClient();
-            
-            string json = await wc.DownloadStringTaskAsync(new Uri(gh_releases));
+            try
+            {
+                var wc = new WebClient();
+
+                json = await wc.DownloadStringTaskAsync(new Uri(gh_releases));
+            }
+            catch (WebException) {
+                return;
+            }
 
             JsonDocument doc = JsonDocument.Parse(json);
 
