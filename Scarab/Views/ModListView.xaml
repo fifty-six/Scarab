@@ -41,6 +41,12 @@
             <MenuItem Header="Out of date" Command="{Binding SelectUnupdated}" DockPanel.Dock="Top"/>
             
             <MenuItem 
+                Command="{Binding ChangePath}" 
+                Header="Change Path" 
+                DockPanel.Dock="Bottom" 
+                VerticalAlignment="Bottom" 
+            />
+            <MenuItem 
                 Command="{Binding OpenModsDirectory}" 
                 Header="Open Mods" 
                 DockPanel.Dock="Bottom" 

@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Scarab.Interfaces;
 using Scarab.Models;
+using Splat;
 
 namespace Scarab.Services
 {
@@ -40,6 +41,14 @@ namespace Scarab.Services
         public InstalledMods() => _fs = new FileSystem();
 
         public InstalledMods(IFileSystem fs) => _fs = fs;
+
+        public async Task Reset()
+        {
+            Mods.Clear();
+            _ApiState = null;
+
+            await SaveToDiskAsync();
+        }
 
         public async Task RecordApiState(ModState st)
         {

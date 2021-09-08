@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -13,54 +14,46 @@ namespace Scarab.Util
 {
     public static class SelectPathUtil
     {
-        public static async Task<string> SelectPath()
+        public class PathInvalidOrUnselectedException : Exception {}
+        
+        private const string NO_SELECT = "No path was selected!";
+        private const string NO_SELECT_MAC = "No application was selected!";
+        
+        private const string INVALID_PATH = "Invalid Hollow Knight path! Select the folder containing hollow_knight_Data or Hollow Knight_Data.";
+        private const string INVALID_APP = "Invalid Hollow Knight app! Missing Managed folder or Assembly-CSharp!";
+        
+        public static async Task<string> SelectPath([DoesNotReturnIf(true)] bool fail = false)
         {
             Debug.WriteLine("Selecting path...");
 
-            Window parent = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow 
+            Window parent = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow
                 ?? throw new InvalidOperationException();
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                return await SelectMacApp(parent);
-            }
-
-            string? result;
+                return await SelectMacApp(parent, fail);
 
             var dialog = new OpenFolderDialog
             {
                 Title = "Select your Hollow Knight folder."
             };
 
-            do
+            while (true)
             {
-                result = await dialog.ShowAsync(parent);
+                string? result = await dialog.ShowAsync(parent);
 
-                if (result == null)
-                {
-                    await MessageBoxManager.GetMessageBoxStandardWindow("Path", "Please select your Hollow Knight Path.").Show();
+                if (result is null)
+                    await MessageBoxManager.GetMessageBoxStandardWindow("Path", NO_SELECT).Show();
+                else if (!IsValid(result, out string? suffix))
+                    await MessageBoxManager.GetMessageBoxStandardWindow("Path", INVALID_PATH).Show();
+                else
+                    return Path.Combine(result, suffix);
 
-                    continue;
-                }
-
-                if (IsValid(result))
-                    continue;
-
-                await MessageBoxManager.GetMessageBoxStandardWindow
-                (
-                    "Path",
-                    "Invalid Hollow Knight Path. Select the Hollow Knight folder containing hollow_knight_Data."
-                )
-                .Show();
-
-                result = null;
+                if (fail)
+                    throw new PathInvalidOrUnselectedException();
             }
-            while (result == null);
-
-            return result;
         }
 
-        private static async Task<string> SelectMacApp(Window parent)
+        private static async Task<string> SelectMacApp(Window parent, [DoesNotReturnIf(true)] bool fail)
         {
             var dialog = new OpenFileDialog
             {
@@ -70,40 +63,43 @@ namespace Scarab.Util
 
             dialog.Filters.Add(new FileDialogFilter { Extensions = { "app" } });
 
-            string[]? result;
-
-            do
+            while (true)
             {
-                result = await dialog.ShowAsync(parent);
+                string[]? result = await dialog.ShowAsync(parent);
 
-                if (result == null || result.Length == 0)
-                {
-                    result = null;
+                if (result is null or { Length: 0 })
+                    await MessageBoxManager.GetMessageBoxStandardWindow("Path", NO_SELECT_MAC).Show();
+                else if (!IsValid(result.First(), out string? suffix))
+                    await MessageBoxManager.GetMessageBoxStandardWindow("Path", INVALID_APP).Show();
+                else
+                    return Path.Combine(result.First(), suffix);
 
-                    await MessageBoxManager.GetMessageBoxStandardWindow("Path", "Please select your Hollow Knight App.").Show();
-                }
-                else if (!IsValid(result.First()))
-                {
-                    result = null;
-
-                    await MessageBoxManager.GetMessageBoxStandardWindow
-                                           (
-                                               "Path",
-                                               "Invalid Hollow Knight App. Assembly-CSharp or Managed folder missing."
-                                           )
-                                           .Show();
-                }
+                if (fail)
+                    throw new PathInvalidOrUnselectedException();
             }
-            while (result == null);
-
-            return result.First();
         }
 
-        private static bool IsValid(string result)
+        private static readonly string[] SUFFIXES =
         {
-            return Directory.Exists(result)
-                && Directory.Exists(Path.Combine(result, Settings.OSManagedSuffix))
-                && File.Exists(Path.Combine(result, Settings.OSManagedSuffix, "Assembly-CSharp.dll"));
+            // Steam
+            "hollow_knight_Data/Managed",
+            // GoG
+            "Hollow Knight_Data/Managed",
+            // Mac
+            "Conents/Resources/Data/Managed"
+        };
+
+
+        private static bool IsValid(string result, [NotNullWhen(true)] out string? suffix)
+        {
+            suffix = null;
+
+            if (!Directory.Exists(result))
+                return false;
+
+            suffix = SUFFIXES.FirstOrDefault(s => Directory.Exists(Path.Combine(result, s)));
+
+            return suffix is not null && File.Exists(Path.Combine(result, suffix, "Assembly-CSharp.dll"));
         }
     }
 }

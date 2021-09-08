@@ -14,5 +14,7 @@ namespace Scarab.Interfaces
         Task RecordInstall(ModItem item);
 
         Task RecordUninstall(ModItem item);
+
+        Task Reset();
     }
 }

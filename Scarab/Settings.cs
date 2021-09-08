@@ -16,8 +16,6 @@ namespace Scarab
     {
         public string ManagedFolder { get; set; }
 
-        internal static string OSManagedSuffix = GenManagedSuffix();
-
         private static readonly ImmutableList<string> STATIC_PATHS = new List<string>
         {
             "Program Files/Steam/steamapps/common/Hollow Knight",
@@ -27,17 +25,14 @@ namespace Scarab
             "Steam/steamapps/common/Hollow Knight",
             "GOG Galaxy/Games/Hollow Knight"
         }
-        .Select(path => path.Replace('/', Path.DirectorySeparatorChar)).SelectMany(path => DriveInfo.GetDrives().Select(d => Path.Combine(d.Name, path))).ToImmutableList();
+        .SelectMany(path => DriveInfo.GetDrives().Select(d => Path.Combine(d.Name, path))).ToImmutableList();
 
         private static readonly ImmutableList<string> USER_SUFFIX_PATHS = new List<string>
         {
             ".local/.share/Steam/steamapps/common/Hollow Knight",
             "Library/Application Support/Steam/steamapps/common/Hollow Knight/hollow_knight.app"
         }
-        .Select(path => path.Replace('/', Path.DirectorySeparatorChar)).ToImmutableList();
-
-        public string ModsFolder     => Path.Combine(ManagedFolder, "Mods");
-        public string DisabledFolder => Path.Combine(ModsFolder, "Disabled");
+        .ToImmutableList();
 
         private static string ConfigPath => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -78,15 +73,6 @@ namespace Scarab
             return !string.IsNullOrEmpty(path);
         }
 
-        private static string GenManagedSuffix()
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                return Path.Combine("hollow_knight_Data", "Managed");
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                return Path.Combine("Contents", "Resources", "Data", "Managed");
-            throw new NotSupportedException();
-        }
-
         public static Settings? Load()
         {
             if (!File.Exists(ConfigPath))
@@ -104,14 +90,14 @@ namespace Scarab
         public static Settings Create(string path)
         {
             // Create from ManagedPath.
-            var settings = new Settings(Path.Combine(path, OSManagedSuffix));
+            var settings = new Settings(path);
 
             settings.Save();
 
             return settings;
         }
 
-        internal void Save()
+        public void Save()
         {
             string content = JsonSerializer.Serialize(this);
 
