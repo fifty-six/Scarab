@@ -83,6 +83,8 @@ namespace Scarab.ViewModels
             try
             {
                 var wc = new WebClient();
+                
+                wc.Headers.Add("User-Agent", "Scarab");
 
                 json = await wc.DownloadStringTaskAsync(new Uri(gh_releases));
             }
@@ -92,7 +94,7 @@ namespace Scarab.ViewModels
 
             JsonDocument doc = JsonDocument.Parse(json);
 
-            if (!doc.RootElement.TryGetProperty("tag", out var tag_elem))
+            if (!doc.RootElement.TryGetProperty("tag_name", out var tag_elem))
                 return;
 
             string? tag = tag_elem.GetString();
@@ -103,7 +105,7 @@ namespace Scarab.ViewModels
             if (tag.StartsWith("v"))
                 tag = tag[1..];
 
-            if (!Version.TryParse(tag, out Version? version))
+            if (!Version.TryParse(tag.Length == 1 ? tag + ".0.0.0" : tag, out Version? version))
                 return;
 
             if (version <= current_version)
