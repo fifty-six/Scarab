@@ -13,7 +13,7 @@ using MessageBox.Avalonia.DTO;
 
 namespace Scarab.Util
 {
-    public static class SelectPathUtil
+    public static class PathUtil
     {
         public class PathInvalidOrUnselectedException : Exception {}
         
@@ -88,7 +88,7 @@ namespace Scarab.Util
             }
         }
 
-        private static readonly string[] SUFFIXES =
+        public static readonly string[] SUFFIXES =
         {
             // Steam
             "hollow_knight_Data/Managed",
@@ -98,6 +98,10 @@ namespace Scarab.Util
             "Conents/Resources/Data/Managed"
         };
 
+        public static string? FindSuffix(string root)
+        {
+            return SUFFIXES.FirstOrDefault(s => Directory.Exists(Path.Combine(root, s)));
+        }
 
         private static bool IsValid(string result, [NotNullWhen(true)] out string? suffix)
         {

@@ -46,7 +46,7 @@ namespace Scarab
             AppDomain.CurrentDomain.UnhandledException += (_, eArgs) =>
             {
                 // Can't open a UI as this is going to crash, so we'll save to a log file.
-                WriteExceptionToLog((Exception)eArgs.ExceptionObject);
+                WriteExceptionToLog((Exception) eArgs.ExceptionObject);
             };
 
             TaskScheduler.UnobservedTaskException += (_, eArgs) => { WriteExceptionToLog(eArgs.Exception); };
@@ -72,8 +72,8 @@ namespace Scarab
 
             Trace.WriteLine($"Caught exception, writing to log: {e.StackTrace}");
 
-            File.WriteAllText(dir + $"ModInstaller_Error_{date}.log", e.StackTrace);
-            File.WriteAllText(Path.Combine(Settings.GetOrCreateDirPath(), $"ModInstaller_Error_{date}.log"), e.StackTrace);
+            File.WriteAllText(dir + $"ModInstaller_Error_{date}.log", e.ToString());
+            File.WriteAllText(Path.Combine(Settings.GetOrCreateDirPath(), $"ModInstaller_Error_{date}.log"), e.ToString());
 
             Trace.Flush();
         }

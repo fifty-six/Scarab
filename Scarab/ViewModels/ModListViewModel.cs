@@ -87,9 +87,9 @@ namespace Scarab.ViewModels
             
             try
             {
-                path = await SelectPathUtil.SelectPath(fail: true);
+                path = await PathUtil.SelectPath(fail: true);
             }
-            catch (SelectPathUtil.PathInvalidOrUnselectedException)
+            catch (PathUtil.PathInvalidOrUnselectedException)
             {
                 return;
             }

@@ -1,10 +1,12 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using JetBrains.Annotations;
+using MessageBox.Avalonia;
 using MessageBox.Avalonia.BaseWindows.Base;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
@@ -21,7 +23,6 @@ using System.Net;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using MessageBox.Avalonia;
 using MessageBox.Avalonia.Models;
 #endif
 
@@ -164,7 +165,7 @@ namespace Scarab.ViewModels
 
                 await info.Show();
                 
-                return await SelectPathUtil.SelectPath();
+                return await PathUtil.SelectPath();
             }
 
             Trace.WriteLine($"Settings doesn't exist. Creating it at detected path {path}.");
@@ -182,8 +183,8 @@ namespace Scarab.ViewModels
             ButtonResult res = await window.Show();
 
             return res == ButtonResult.Yes
-                ? path
-                : await SelectPathUtil.SelectPath();
+                ? Path.Combine(path, PathUtil.FindSuffix(path) ?? throw new InvalidOperationException("Found path but no valid suffix!"))
+                : await PathUtil.SelectPath();
         }
 
         public MainWindowViewModel() => Dispatcher.UIThread.InvokeAsync(async () => 

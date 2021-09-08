@@ -11,8 +11,6 @@ namespace Scarab.Models
 {
     public partial class ModItem : INotifyPropertyChanged, IEquatable<ModItem>
     {
-        private static readonly SemaphoreSlim _InstallSem = new(1);
-
         public ModItem
         (
             ModState state,
@@ -99,8 +97,6 @@ namespace Scarab.Models
                 State = (NotInstalledState) State with { Installing = true };
 
                 setProgressBar(true);
-
-                await _InstallSem.WaitAsync();
 
                 await inst.Install(this, setProgress, true);
 
