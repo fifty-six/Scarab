@@ -22,8 +22,8 @@ jobs:
     - name: Upload Binary
       uses: actions/upload-artifact@v2
       with:
-        name: ModInstaller-Windows
-        path: Modinstaller2/bin/Release/netcoreapp3.1/win-x64/publish/
+        name: Scarab-Windows
+        path: Scarab/bin/Release/net5.0/win-x64/publish/
   build-linux:
     runs-on: ubuntu-latest
     steps:
@@ -35,12 +35,15 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet publish -r linux-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
+      run: | 
+        cd Scarab
+        dotnet publish -r linux-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
+        cd ..
     - name: Upload Binary
       uses: actions/upload-artifact@v2
       with:
-        name: ModInstaller-Linux
-        path: Modinstaller2/bin/Release/netcoreapp3.1/linux-x64/publish/
+        name: Scarab-Linux
+        path: Scarab/bin/Release/net5.0/linux-x64/publish/
   build-macos:
     runs-on: macos-latest
     steps:
@@ -53,10 +56,12 @@ jobs:
       run: dotnet restore
     - name: Build
       run: |
+        cd Scarab
         dotnet publish -r osx-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
-        python3 make_app.py ModInstaller.app Modinstaller2/bin/Release/netcoreapp3.1/osx-x64/publish/Modinstaller2
+        cd ..
+        python3 make_app.py Scarab.app Scarab/bin/Release/net5.0/osx-x64/publish
     - name: Upload Binary
       uses: actions/upload-artifact@v2
       with:
-        name: ModInstaller-MacOS
-        path: ModInstaller.zip
+        name: Scarab-MacOS
+        path: Scarab.zip
