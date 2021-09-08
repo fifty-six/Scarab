@@ -18,7 +18,10 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet publish -r win-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
+      run: |
+        cd Scarab
+        dotnet publish -r win-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
+        cd ..
     - name: Upload Binary
       uses: actions/upload-artifact@v2
       with:
