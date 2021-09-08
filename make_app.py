@@ -7,11 +7,12 @@ from pathlib import Path
 from sys import argv
 
 if len(argv) != 3:
-    print(f"USAGE: {argv[0]} [APP_DIRECTORY] [EXECUTABLE]")
+    print(f"USAGE: {argv[0]} [APP_DIRECTORY] [PUBLISH DIR]")
     exit(-1)
 
 app_dir = Path(argv[1])
-exe = Path(argv[2])
+publish = Path(argv[2])
+exe = Path(argv[2] + "/Scarab")
 
 if app_dir.suffix != ".app":
     print("Error: " + app_dir + " is not an .app folder.")
@@ -39,10 +40,18 @@ with ZipFile(zip_name, 'w', ZIP_DEFLATED) as zip_f:
         if not mac_os:
             continue
 
+        for publish_root, _, files in walk(publish):
+            for fname in files:
+                if fname == "Scarab":
+                    continue
+                path = Path(publish_root, fname)
+                zip_path = Path(root, mac_os, fname)
+                zip_f.write(path, zip_path)
+
         with open(exe, 'rb') as exe_f:
             exe_bytes = exe_f.read()
 
-        info = ZipInfo(str(Path(root, mac_os, exe.name[:-1])))
+        info = ZipInfo(str(Path(root, mac_os, exe.name)))
         info.date_time = localtime()
         info.external_attr = 0o100755 << 16
         # UNIX host
