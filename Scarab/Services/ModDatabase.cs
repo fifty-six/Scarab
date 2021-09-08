@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Cache;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using JetBrains.Annotations;
 using Scarab.Interfaces;
 using Scarab.Models;
 

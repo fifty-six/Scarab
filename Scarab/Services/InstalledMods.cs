@@ -8,7 +8,6 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Scarab.Interfaces;
 using Scarab.Models;
-using Splat;
 
 namespace Scarab.Services
 {

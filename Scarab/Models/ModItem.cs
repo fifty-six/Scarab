@@ -1,11 +1,9 @@
 using System;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media;
-using Scarab.Services;
 using PropertyChanged.SourceGenerator;
 using Scarab.Interfaces;
 
