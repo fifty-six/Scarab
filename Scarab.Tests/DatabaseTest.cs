@@ -10,7 +10,7 @@ namespace Scarab.Tests
 {
     public class DatabaseTest
     {
-        private static readonly string xml = @"
+        private static readonly string modlinks_xml = @"
             <?xml version=""1.0""?>
             <ModLinks
                 xmlns=""https://github.com/HollowKnight-Modding/HollowKnight.ModLinks/HollowKnight.ModManager""
@@ -45,16 +45,57 @@ namespace Scarab.Tests
             </ModLinks>
         ".Trim();
 
+        private static readonly string api_xml = @"
+            <?xml version=""1.0""?>
+            <ApiLinks
+                xmlns=""https://github.com/HollowKnight-Modding/HollowKnight.ModLinks/HollowKnight.ModManager""
+                xmlns:xsd=""http://www.w3.org/2001/XMLSchema""
+                xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
+                xsi:schemaLocation=""https://raw.githubusercontent.com/HollowKnight-Modding/HollowKnight.ModLinks/main/Schemas/ApiLinks.xml""
+            >
+                <Manifest>
+                    <Version>63</Version>
+            
+                    <Links>
+                        <Linux SHA256=""21A0BB816283C4C90FCC944A19F5098D943E1B9EC5C6BA35DDBB27BCA6C43F95"">
+                            <![CDATA[https://github.com/hk-modding/api/releases/download/1.5.75.11827-63/ModdingApiUnix.zip]]>
+                        </Linux>
+                        <Mac SHA256=""21A0BB816283C4C90FCC944A19F5098D943E1B9EC5C6BA35DDBB27BCA6C43F95"">
+                            <![CDATA[https://github.com/hk-modding/api/releases/download/1.5.75.11827-63/ModdingApiUnix.zip]]>
+                        </Mac>
+                        <Windows SHA256=""7214D6D1DC144D7AAB7C1B9679546EDCCFFA650384FE07AAD1FA93DD72A17E10"">
+                            <![CDATA[https://github.com/hk-modding/api/releases/download/1.5.75.11827-63/ModdingApiWin.zip]]>
+                        </Windows>
+                    </Links>
+                    
+                    <Files>
+                        <File>Assembly-CSharp.dll</File>
+                        <File>Assembly-CSharp.xml</File>
+                        
+                        <File>MMHOOK_Assembly-CSharp.dll</File>
+                        <File>MMHOOK_PlayMaker.dll</File>
+                        
+                        <File>Mono.Cecil.dll</File>
+                        <File>MonoMod.RuntimeDetour.dll</File>
+                        <File>MonoMod.Utils.dll</File>
+                        
+                        <File>mscorlib.dll</File>
+                        
+                        <File>Newtonsoft.Json.dll</File>
+                    </Files>
+                </Manifest>
+            </ApiLinks>
+        ".Trim();
+
         [Fact]
         public void Serialization()
         {
             IModSource src = new InstalledMods(new MockFileSystem());
 
-            IModDatabase db = new ModDatabase(src, xml);
+            IModDatabase db = new ModDatabase(src, modlinks_xml, api_xml);
 
             Assert.Equal
             (
-                db.Items.First(x => x.Name == "QoL"),
                 new ModItem
                 (
                     new NotInstalledState(),
@@ -63,7 +104,13 @@ namespace Scarab.Tests
                     "https://github.com/fifty-six/HollowKnight.QoL/releases/download/v3/QoL.zip",
                     "QoL",
                     "A collection of various quality of life improvements."
-                )
+                ),
+                db.Items.First(x => x.Name == "QoL")
+            );
+            
+            Assert.Equal(
+                63,
+                db.Api.Version
             );
         }
 
@@ -72,7 +119,7 @@ namespace Scarab.Tests
         {
             IModSource src = new InstalledMods(new MockFileSystem());
 
-            IModDatabase db = new ModDatabase(src, xml);
+            IModDatabase db = new ModDatabase(src, modlinks_xml, api_xml);
 
             Assert.True(db.Items.All(x => x.State is NotInstalledState));
         }
@@ -88,7 +135,7 @@ namespace Scarab.Tests
                 }
             };
 
-            IModDatabase db = new ModDatabase(src, xml);
+            IModDatabase db = new ModDatabase(src, modlinks_xml, api_xml);
 
             Assert.True(db.Items.First(x => x.Name == "QoL").State is InstalledState { Updated: false, Enabled: true });
             Assert.False(db.Items.First(x => x.Name == "Vasi").Installed);

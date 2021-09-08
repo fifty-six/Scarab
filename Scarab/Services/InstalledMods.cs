@@ -4,6 +4,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Abstractions;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Scarab.Interfaces;
 using Scarab.Models;
@@ -19,6 +20,16 @@ namespace Scarab.Services
 
         public Dictionary<string, InstalledState> Mods { get; init; } = new();
 
+        public ModState ApiInstall
+        {
+            get => (ModState?) _ApiState ?? new NotInstalledState();
+            private set => _ApiState = value is InstalledState s ? s : null; 
+        } 
+
+        [JsonInclude]
+        // public get because System.Text.Json won't let me make both private
+        public InstalledState? _ApiState { get; private set; }
+
         private readonly IFileSystem _fs;
 
         public static InstalledMods Load() =>
@@ -29,6 +40,13 @@ namespace Scarab.Services
         public InstalledMods() => _fs = new FileSystem();
 
         public InstalledMods(IFileSystem fs) => _fs = fs;
+
+        public async Task RecordApiState(ModState st)
+        {
+            ApiInstall = st;
+            
+            await SaveToDiskAsync();
+        }
 
         public ModState FromManifest(Manifest manifest)
         {
@@ -42,7 +60,7 @@ namespace Scarab.Services
 
             return new NotInstalledState();
         }
-
+        
         public async Task RecordInstall(ModItem item)
         {
             Contract.Assert(item.State is InstalledState);

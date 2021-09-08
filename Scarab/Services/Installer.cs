@@ -1,11 +1,14 @@
 using System;
+using System.Diagnostics.Contracts;
 using System.IO;
+using System.IO.Abstractions;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Utilities;
 using Scarab.Interfaces;
 using Scarab.Models;
 
@@ -16,23 +19,29 @@ namespace Scarab.Services
         private readonly ISettings _config;
         private readonly IModSource _installed;
         private readonly IModDatabase _db;
+        private readonly IFileSystem _fs;
+
+        private const string Modded = "Assembly-CSharp.dll.m";
+        private const string Vanilla = "Assembly-CSharp.dll.v";
+        private const string Current = "Assembly-CSharp.dll";
 
         private readonly SemaphoreSlim _semaphore = new(1);
 
-        public Installer(ISettings config, IModSource installed, IModDatabase db)
+        public Installer(ISettings config, IModSource installed, IModDatabase db, IFileSystem fs)
         {
             _config = config;
             _installed = installed;
             _db = db;
+            _fs = fs;
         }
         
         private void CreateNeededDirectories()
         {
             // These both no-op if the directory already exists,
             // so no need to check ourselves
-            Directory.CreateDirectory(_config.DisabledFolder);
+            _fs.Directory.CreateDirectory(_config.DisabledFolder);
 
-            Directory.CreateDirectory(_config.ModsFolder);
+            _fs.Directory.CreateDirectory(_config.ModsFolder);
         }
 
         public void Toggle(ModItem mod)
@@ -51,9 +60,75 @@ namespace Scarab.Services
             mod.State = state with { Enabled = !state.Enabled };
         }
 
+        public async Task InstallApi((string Url, int Version) manifest)
+        {
+            bool was_vanilla = true;
+
+            if (_installed.ApiInstall is InstalledState { Version: var version })
+            {
+                if (version.Major > manifest.Version)
+                    return;
+
+                was_vanilla = false;
+            }
+            
+            (string api_url, int ver) = manifest;
+            
+            string managed = _config.ManagedFolder;
+
+            (byte[] data, string _) = await DownloadFile(api_url, _ => { });
+
+            // Backup the vanilla assembly
+            if (was_vanilla)
+                _fs.File.Copy(Path.Combine(managed, Current), Path.Combine(managed, Vanilla), true);
+            
+            ExtractZip(data, managed);
+            
+            await _installed.RecordApiState(new InstalledState(true, new Version(ver, 0, 0), true));
+        }
+
+        public async Task ToggleApi()
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                _ToggleApi();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        private void _ToggleApi()
+        {
+            string managed = _config.ManagedFolder;
+            
+            Contract.Assert(_installed.ApiInstall is InstalledState);
+
+            var st = (InstalledState) _installed.ApiInstall;
+
+            var (move_to, move_from) = st.Enabled
+                // If the api is enabled, move the current (modded) dll
+                // to .m and then take from .v
+                ? (Modded, Vanilla)
+                // Otherwise, we're enabling the api, so move the current (vanilla) dll
+                // And take from our .m file
+                : (Vanilla, Modded);
+            
+            _fs.File.Move(Path.Combine(managed, Current),   Path.Combine(managed, move_to));
+            _fs.File.Move(Path.Combine(managed, move_from), Path.Combine(managed, Current));
+
+            var current = (InstalledState) _installed.ApiInstall;
+
+            _installed.RecordApiState(current with { Enabled = !current.Enabled });
+        }
 
         public async Task Install(ModItem mod, Action<double> setProgress, bool enable)
         {
+            await InstallApi(_db.Api);
+            
             await _semaphore.WaitAsync();
 
             try
@@ -97,7 +172,7 @@ namespace Scarab.Services
                 await _Install(dep, _ => { }, enable || dep.State is NotInstalledState);
             }
 
-            var (data, filename) = await DownloadFile(mod, setProgress);
+            var (data, filename) = await DownloadFile(mod.Link, setProgress);
 
             string ext = Path.GetExtension(filename.ToLower());
 
@@ -121,7 +196,7 @@ namespace Scarab.Services
                 {
                     Directory.CreateDirectory(mod_folder);
 
-                    await File.WriteAllBytesAsync(Path.Combine(mod_folder, filename), data);
+                    await _fs.File.WriteAllBytesAsync(Path.Combine(mod_folder, filename), data);
 
                     break;
                 }
@@ -149,7 +224,7 @@ namespace Scarab.Services
             await _installed.RecordInstall(mod);
         }
 
-        private static async Task<(byte[] data, string filename)> DownloadFile(ModItem mod, Action<double> setProgress)
+        private static async Task<(byte[] data, string filename)> DownloadFile(string uri, Action<double> setProgress)
         {
             var dl = new WebClient();
 
@@ -167,7 +242,7 @@ namespace Scarab.Services
                 setProgress(100 * args.BytesReceived / (double) args.TotalBytesToReceive);
             };
 
-            byte[] data = await dl.DownloadDataTaskAsync(new Uri(mod.Link));
+            byte[] data = await dl.DownloadDataTaskAsync(new Uri(uri));
 
             string filename = string.Empty;
 
@@ -180,13 +255,13 @@ namespace Scarab.Services
 
             if (string.IsNullOrEmpty(filename))
             {
-                filename = mod.Link[(mod.Link.LastIndexOf("/") + 1)..];
+                filename = uri[(uri.LastIndexOf("/") + 1)..];
             }
 
             return (data, filename);
         }
 
-        private static void ExtractZip(byte[] data, string root)
+        private void ExtractZip(byte[] data, string root)
         {
             using var archive = new ZipArchive(new MemoryStream(data));
 
@@ -202,23 +277,44 @@ namespace Scarab.Services
                 // If it's a directory:
                 if (Path.GetFileName(file_dest).Length == 0)
                 {
-                    Directory.CreateDirectory(file_dest);
+                    _fs.Directory.CreateDirectory(file_dest);
                 }
                 // File
                 else
                 {
                     // Create containing directory:
-                    Directory.CreateDirectory(Path.GetDirectoryName(file_dest)!);
+                    _fs.Directory.CreateDirectory(Path.GetDirectoryName(file_dest)!);
 
-                    entry.ExtractToFile(file_dest, true);
+                    ExtractToFile(entry, file_dest);
                 }
             }
         }
 
-        private static string CreateDirectoryPath(string path)
+        private void ExtractToFile(ZipArchiveEntry src, string dest)
+        {
+            if (src == null)
+                throw new ArgumentNullException(nameof(src));
+
+            if (dest == null)
+                throw new ArgumentNullException(nameof(dest));
+
+            // Rely on FileStream's ctor for further checking dest parameter
+            const FileMode fMode = FileMode.Create;
+
+            using (Stream fs = _fs.FileStream.Create(dest, fMode, FileAccess.Write, FileShare.None, 0x1000, false))
+            {
+                using (Stream es = src.Open())
+                    es.CopyTo(fs);
+            }
+
+            _fs.File.SetLastWriteTime(dest, src.LastWriteTime.DateTime);
+        }
+
+
+        private string CreateDirectoryPath(string path)
         {
             // Note that this will give us a good DirectoryInfo even if destinationDirectoryName exists:
-            DirectoryInfo di = Directory.CreateDirectory(path);
+            IDirectoryInfo di = _fs.Directory.CreateDirectory(path);
 
             string dest_dir_path = di.FullName;
 
@@ -240,7 +336,7 @@ namespace Scarab.Services
 
             try 
             {
-                Directory.Delete(dir, true);
+                _fs.Directory.Delete(dir, true);
             }
             catch (DirectoryNotFoundException) { /* oh well, it's uninstalled anyways */ }
 

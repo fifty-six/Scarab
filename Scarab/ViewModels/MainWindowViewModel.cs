@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO.Abstractions;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using MessageBox.Avalonia.BaseWindows.Base;
@@ -8,6 +9,7 @@ using MessageBox.Avalonia.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using Scarab.Interfaces;
+using Scarab.Models;
 using Scarab.Services;
 using Scarab.Util;
 
@@ -30,9 +32,12 @@ namespace Scarab.ViewModels
 
             Settings settings = Settings.Load() ?? Settings.Create(await GetSettingsPath());
 
+            (ModLinks, ApiLinks) content = await ModDatabase.FetchContent();
+            
             sc.AddSingleton<ISettings>(_ => settings)
+              .AddSingleton<IFileSystem, FileSystem>()
               .AddSingleton<IModSource>(_ => InstalledMods.Load())
-              .AddSingleton<IModDatabase, ModDatabase>()
+              .AddSingleton<IModDatabase, ModDatabase>(sp => new ModDatabase(sp.GetRequiredService<IModSource>(), content))
               .AddSingleton<IInstaller, Installer>()
               .AddSingleton<ModListViewModel>();
             

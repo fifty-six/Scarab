@@ -6,6 +6,7 @@
         <RuntimeIdentifiers>win10-x64;osx.10.12-x64</RuntimeIdentifiers>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
+        <UseAppHost>true</UseAppHost>
     </PropertyGroup>
     
     <ItemGroup>

@@ -100,6 +100,18 @@ namespace Scarab.Models
                 + $"\t{nameof(Linux)} = {Linux}\n"
                 + "}";
         }
+
+        public string GetOSUrl()
+        {
+            return Environment.OSVersion.Platform switch
+            {
+                PlatformID.Win32NT => Windows.URL,
+                PlatformID.MacOSX => Mac.URL,
+                PlatformID.Unix => Linux.URL,
+
+                var val => throw new NotSupportedException(val.ToString())
+            };
+        }
     }
 
     public class Link
@@ -119,7 +131,7 @@ namespace Scarab.Models
     [Serializable]
     public class ApiManifest
     {
-        public int Version;
+        public int Version { get; set; }
 
         [XmlArray("Files")]
         [XmlArrayItem("File")]

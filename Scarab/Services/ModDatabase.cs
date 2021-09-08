@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Cache;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 using JetBrains.Annotations;
 using Scarab.Interfaces;
@@ -13,26 +14,21 @@ namespace Scarab.Services
     public class ModDatabase : IModDatabase
     {
         private const string MODLINKS_URI = "https://raw.githubusercontent.com/hk-modding/modlinks/main/ModLinks.xml";
+        private const string APILINKS_URI = "https://raw.githubusercontent.com/hk-modding/modlinks/main/ApiLinks.xml";
+
+        public (string Url, int Version) Api { get; }
 
         public IEnumerable<ModItem> Items => _items;
 
         private readonly List<ModItem> _items = new();
 
-        private ModDatabase(IModSource mods, ModLinks ml)
+        private ModDatabase(IModSource mods, ModLinks ml, ApiLinks al)
         {
             foreach (var mod in ml.Manifests)
             {
                 var item = new ModItem
                 (
-                    link: Environment.OSVersion.Platform switch
-                    {
-                        PlatformID.Win32NT => mod.Links.Windows.URL,
-                        PlatformID.MacOSX => mod.Links.Mac.URL,
-                        PlatformID.Unix => mod.Links.Linux.URL,
-
-                        var val => throw new NotSupportedException(val.ToString())
-                    },
-
+                    link: mod.Links.GetOSUrl(),
                     version: mod.Version.Value,
                     name: mod.Name,
                     description: mod.Description,
@@ -45,28 +41,51 @@ namespace Scarab.Services
             }
 
             _items.Sort((a, b) => string.Compare(a.Name, b.Name));
+
+            Api = (al.Manifest.Links.GetOSUrl(), al.Manifest.Version);
         }
 
-        [UsedImplicitly]
-        public ModDatabase(IModSource mods) : this(mods, GetModLinks()) { }
+        public ModDatabase(IModSource mods, (ModLinks ml, ApiLinks al) links) : this(mods, links.ml, links.al) { }
 
-        public ModDatabase(IModSource mods, string modlinks) : this(mods, FromString(modlinks)) { }
-
-        private static ModLinks FromString(string xml)
+        public ModDatabase(IModSource mods, string modlinks, string apilinks) : this(mods, FromString<ModLinks>(modlinks), FromString<ApiLinks>(apilinks)) { }
+        
+        public static async Task<(ModLinks, ApiLinks)> FetchContent()
         {
-            var serializer = new XmlSerializer(typeof(ModLinks));
+            Task<ModLinks> ml = FetchModLinks();
+            Task<ApiLinks> al = FetchApiLinks();
+
+            return (await ml, await al);
+        }
+
+        private static T FromString<T>(string xml)
+        {
+            var serializer = new XmlSerializer(typeof(T));
             
             using TextReader reader = new StringReader(xml);
 
-            var ml = (ModLinks?) serializer.Deserialize(reader);
+            var obj = (T?) serializer.Deserialize(reader);
 
-            if (ml is null)
+            if (obj is null)
                 throw new InvalidDataException();
 
-            return ml;
+            return obj;
         }
 
-        private static ModLinks GetModLinks()
+        private static async Task<ApiLinks> FetchApiLinks()
+        {
+            var uri = new Uri(APILINKS_URI);
+            
+            using var wc = new WebClient
+            {
+                CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
+            };
+
+            string xmlString = await wc.DownloadStringTaskAsync(uri);
+
+            return FromString<ApiLinks>(xmlString);
+        }
+        
+        private static async Task<ModLinks> FetchModLinks()
         {
             var uri = new Uri(MODLINKS_URI);
 
@@ -75,9 +94,9 @@ namespace Scarab.Services
                 CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
             };
 
-            string xmlString = wc.DownloadString(uri);
+            string xmlString = await wc.DownloadStringTaskAsync(uri);
 
-            return FromString(xmlString);
+            return FromString<ModLinks>(xmlString);
         }
     }
 }

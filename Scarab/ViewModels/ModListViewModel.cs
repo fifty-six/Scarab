@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Scarab.Services;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using Scarab.Interfaces;
@@ -18,8 +17,10 @@ namespace Scarab.ViewModels
     public partial class ModListViewModel : ViewModelBase
     {
         private readonly SortableObservableCollection<ModItem> _items;
+        
         private readonly ISettings _settings;
         private readonly IInstaller _installer;
+        private readonly IModSource _mods;
         
         [Notify("ProgressBarVisible")]
         private bool _pbVisible;
@@ -35,19 +36,20 @@ namespace Scarab.ViewModels
 
         [Notify]
         private string? _search;
-        
-        public ModListViewModel(ISettings settings, IModDatabase db, IInstaller inst)
+
+        public ModListViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods)
         {
             _settings = settings;
             _installer = inst;
+            _mods = mods;
 
             _items = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
 
             SelectedItems = _selectedItems = _items;
 
             OnInstall = ReactiveCommand.CreateFromTask<ModItem>(OnInstallAsync);
+            ToggleApi = ReactiveCommand.Create(ToggleApiCommand);
         }
-
 
         [UsedImplicitly]
         private IEnumerable<ModItem> FilteredItems =>
@@ -58,14 +60,26 @@ namespace Scarab.ViewModels
         // Needed for source generator to find it.
         private void RaisePropertyChanged(string name) => IReactiveObjectExtensions.RaisePropertyChanged(this, name);
 
-        [UsedImplicitly]
         public ReactiveCommand<ModItem, Unit> OnInstall { get; }
+        
+        public ReactiveCommand<Unit, Unit> ToggleApi { get; }
+
+        public string ApiButtonText   => _mods.ApiInstall is InstalledState { Enabled: var enabled } ? (enabled ? "Disable API" : "Enable API") : "Toggle API";
+        public bool   EnableApiButton => _mods.ApiInstall is InstalledState;
 
         private static (int priority, string name) ModToOrderedTuple(ModItem m) =>
         (
             m.State is InstalledState { Updated : false } ? -1 : 1,
             m.Name
         );
+
+        private void ToggleApiCommand()
+        {
+            _installer.ToggleApi();
+            
+            RaisePropertyChanged(nameof(ApiButtonText));
+            RaisePropertyChanged(nameof(EnableApiButton));
+        }
 
         public void SelectAll() => SelectedItems = _items;
 
@@ -79,6 +93,8 @@ namespace Scarab.ViewModels
                     UseShellExecute = true
                 }
             );
+
+        public static void Donate() => Process.Start(new ProcessStartInfo("https://paypal.me/ybham") { UseShellExecute = true });
 
         public void SelectUnupdated() => SelectedItems = _items.Where(x => x.State is InstalledState { Updated: false });
 
@@ -102,6 +118,9 @@ namespace Scarab.ViewModels
                         Progress = progress;
                 }
             );
+            
+            RaisePropertyChanged(nameof(ApiButtonText));
+            RaisePropertyChanged(nameof(EnableApiButton));
 
             static int Comparer(ModItem x, ModItem y) => ModToOrderedTuple(x).CompareTo(ModToOrderedTuple(y));
 

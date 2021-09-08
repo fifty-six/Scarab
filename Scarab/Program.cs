@@ -59,7 +59,7 @@ namespace Scarab
         {
             string date = DateTime.Now.ToString("yy-MM-dd HH-mm-ss");
 
-            string? dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string dirName = AppContext.BaseDirectory;
 
             string dir = dirName switch
             {
