@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO.Abstractions;
+using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using MessageBox.Avalonia.BaseWindows.Base;
@@ -12,6 +13,16 @@ using Scarab.Interfaces;
 using Scarab.Models;
 using Scarab.Services;
 using Scarab.Util;
+
+#if !DEBUG
+using System.Text.Json;
+using System.Net;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using MessageBox.Avalonia;
+using MessageBox.Avalonia.Models;
+#endif
 
 namespace Scarab.ViewModels
 {
@@ -28,6 +39,8 @@ namespace Scarab.ViewModels
 
         private async Task Impl()
         {
+            await CheckUpToDate();
+            
             var sc = new ServiceCollection();
 
             Settings settings = Settings.Load() ?? Settings.Create(await GetSettingsPath());
@@ -47,6 +60,76 @@ namespace Scarab.ViewModels
             });
 
             Content = sp.GetRequiredService<ModListViewModel>();
+        }
+
+        private static 
+            #if !DEBUG
+            async 
+            #endif
+            Task CheckUpToDate()
+        {
+            Version? current_version = Assembly.GetExecutingAssembly().GetName().Version;
+            
+            Debug.WriteLine($"Current version of installer is {current_version}");
+            
+            #if DEBUG
+            return Task.CompletedTask;
+            #else
+            const string gh_releases = "https://api.github.com/repos/fifty-six/Scarab/releases/latest";
+            
+            var wc = new WebClient();
+            
+            string json = await wc.DownloadStringTaskAsync(new Uri(gh_releases));
+
+            JsonDocument doc = JsonDocument.Parse(json);
+
+            if (!doc.RootElement.TryGetProperty("tag", out var tag_elem))
+                return;
+
+            string? tag = tag_elem.GetString();
+
+            if (tag is null)
+                return;
+
+            if (tag.StartsWith("v"))
+                tag = tag[1..];
+
+            if (!Version.TryParse(tag, out Version? version))
+                return;
+
+            if (version <= current_version)
+                return;
+            
+            string? res = await MessageBoxManager.GetMessageBoxCustomWindow
+            (
+                new MessageBoxCustomParams {
+                    ButtonDefinitions = new[] {
+                        new ButtonDefinition {
+                            IsDefault = true,
+                            IsCancel = true,
+                            Name = "Get the latest release"
+                        },
+                        new ButtonDefinition {
+                            Name = "Continue anyways."
+                        }
+                    },
+                    ContentTitle = "Out of date!",
+                    ContentMessage = "This program is out of date! It may not function correctly.",
+                    SizeToContent = SizeToContent.WidthAndHeight
+                }
+            ).Show();
+
+            if (res == "Get the latest release")
+            {
+                Process.Start(new ProcessStartInfo("https://github.com/fifty-six/Scarab/releases/latest") { UseShellExecute = true });
+                
+                ((IClassicDesktopStyleApplicationLifetime) Application.Current.ApplicationLifetime).Shutdown();
+            }
+            else
+            {
+                Trace.WriteLine($"Installer out of date! Version {current_version} with latest {version}!");
+            }
+            #endif
         }
 
         private static async Task<string> GetSettingsPath()
