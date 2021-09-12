@@ -4,7 +4,10 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 # Output files
-Scarab.zip
+out/*
+windows.zip
+mac.zip
+linux.zip
 
 # User-specific files
 *.rsuser

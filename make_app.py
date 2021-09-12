@@ -24,9 +24,7 @@ if not app_dir.exists():
 if not exe.exists():
     raise FileNotFoundError(ENOENT, strerror(ENOENT), exe)
 
-zip_name = app_dir.stem + ".zip"
-
-with ZipFile(zip_name, 'w', ZIP_DEFLATED) as zip_f:
+with ZipFile("out/mac.zip", 'w', ZIP_DEFLATED) as zip_f:
     found_bin = False
     
     for root, dirs, files in walk(app_dir):
@@ -62,4 +60,4 @@ with ZipFile(zip_name, 'w', ZIP_DEFLATED) as zip_f:
         zip_f.writestr(info, exe_bytes, ZIP_DEFLATED)
         
 
-print("Created " + zip_name)
+print("Created mac.zip")
