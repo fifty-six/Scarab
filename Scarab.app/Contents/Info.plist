@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleExecutable</key>
-	<string>ModInstaller</string>
+	<string>Scarab</string>
 	<key>CFBundleGetInfoString</key>
-	<string>ModInstaller</string>
+	<string>Scarab</string>
 	<key>CFBundleIconFile</key>
-	<string>ModInstaller</string>
+	<string>Scarab</string>
 	<key>CFBundleName</key>
-	<string>ModInstaller</string>
+	<string>Scarab</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 </dict>
