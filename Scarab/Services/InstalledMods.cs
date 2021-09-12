@@ -69,7 +69,7 @@ namespace Scarab.Services
             return new NotInstalledState();
         }
         
-        public async Task RecordInstall(ModItem item)
+        public async Task RecordInstalledState(ModItem item)
         {
             Contract.Assert(item.State is InstalledState);
 

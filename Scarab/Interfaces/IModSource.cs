@@ -11,7 +11,7 @@ namespace Scarab.Interfaces
 
         ModState FromManifest(Manifest manifest);
 
-        Task RecordInstall(ModItem item);
+        Task RecordInstalledState(ModItem item);
 
         Task RecordUninstall(ModItem item);
 

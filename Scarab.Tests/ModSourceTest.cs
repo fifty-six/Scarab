@@ -34,7 +34,7 @@ namespace Scarab.Tests
                 "test"
             );
             
-            await ms.RecordInstall(item);
+            await ms.RecordInstalledState(item);
             
             Assert.True(fs.FileExists(InstalledMods.ConfigPath));
 
