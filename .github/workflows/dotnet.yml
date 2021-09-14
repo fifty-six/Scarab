@@ -2,9 +2,9 @@ name: .NET
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, dev ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, dev ]
 
 jobs:
   build-windows:
@@ -27,6 +27,7 @@ jobs:
       with:
         name: Scarab-Windows
         path: Scarab/bin/Release/net5.0/win-x64/publish/
+
   build-linux:
     runs-on: ubuntu-latest
     steps:
@@ -47,6 +48,7 @@ jobs:
       with:
         name: Scarab-Linux
         path: Scarab/bin/Release/net5.0/linux-x64/publish/
+
   build-macos:
     runs-on: macos-latest
     steps:
@@ -69,3 +71,30 @@ jobs:
       with:
         name: Scarab-MacOS
         path: out/mac.zip
+
+  release:
+    needs: [build-macos, build-windows, build-linux]
+    runs-on: ubuntu-latest
+
+    if: startsWith(github.ref, 'refs/tags')
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with: 
+          path: ./artifacts
+
+      - name: Zip
+        run: |
+            zip -jr windows.zip ./artifacts/Scarab-Windows/*
+
+            chmod +x ./artifacts/Scarab-Linux/Scarab
+            zip -jr linux.zip ./artifacts/Scarab-Linux/*
+
+      - name: Create release if a new tag is pushed
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./windows.zip
+            ./artifacts/Scarab-MacOS/mac.zip
+            ./linux.zip
