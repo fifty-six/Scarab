@@ -54,9 +54,14 @@ namespace Scarab.Services
                 ? (_config.DisabledFolder, _config.ModsFolder)
                 : (_config.ModsFolder, _config.DisabledFolder);
 
+            (prev, after) = (
+                Path.Combine(prev, mod.Name),
+                Path.Combine(after, mod.Name)
+            );
+
             // If it's already in the other state due to user usage or an error, let it fix itself.
-            if (_fs.Directory.Exists(prev) && !Directory.Exists(after))
-                _fs.Directory.Move(Path.Combine(prev, mod.Name), Path.Combine(after, mod.Name));
+            if (_fs.Directory.Exists(prev) && !_fs.Directory.Exists(after))
+                _fs.Directory.Move(prev, after);
 
             mod.State = state with { Enabled = !state.Enabled };
 
