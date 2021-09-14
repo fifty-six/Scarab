@@ -4,6 +4,8 @@ namespace Scarab.Interfaces
 {
     public interface ISettings
     {
+        bool AutoRemoveDeps { get; }
+        
         string ManagedFolder { get; set; }
         
         string ModsFolder     => Path.Combine(ManagedFolder, "Mods");

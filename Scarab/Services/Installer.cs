@@ -352,6 +352,9 @@ namespace Scarab.Services
 
             await _installed.RecordUninstall(mod);
 
+            if (!_config.AutoRemoveDeps)
+                return;
+
             foreach (ModItem dep in mod.Dependencies.Select(x => _db.Items.First(i => x == i.Name)))
             {
                 // Make sure no other mods depend on it

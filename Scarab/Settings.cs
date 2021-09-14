@@ -14,6 +14,8 @@ namespace Scarab
     public class Settings : ISettings
     {
         public string ManagedFolder { get; set; }
+        
+        public bool AutoRemoveDeps { get; }
 
         private static readonly ImmutableList<string> STATIC_PATHS = new List<string>
         {
@@ -42,7 +44,11 @@ namespace Scarab
         internal Settings(string path) => ManagedFolder = path;
 
         // Used by serializer.
-        public Settings() => ManagedFolder = null!;
+        public Settings()
+        {
+            ManagedFolder = null!;
+            AutoRemoveDeps = false;
+        }
 
         public static string GetOrCreateDirPath()
         {
