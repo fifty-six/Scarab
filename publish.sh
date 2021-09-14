@@ -6,6 +6,8 @@ dotnet publish -r osx-x64 -p:Configuration=Release -p:PublishSingleFile=true -p:
 
 cd ..
 
+rm out/*.zip
+
 python make_app.py Scarab.app Scarab/bin/Release/net5.0/osx-x64/publish
-7z a "out/windows.zip" Scarab/bin/Release/net5.0/win-x64/publish/*
-7z a "out/linux.zip" Scarab/bin/Release/net5.0/linux-x64/publish/*
+7z a "out/windows.zip" "./Scarab/bin/Release/net5.0/win-x64/publish/"
+7z a "out/linux.zip" "./Scarab/bin/Release/net5.0/linux-x64/publish/"
