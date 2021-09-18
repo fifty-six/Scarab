@@ -95,7 +95,7 @@ namespace Scarab.Util
             // GoG
             "Hollow Knight_Data/Managed",
             // Mac
-            "Conents/Resources/Data/Managed"
+            "Contents/Resources/Data/Managed"
         };
 
         public static string? FindSuffix(string root)
