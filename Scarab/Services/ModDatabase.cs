@@ -12,8 +12,8 @@ namespace Scarab.Services
 {
     public class ModDatabase : IModDatabase
     {
-        private const string MODLINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@main/ModLinks.xml";
-        private const string APILINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@main/ApiLinks.xml";
+        private const string MODLINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@latest/ModLinks.xml";
+        private const string APILINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@latest/ApiLinks.xml";
 
         public (string Url, int Version) Api { get; }
 
