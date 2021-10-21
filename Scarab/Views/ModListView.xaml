@@ -60,6 +60,13 @@
                 VerticalAlignment="Bottom"
             />
             <MenuItem
+                Command="{Binding UpdateApi}"
+                Header="Update API"
+                IsEnabled="{Binding ApiOutOfDate}"
+                DockPanel.Dock="Bottom"
+                VerticalAlignment="Bottom"
+            />
+            <MenuItem
                 Command="{Binding Donate}"
                 Header="Donate"
                 DockPanel.Dock="Bottom"

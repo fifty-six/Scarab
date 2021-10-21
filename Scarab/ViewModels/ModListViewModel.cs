@@ -24,6 +24,7 @@ namespace Scarab.ViewModels
         private readonly ISettings _settings;
         private readonly IInstaller _installer;
         private readonly IModSource _mods;
+        private readonly IModDatabase _db;
         
         [Notify("ProgressBarVisible")]
         private bool _pbVisible;
@@ -45,6 +46,7 @@ namespace Scarab.ViewModels
             _settings = settings;
             _installer = inst;
             _mods = mods;
+            _db = db;
 
             _items = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
 
@@ -53,6 +55,7 @@ namespace Scarab.ViewModels
             OnInstall = ReactiveCommand.CreateFromTask<ModItem>(OnInstallAsync);
             ToggleApi = ReactiveCommand.Create(ToggleApiCommand);
             ChangePath = ReactiveCommand.CreateFromTask(ChangePathAsync);
+            UpdateApi = ReactiveCommand.CreateFromTask(UpdateApiAsync);
         }
 
         [UsedImplicitly]
@@ -63,6 +66,7 @@ namespace Scarab.ViewModels
 
         public string ApiButtonText   => _mods.ApiInstall is InstalledState { Enabled: var enabled } ? (enabled ? "Disable API" : "Enable API") : "Toggle API";
         public bool   EnableApiButton => _mods.ApiInstall is InstalledState;
+        public bool   ApiOutOfDate    => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
 
         // Needed for source generator to find it.
         private void RaisePropertyChanged(string name) => IReactiveObjectExtensions.RaisePropertyChanged(this, name);
@@ -73,9 +77,11 @@ namespace Scarab.ViewModels
         
         public ReactiveCommand<Unit, Unit> ChangePath { get; }
 
-        private void ToggleApiCommand()
+        public ReactiveCommand<Unit, Unit> UpdateApi { get; }
+
+        private async void ToggleApiCommand()
         {
-            _installer.ToggleApi();
+            await _installer.ToggleApi();
             
             RaisePropertyChanged(nameof(ApiButtonText));
             RaisePropertyChanged(nameof(EnableApiButton));
@@ -120,6 +126,15 @@ namespace Scarab.ViewModels
         public void SelectEnabled() => SelectedItems = _items.Where(x => x.State is InstalledState { Enabled: true });
 
         public void OnEnable(ModItem item) => _installer.Toggle(item);
+
+        private async Task UpdateApiAsync()
+        {
+            await _installer.InstallApi();
+            
+            RaisePropertyChanged(nameof(ApiOutOfDate));
+            RaisePropertyChanged(nameof(ApiButtonText));
+            RaisePropertyChanged(nameof(EnableApiButton));
+        }
 
         private async Task OnInstallAsync(ModItem item)
         {

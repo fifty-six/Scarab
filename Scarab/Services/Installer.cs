@@ -15,6 +15,12 @@ namespace Scarab.Services
 {
     public class Installer : IInstaller
     {
+        private enum Update
+        {
+            ForceUpdate,
+            LeaveUnchanged
+        }
+
         private readonly ISettings _config;
         private readonly IModSource _installed;
         private readonly IModDatabase _db;
@@ -24,7 +30,7 @@ namespace Scarab.Services
         private const string Vanilla = "Assembly-CSharp.dll.v";
         private const string Current = "Assembly-CSharp.dll";
 
-        private readonly SemaphoreSlim _semaphore = new(1);
+        private readonly SemaphoreSlim _semaphore = new (1);
 
         public Installer(ISettings config, IModSource installed, IModDatabase db, IFileSystem fs)
         {
@@ -33,7 +39,7 @@ namespace Scarab.Services
             _db = db;
             _fs = fs;
         }
-        
+
         private void CreateNeededDirectories()
         {
             // These both no-op if the directory already exists,
@@ -68,7 +74,28 @@ namespace Scarab.Services
             _installed.RecordInstalledState(mod);
         }
 
-        public async Task InstallApi((string Url, int Version) manifest)
+        /// <remarks> This enables the API if it's installed! </remarks>
+        public async Task InstallApi()
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (_installed.ApiInstall is InstalledState { Enabled: false })
+                {
+                    // Don't have the toggle update it for us, as that'll infinitely loop.
+                    await _ToggleApi(Update.LeaveUnchanged);
+                }
+
+                await _InstallApi(_db.Api);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        private async Task _InstallApi((string Url, int Version) manifest)
         {
             bool was_vanilla = true;
 
@@ -79,9 +106,9 @@ namespace Scarab.Services
 
                 was_vanilla = false;
             }
-            
+
             (string api_url, int ver) = manifest;
-            
+
             string managed = _config.ManagedFolder;
 
             (byte[] data, string _) = await DownloadFile(api_url, _ => { });
@@ -89,9 +116,9 @@ namespace Scarab.Services
             // Backup the vanilla assembly
             if (was_vanilla)
                 _fs.File.Copy(Path.Combine(managed, Current), Path.Combine(managed, Vanilla), true);
-            
+
             ExtractZip(data, managed);
-            
+
             await _installed.RecordApiState(new InstalledState(true, new Version(ver, 0, 0), true));
         }
 
@@ -101,7 +128,7 @@ namespace Scarab.Services
 
             try
             {
-                _ToggleApi();
+                await _ToggleApi();
             }
             finally
             {
@@ -109,10 +136,10 @@ namespace Scarab.Services
             }
         }
 
-        private void _ToggleApi()
+        private async Task _ToggleApi(Update update = Update.ForceUpdate)
         {
             string managed = _config.ManagedFolder;
-            
+
             Contract.Assert(_installed.ApiInstall is InstalledState);
 
             var st = (InstalledState) _installed.ApiInstall;
@@ -124,25 +151,28 @@ namespace Scarab.Services
                 // Otherwise, we're enabling the api, so move the current (vanilla) dll
                 // And take from our .m file
                 : (Vanilla, Modded);
-            
-            _fs.File.Move(Path.Combine(managed, Current),   Path.Combine(managed, move_to));
+
+            _fs.File.Move(Path.Combine(managed, Current), Path.Combine(managed, move_to));
             _fs.File.Move(Path.Combine(managed, move_from), Path.Combine(managed, Current));
 
-            var current = (InstalledState) _installed.ApiInstall;
+            await _installed.RecordApiState(st with { Enabled = !st.Enabled });
 
-            _installed.RecordApiState(current with { Enabled = !current.Enabled });
+            // If we're out of date, and re-enabling the api - update it.
+            // Note we do this *after* we put the API in place.
+            if (update == Update.ForceUpdate && !st.Enabled && st.Version.Major < _db.Api.Version)
+                await _InstallApi(_db.Api);
         }
 
         public async Task Install(ModItem mod, Action<double> setProgress, bool enable)
         {
-            await InstallApi(_db.Api);
-            
+            await InstallApi();
+
             await _semaphore.WaitAsync();
 
             try
             {
                 CreateNeededDirectories();
-                
+
                 await _Install(mod, setProgress, enable);
             }
             finally
@@ -159,7 +189,7 @@ namespace Scarab.Services
             {
                 // Shouldn't ever not exist, but rather safe than sorry I guess.
                 CreateNeededDirectories();
-                
+
                 await _Uninstall(mod);
             }
             finally
@@ -215,10 +245,8 @@ namespace Scarab.Services
                 }
             }
 
-            mod.State = mod.State switch
-            {
-                InstalledState installed => installed with
-                {
+            mod.State = mod.State switch {
+                InstalledState installed => installed with {
                     Version = mod.Version,
                     Updated = true,
                     Enabled = enable
@@ -328,7 +356,7 @@ namespace Scarab.Services
 
             if (!dest_dir_path.EndsWith(Path.DirectorySeparatorChar))
                 dest_dir_path += Path.DirectorySeparatorChar;
-            
+
             return dest_dir_path;
         }
 
@@ -342,11 +370,14 @@ namespace Scarab.Services
                 mod.Name
             );
 
-            try 
+            try
             {
                 _fs.Directory.Delete(dir, true);
             }
-            catch (DirectoryNotFoundException) { /* oh well, it's uninstalled anyways */ }
+            catch (DirectoryNotFoundException)
+            {
+                /* oh well, it's uninstalled anyways */
+            }
 
             mod.State = new NotInstalledState();
 

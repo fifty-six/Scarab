@@ -12,7 +12,7 @@ namespace Scarab.Interfaces
 
         public Task Uninstall(ModItem mod);
 
-        public Task InstallApi((string Url, int Version) manifest);
+        public Task InstallApi();
 
         public Task ToggleApi();
     }
