@@ -151,9 +151,9 @@ namespace Scarab.Services
                 // Otherwise, we're enabling the api, so move the current (vanilla) dll
                 // And take from our .m file
                 : (Vanilla, Modded);
-
-            _fs.File.Move(Path.Combine(managed, Current), Path.Combine(managed, move_to));
-            _fs.File.Move(Path.Combine(managed, move_from), Path.Combine(managed, Current));
+            
+            _fs.File.Move(Path.Combine(managed, Current), Path.Combine(managed, move_to), true);
+            _fs.File.Move(Path.Combine(managed, move_from), Path.Combine(managed, Current), true);
 
             await _installed.RecordApiState(st with { Enabled = !st.Enabled });
 
