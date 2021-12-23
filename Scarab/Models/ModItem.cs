@@ -27,6 +27,10 @@ namespace Scarab.Models
             Link = link;
             Name = name;
             Description = description;
+            if (dependencies.Length > 0)
+            {
+                Description += "\n\nDependencies:\n" + String.Join(", ", dependencies);
+            }
         }
         
         public  Version  Version      { get; }
