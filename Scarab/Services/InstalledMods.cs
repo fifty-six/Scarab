@@ -32,10 +32,29 @@ namespace Scarab.Services
 
         private readonly IFileSystem _fs;
 
-        public static InstalledMods Load() =>
-            File.Exists(ConfigPath)
+        public static InstalledMods Load(IFileSystem fs, Settings config)
+        {
+            InstalledMods db = File.Exists(ConfigPath)
                 ? JsonSerializer.Deserialize<InstalledMods>(File.ReadAllText(ConfigPath)) ?? throw new InvalidDataException()
                 : new InstalledMods();
+
+            if (db.ApiInstall is not InstalledState) 
+                return db;
+            
+            /*
+             * If the user deleted their API, we can deal with it at least.
+             * Similarly, if there's no current file, we can just install the API as a very budget remedy.
+             * 
+             * This isn't ideal, but at least we won't crash and the user will be (relatively) okay.
+             */
+            if (
+                !fs.File.Exists(Path.Combine(config.ManagedFolder, Installer.Modded)) ||
+                !fs.File.Exists(Path.Combine(config.ManagedFolder, Installer.Current))
+            )
+                db.ApiInstall = new NotInstalledState();
+
+            return db;
+        }
 
         public InstalledMods() => _fs = new FileSystem();
 

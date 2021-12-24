@@ -27,10 +27,13 @@ namespace Scarab.Services
         private readonly IModSource _installed;
         private readonly IModDatabase _db;
         private readonly IFileSystem _fs;
-
-        private const string Modded = "Assembly-CSharp.dll.m";
-        private const string Vanilla = "Assembly-CSharp.dll.v";
-        private const string Current = "Assembly-CSharp.dll";
+        
+        // If we're going to have one be internal, might as well be consistent
+        // ReSharper disable MemberCanBePrivate.Global 
+        internal const string Modded = "Assembly-CSharp.dll.m";
+        internal const string Vanilla = "Assembly-CSharp.dll.v";
+        internal const string Current = "Assembly-CSharp.dll";
+        // ReSharper restore MemberCanBePrivate.Global
 
         private readonly SemaphoreSlim _semaphore = new (1);
         private readonly HttpClient _hc = new ();
