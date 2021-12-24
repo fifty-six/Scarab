@@ -34,9 +34,11 @@ public static class HttpClientExt
 
         HttpContent content = resp.Content;
 
-        await using Stream stream = await content.ReadAsStreamAsync(cts);
+        await using Stream stream = await content.ReadAsStreamAsync(cts).ConfigureAwait(false);
 
-        Memory<byte> buf = ArrayPool<byte>.Shared.Rent(4096);
+        byte[] pool_buffer = ArrayPool<byte>.Shared.Rent(4096);
+        
+        Memory<byte> buf = pool_buffer;
 
         MemoryStream memory = content.Headers.ContentLength is long value
             ? new MemoryStream((int) value)
@@ -48,26 +50,33 @@ public static class HttpClientExt
 
         progress.Report(args);
 
-        while (true)
+        try
         {
-            cts.ThrowIfCancellationRequested();
+            while (true)
+            {
+                cts.ThrowIfCancellationRequested();
 
-            int read = await stream.ReadAsync(buf, cts);
+                int read = await stream.ReadAsync(buf, cts).ConfigureAwait(false);
+                
+                await memory.WriteAsync(buf[..read], cts).ConfigureAwait(false);
 
-            await memory.WriteAsync(buf[..read], cts);
+                if (read == 0)
+                    break;
 
-            if (read == 0)
-                break;
+                args.BytesRead += read;
 
-            args.BytesRead += read;
-
-            progress.Report(args);
+                progress.Report(args);
+            }
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(pool_buffer);
         }
 
         args.Completed = true;
 
         progress.Report(args);
-
+        
         ArraySegment<byte> res_segment = memory.TryGetBuffer(out ArraySegment<byte> out_buffer)
             ? out_buffer
             : memory.ToArray();
