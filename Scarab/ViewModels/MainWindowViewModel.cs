@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Abstractions;
-using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia.Threading;
@@ -20,7 +19,7 @@ using Scarab.Util;
 
 #if !DEBUG
 using System.Text.Json;
-using System.Net;
+using System.Net.Http;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
