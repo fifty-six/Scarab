@@ -27,13 +27,13 @@ namespace Scarab.Services
         private readonly IModSource _installed;
         private readonly IModDatabase _db;
         private readonly IFileSystem _fs;
-        private readonly HttpClient _hc;
 
         private const string Modded = "Assembly-CSharp.dll.m";
         private const string Vanilla = "Assembly-CSharp.dll.v";
         private const string Current = "Assembly-CSharp.dll";
 
         private readonly SemaphoreSlim _semaphore = new (1);
+        private readonly HttpClient _hc = new ();
 
         public Installer(ISettings config, IModSource installed, IModDatabase db, IFileSystem fs)
         {
@@ -41,7 +41,6 @@ namespace Scarab.Services
             _installed = installed;
             _db = db;
             _fs = fs;
-            _hc = new HttpClient();
         }
 
         private void CreateNeededDirectories()
