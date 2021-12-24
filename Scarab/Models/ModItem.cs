@@ -27,17 +27,16 @@ namespace Scarab.Models
             Link = link;
             Name = name;
             Description = description;
-            if (dependencies.Length > 0)
-            {
-                Description += "\n\nDependencies:\n" + String.Join(", ", dependencies);
-            }
+
+            DependenciesDesc = string.Join(Environment.NewLine, Dependencies);
         }
-        
-        public  Version  Version      { get; }
-        public  string[] Dependencies { get; }
-        public  string   Link         { get; }
-        public  string   Name         { get; }
-        public  string   Description  { get; }
+
+        public Version  Version          { get; }
+        public string[] Dependencies     { get; }
+        public string   Link             { get; }
+        public string   Name             { get; }
+        public string   Description      { get; }
+        public string   DependenciesDesc { get; }
 
         [Notify]
         private ModState _state;
@@ -75,6 +74,8 @@ namespace Scarab.Models
         public string InstallText => State is InstalledState { Updated: false } ? "Out of date!" : "Installed?";
 
         public bool Installed => State is InstalledState;
+
+        public bool HasDependencies => Dependencies.Length > 0;
 
         public async Task OnInstall(IInstaller inst, Action<ModProgressArgs> setProgress)
         {

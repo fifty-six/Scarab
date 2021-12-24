@@ -134,7 +134,11 @@
                             <Expander.Header>
                                 <TextBlock Text="{Binding Name}" TextWrapping="Wrap" MaxWidth="180" />
                             </Expander.Header>
-                            <TextBlock Text="{Binding Description}" TextWrapping="Wrap" MaxWidth="180" />
+                            <StackPanel>
+                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" MaxWidth="180" /> 
+                                <TextBlock Text="&#x0a;Dependencies:&#x0a;" FontWeight="Bold" IsVisible="{Binding HasDependencies}" />
+                                <TextBlock Text="{Binding DependenciesDesc}" IsVisible="{Binding HasDependencies}" />
+                            </StackPanel>
                         </Expander>
 
                         <CheckBox
