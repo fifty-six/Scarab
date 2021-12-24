@@ -2,7 +2,7 @@
     <PropertyGroup>
         <!-- Windowed exe, avoids Console showing for users. -->
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <RuntimeIdentifiers>win10-x64;osx.10.12-x64</RuntimeIdentifiers>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
