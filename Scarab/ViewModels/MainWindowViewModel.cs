@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Abstractions;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia.Threading;
@@ -89,19 +90,19 @@ namespace Scarab.ViewModels
             
             try
             {
-                var wc = new WebClient();
+                var hc = new HttpClient();
                 
-                wc.Headers.Add("User-Agent", "Scarab");
+                hc.DefaultRequestHeaders.Add("User-Agent", "Scarab");
 
-                json = await wc.DownloadStringTaskAsync(new Uri(gh_releases));
+                json = await hc.GetStringAsync(new Uri(gh_releases));
             }
-            catch (WebException) {
+            catch (Exception e) when (e is HttpRequestException or TimeoutException) {
                 return;
             }
 
             JsonDocument doc = JsonDocument.Parse(json);
 
-            if (!doc.RootElement.TryGetProperty("tag_name", out var tag_elem))
+            if (!doc.RootElement.TryGetProperty("tag_name", out JsonElement tag_elem))
                 return;
 
             string? tag = tag_elem.GetString();

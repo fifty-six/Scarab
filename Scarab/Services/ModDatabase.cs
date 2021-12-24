@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Cache;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Scarab.Interfaces;
@@ -50,8 +52,17 @@ namespace Scarab.Services
         
         public static async Task<(ModLinks, ApiLinks)> FetchContent()
         {
-            Task<ModLinks> ml = FetchModLinks();
-            Task<ApiLinks> al = FetchApiLinks();
+            using var hc = new HttpClient {
+                DefaultRequestHeaders = {
+                    CacheControl = new CacheControlHeaderValue {
+                        NoCache = true,
+                        MustRevalidate = true
+                    }
+                }
+            };
+            
+            Task<ModLinks> ml = FetchModLinks(hc);
+            Task<ApiLinks> al = FetchApiLinks(hc);
 
             return (await ml, await al);
         }
@@ -70,32 +81,18 @@ namespace Scarab.Services
             return obj;
         }
 
-        private static async Task<ApiLinks> FetchApiLinks()
+        private static async Task<ApiLinks> FetchApiLinks(HttpClient hc)
         {
             var uri = new Uri(APILINKS_URI);
-            
-            using var wc = new WebClient
-            {
-                CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
-            };
 
-            string xmlString = await wc.DownloadStringTaskAsync(uri);
-
-            return FromString<ApiLinks>(xmlString);
+            return FromString<ApiLinks>(await hc.GetStringAsync(uri));
         }
         
-        private static async Task<ModLinks> FetchModLinks()
+        private static async Task<ModLinks> FetchModLinks(HttpClient hc)
         {
             var uri = new Uri(MODLINKS_URI);
 
-            using var wc = new WebClient
-            {
-                CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate)
-            };
-
-            string xmlString = await wc.DownloadStringTaskAsync(uri);
-
-            return FromString<ModLinks>(xmlString);
+            return FromString<ModLinks>(await hc.GetStringAsync(uri));
         }
     }
 }

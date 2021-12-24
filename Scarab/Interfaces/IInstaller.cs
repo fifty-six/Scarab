@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Scarab.Models;
+using Scarab.Util;
 
 namespace Scarab.Interfaces
 {
@@ -8,7 +9,7 @@ namespace Scarab.Interfaces
     {
         public void Toggle(ModItem mod);
 
-        public Task Install(ModItem mod, Action<double> setProgress, bool enable);
+        public Task Install(ModItem mod, Action<ModProgressArgs> setProgress, bool enable);
 
         public Task Uninstall(ModItem mod);
 

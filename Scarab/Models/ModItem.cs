@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media;
 using PropertyChanged.SourceGenerator;
@@ -73,18 +72,14 @@ namespace Scarab.Models
 
         public bool Installed => State is InstalledState;
 
-        public async Task OnInstall(IInstaller inst, Action<bool> setProgressBar, Action<double> setProgress)
+        public async Task OnInstall(IInstaller inst, Action<ModProgressArgs> setProgress)
         {
             if (State is InstalledState(var enabled, var updated))
             {
                 // If we're not updated, update
                 if (!updated)
                 {
-                    setProgressBar(true);
-
                     await inst.Install(this, setProgress, enabled);
-
-                    setProgressBar(false);
                 }
                 // Otherwise the user wanted to uninstall.
                 else
@@ -96,11 +91,13 @@ namespace Scarab.Models
             {
                 State = (NotInstalledState) State with { Installing = true };
 
-                setProgressBar(true);
+                setProgress(new ModProgressArgs());
 
                 await inst.Install(this, setProgress, true);
 
-                setProgressBar(false);
+                setProgress(new ModProgressArgs {
+                    Completed = true
+                });
             }
         }
         

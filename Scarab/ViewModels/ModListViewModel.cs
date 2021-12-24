@@ -141,13 +141,17 @@ namespace Scarab.ViewModels
             await item.OnInstall
             (
                 _installer,
-                val => ProgressBarVisible = val,
                 progress =>
                 {
-                    ProgressBarIndeterminate = progress < 0;
+                    ProgressBarVisible = !progress.Completed;
 
-                    if (progress >= 0)
-                        Progress = progress;
+                    if (progress.Download?.PercentComplete is not double percent)
+                    {
+                        ProgressBarIndeterminate = true;
+                        return;
+                    }
+
+                    Progress = percent;
                 }
             );
             

@@ -4,12 +4,14 @@ using System.IO;
 using System.IO.Abstractions;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
-using System.Net.Mime;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Toolkit.HighPerformance;
 using Scarab.Interfaces;
 using Scarab.Models;
+using Scarab.Util;
 
 namespace Scarab.Services
 {
@@ -25,6 +27,7 @@ namespace Scarab.Services
         private readonly IModSource _installed;
         private readonly IModDatabase _db;
         private readonly IFileSystem _fs;
+        private readonly HttpClient _hc;
 
         private const string Modded = "Assembly-CSharp.dll.m";
         private const string Vanilla = "Assembly-CSharp.dll.v";
@@ -38,6 +41,7 @@ namespace Scarab.Services
             _installed = installed;
             _db = db;
             _fs = fs;
+            _hc = new HttpClient();
         }
 
         private void CreateNeededDirectories()
@@ -111,7 +115,7 @@ namespace Scarab.Services
 
             string managed = _config.ManagedFolder;
 
-            (byte[] data, string _) = await DownloadFile(api_url, _ => { });
+            (ArraySegment<byte> data, string _) = await DownloadFile(api_url, _ => { });
 
             // Backup the vanilla assembly
             if (was_vanilla)
@@ -163,7 +167,7 @@ namespace Scarab.Services
                 await _InstallApi(_db.Api);
         }
 
-        public async Task Install(ModItem mod, Action<double> setProgress, bool enable)
+        public async Task Install(ModItem mod, Action<ModProgressArgs> setProgress, bool enable)
         {
             await InstallApi();
 
@@ -173,7 +177,21 @@ namespace Scarab.Services
             {
                 CreateNeededDirectories();
 
-                await _Install(mod, setProgress, enable);
+                void DownloadProgressed(DownloadProgressArgs args)
+                {
+                    setProgress(new ModProgressArgs {
+                        Download = args
+                    });
+                }
+
+                // Start our progress
+                setProgress(new ModProgressArgs());
+
+                await _Install(mod, DownloadProgressed, enable);
+                
+                setProgress(new ModProgressArgs {
+                    Completed = true
+                });
             }
             finally
             {
@@ -198,7 +216,7 @@ namespace Scarab.Services
             }
         }
 
-        private async Task _Install(ModItem mod, Action<double> setProgress, bool enable)
+        private async Task _Install(ModItem mod, Action<DownloadProgressArgs> setProgress, bool enable)
         {
             foreach (ModItem dep in mod.Dependencies.Select(x => _db.Items.First(i => i.Name == x)))
             {
@@ -234,7 +252,7 @@ namespace Scarab.Services
                 {
                     Directory.CreateDirectory(mod_folder);
 
-                    await _fs.File.WriteAllBytesAsync(Path.Combine(mod_folder, filename), data);
+                    await _fs.File.WriteAllBytesAsync(Path.Combine(mod_folder, filename), data.Array);
 
                     break;
                 }
@@ -260,46 +278,27 @@ namespace Scarab.Services
             await _installed.RecordInstalledState(mod);
         }
 
-        private static async Task<(byte[] data, string filename)> DownloadFile(string uri, Action<double> setProgress)
+        private async Task<(ArraySegment<byte> data, string filename)> DownloadFile(string uri, Action<DownloadProgressArgs> setProgress)
         {
-            var dl = new WebClient();
+            (ArraySegment<byte> bytes, HttpResponseMessage response) = await _hc.DownloadBytesWithProgressAsync(
+                new Uri(uri), 
+                new Progress<DownloadProgressArgs>(setProgress)
+            );
 
-            setProgress(0);
+            string? filename = string.Empty;
 
-            dl.DownloadProgressChanged += (_, args) =>
-            {
-                if (args.TotalBytesToReceive < 0)
-                {
-                    setProgress(-1);
-
-                    return;
-                }
-
-                setProgress(100 * args.BytesReceived / (double) args.TotalBytesToReceive);
-            };
-
-            byte[] data = await dl.DownloadDataTaskAsync(new Uri(uri));
-
-            string filename = string.Empty;
-
-            if (!string.IsNullOrEmpty(dl.ResponseHeaders?["Content-Disposition"]))
-            {
-                var disposition = new ContentDisposition(dl.ResponseHeaders["Content-Disposition"] ?? throw new InvalidOperationException());
-
-                filename = disposition.FileName ?? throw new InvalidOperationException();
-            }
+            if (response.Content.Headers.ContentDisposition is ContentDispositionHeaderValue disposition)
+                filename = disposition.FileName;
 
             if (string.IsNullOrEmpty(filename))
-            {
                 filename = uri[(uri.LastIndexOf("/") + 1)..];
-            }
 
-            return (data, filename);
+            return (bytes, filename);
         }
 
-        private void ExtractZip(byte[] data, string root)
+        private void ExtractZip(ArraySegment<byte> data, string root)
         {
-            using var archive = new ZipArchive(new MemoryStream(data));
+            using var archive = new ZipArchive(data.AsMemory().AsStream());
 
             string dest_dir_path = CreateDirectoryPath(root);
 
