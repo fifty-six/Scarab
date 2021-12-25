@@ -17,9 +17,10 @@ namespace Scarab
     public class Settings : ISettings
     {
         public string ManagedFolder { get; set; }
-        
+
         public bool AutoRemoveDeps { get; }
 
+        // @formatter:off
         private static readonly ImmutableList<string> STATIC_PATHS = new List<string>
         {
             "Program Files/Steam/steamapps/common/Hollow Knight",
@@ -37,8 +38,10 @@ namespace Scarab
             "Library/Application Support/Steam/steamapps/common/Hollow Knight/hollow_knight.app"
         }
         .ToImmutableList();
+        // @formatter:on
 
-        private static string ConfigPath => Path.Combine(
+        private static string ConfigPath => Path.Combine
+        (
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "HKModInstaller",
             "HKInstallerSettings.json"
@@ -56,7 +59,7 @@ namespace Scarab
         public static string GetOrCreateDirPath()
         {
             string dirPath = Path.GetDirectoryName(ConfigPath) ?? throw new InvalidOperationException();
-            
+
             // No-op if path already exists.
             Directory.CreateDirectory(dirPath);
 
@@ -113,7 +116,7 @@ namespace Scarab
         {
             path = null;
 
-            if (Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\\WOW6432Node\Valve\Steam", "InstallPath", null) is not string steam_install)
+            if (Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Valve\Steam", "InstallPath", null) is not string steam_install)
                 return false;
 
             IEnumerable<string> lines;
@@ -131,15 +134,26 @@ namespace Scarab
             {
                 return false;
             }
-            
-            path = lines.Select(line => line.TrimStart())
-                        .Where(line => line.StartsWith("\"path\""))
-                        .Select(pair => pair.Split("\t", 2, StringSplitOptions.RemoveEmptyEntries))
-                        .Where(pair => pair.Length == 2)
-                        .Select(pair => pair[1].Trim('"'))
-                        .Select(library_path => Path.Combine(library_path, "steamapps", "common", "Hollow Knight"))
-                        .Where(Directory.Exists)
-                        .FirstOrDefault();
+
+            string? Parse(string line)
+            {
+                line = line.TrimStart();
+
+                if (!line.StartsWith("\"path\""))
+                    return null;
+
+                string[] pair = line.Split("\t", 2, StringSplitOptions.RemoveEmptyEntries);
+
+                return pair.Length != 2
+                    ? null
+                    : pair[1].Trim('"');
+            }
+
+            IEnumerable<string> library_paths = lines.Select(Parse).OfType<string>();
+
+            path = library_paths.Select(library_path => Path.Combine(library_path, "steamapps", "common", "Hollow Knight"))
+                                .Where(Directory.Exists)
+                                .FirstOrDefault();
 
             return !string.IsNullOrEmpty(path);
         }
@@ -173,9 +187,9 @@ namespace Scarab
             string content = JsonSerializer.Serialize(this);
 
             GetOrCreateDirPath();
-            
+
             string path = ConfigPath;
-            
+
             File.WriteAllText(path, content);
         }
     }
