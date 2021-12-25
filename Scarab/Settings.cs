@@ -5,7 +5,10 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text.Json;
+using Microsoft.Win32;
 using Scarab.Interfaces;
 
 namespace Scarab
@@ -74,6 +77,69 @@ namespace Scarab
             path = USER_SUFFIX_PATHS
                    .Select(suffix => Path.Combine(home, suffix))
                    .FirstOrDefault(Directory.Exists);
+
+            return !string.IsNullOrEmpty(path) || TryDetectFromRegistry(out path);
+        }
+
+        private static bool TryDetectFromRegistry([MaybeNullWhen(false)] out string path)
+        {
+            path = null;
+
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                return false;
+
+            return TryDetectSteamRegistry(out path) || TryDetectGogRegistry(out path);
+        }
+
+        [SupportedOSPlatform(nameof(OSPlatform.Windows))]
+        private static bool TryDetectGogRegistry([MaybeNullWhen(false)] out string path)
+        {
+            path = null;
+
+            if (Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\GOG.com\Games\1308320804", "workingDir", null) is not string gog_path)
+                return false;
+
+            // Double check, just in case.
+            if (!Directory.Exists(gog_path))
+                return false;
+
+            path = gog_path;
+
+            return true;
+        }
+
+        [SupportedOSPlatform(nameof(OSPlatform.Windows))]
+        private static bool TryDetectSteamRegistry([MaybeNullWhen(false)] out string path)
+        {
+            path = null;
+
+            if (Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\\WOW6432Node\Valve\Steam", "InstallPath", null) is not string steam_install)
+                return false;
+
+            IEnumerable<string> lines;
+
+            try
+            {
+                lines = File.ReadLines(Path.Combine(steam_install, "steamapps", "libraryfolders.vdf"));
+            }
+            catch (Exception e) when (
+                e is FileNotFoundException
+                    or UnauthorizedAccessException
+                    or IOException
+                    or DirectoryNotFoundException
+            )
+            {
+                return false;
+            }
+            
+            path = lines.Select(line => line.TrimStart())
+                        .Where(line => line.StartsWith("\"path\""))
+                        .Select(pair => pair.Split("\t", 2, StringSplitOptions.RemoveEmptyEntries))
+                        .Where(pair => pair.Length == 2)
+                        .Select(pair => pair[1].Trim('"'))
+                        .Select(library_path => Path.Combine(library_path, "steamapps", "common", "Hollow Knight"))
+                        .Where(Directory.Exists)
+                        .FirstOrDefault();
 
             return !string.IsNullOrEmpty(path);
         }
