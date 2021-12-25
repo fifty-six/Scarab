@@ -14,7 +14,7 @@
         <Menu DockPanel.Dock="Left" HorizontalAlignment="Left">
             <Menu.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <DockPanel VerticalAlignment="Stretch" Dock="Top"/>
+                    <DockPanel VerticalAlignment="Stretch" Dock="Top" />
                 </ItemsPanelTemplate>
             </Menu.ItemsPanel>
 
@@ -32,46 +32,41 @@
                 </Style>
             </Menu.Styles>
 
-            <MenuItem Header="All" Command="{Binding SelectAll}" DockPanel.Dock="Top"/>
-            <MenuItem Header="-" DockPanel.Dock="Top"/>
-            <MenuItem Header="Installed" Command="{Binding SelectInstalled}" DockPanel.Dock="Top"/>
-            <MenuItem Header="-" DockPanel.Dock="Top"/>
-            <MenuItem Header="Enabled" Command="{Binding SelectEnabled}" DockPanel.Dock="Top"/>
-            <MenuItem Header="-" DockPanel.Dock="Top"/>
-            <MenuItem Header="Out of date" Command="{Binding SelectUnupdated}" DockPanel.Dock="Top"/>
-            
-            <MenuItem 
-                Command="{Binding ChangePath}" 
-                Header="Change Path" 
-                DockPanel.Dock="Bottom" 
-                VerticalAlignment="Bottom" 
-            />
-            <MenuItem 
-                Command="{Binding OpenModsDirectory}" 
-                Header="Open Mods" 
-                DockPanel.Dock="Bottom" 
-                VerticalAlignment="Bottom" 
-            />
-            <MenuItem 
-                Command="{Binding ToggleApi}" 
-                Header="{Binding ApiButtonText}" 
-                IsEnabled="{Binding EnableApiButton}" 
-                DockPanel.Dock="Bottom" 
-                VerticalAlignment="Bottom"
-            />
+            <MenuItem Header="All" Command="{Binding SelectAll}" DockPanel.Dock="Top" />
+            <MenuItem Header="-" DockPanel.Dock="Top" />
+            <MenuItem Header="Installed" Command="{Binding SelectInstalled}" DockPanel.Dock="Top" />
+            <MenuItem Header="-" DockPanel.Dock="Top" />
+            <MenuItem Header="Enabled" Command="{Binding SelectEnabled}" DockPanel.Dock="Top" />
+            <MenuItem Header="-" DockPanel.Dock="Top" />
+            <MenuItem Header="Out of date" Command="{Binding SelectUnupdated}" DockPanel.Dock="Top" />
+
+            <MenuItem
+                Command="{Binding ChangePath}"
+                Header="Change Path"
+                DockPanel.Dock="Bottom"
+                VerticalAlignment="Bottom" />
+            <MenuItem
+                Command="{Binding OpenModsDirectory}"
+                Header="Open Mods"
+                DockPanel.Dock="Bottom"
+                VerticalAlignment="Bottom" />
+            <MenuItem
+                Command="{Binding ToggleApi}"
+                Header="{Binding ApiButtonText}"
+                IsEnabled="{Binding EnableApiButton}"
+                DockPanel.Dock="Bottom"
+                VerticalAlignment="Bottom" />
             <MenuItem
                 Command="{Binding UpdateApi}"
                 Header="Update API"
                 IsEnabled="{Binding ApiOutOfDate}"
                 DockPanel.Dock="Bottom"
-                VerticalAlignment="Bottom"
-            />
+                VerticalAlignment="Bottom" />
             <MenuItem
                 Command="{Binding Donate}"
                 Header="Donate"
                 DockPanel.Dock="Bottom"
-                VerticalAlignment="Bottom"
-            />
+                VerticalAlignment="Bottom" />
         </Menu>
 
         <Separator
@@ -84,11 +79,11 @@
 
             MaxHeight="8"
             MinHeight="8"
-            
+
             Name="Bar"
 
             IsVisible="{Binding ProgressBarVisible}"
-            
+
             IsIndeterminate="{Binding ProgressBarIndeterminate}"
 
             Minimum="0"
@@ -108,65 +103,63 @@
             Height="1"
             Background="#a9a9a9" />
 
-        <ListBox Items="{Binding FilteredItems}" BorderThickness="0">
-            <!-- ItemsControl would be preferable, but ListBox has virtualization which we need for search -->
-            <!-- To make up for this, we disable the brushes which get used for selection, making this look -->
-            <!-- and feel like an ItemsControl. -->
-            <ListBox.Resources>
-                <!-- ReSharper disable Xaml.RedundantResource -->
-                <SolidColorBrush x:Key="ThemeControlHighlightMidBrush" Color="Transparent" />
-                <SolidColorBrush x:Key="ThemeAccentBrush4" Color="Transparent" />
-                <SolidColorBrush x:Key="ThemeAccentBrush3" Color="Transparent" />
-                <SolidColorBrush x:Key="ThemeAccentBrush2" Color="Transparent" />
-                <!-- ReSharper enable Xaml.RedundantResource -->
-            </ListBox.Resources>
+        <ScrollViewer>
+            <ItemsRepeater Items="{Binding FilteredItems}" ElementClearing="PrepareElement" VerticalCacheLength="20">
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate DataType="models:ModItem">
+                        <Grid Margin="8 12 12 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" MaxWidth="260" />
+                                <ColumnDefinition Width="*" MaxWidth="260" />
+                                <ColumnDefinition Width="*" MaxWidth="260" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <Expander Grid.Column="0" Grid.ColumnSpan="3">
+                                <Expander.Header>
+                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" MaxWidth="180"/>
+                                </Expander.Header>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Margin="12 4 4 0"/>
+                                    <TextBlock Text="&#x0a;Dependencies:&#x0a;" FontWeight="Bold" IsVisible="{Binding HasDependencies}" Margin="12 0 0 0"/>
+                                    <TextBlock Text="{Binding DependenciesDesc}" IsVisible="{Binding HasDependencies}" Margin="12 0 0 0" />
+                                </StackPanel>
+                            </Expander>
 
-            <ListBox.ItemTemplate>
-                <DataTemplate DataType="models:ModItem">
-                    <Grid Margin="4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" MaxWidth="260" />
-                            <ColumnDefinition Width="*" MaxWidth="260" />
-                            <ColumnDefinition Width="*" MaxWidth="260" />
-                        </Grid.ColumnDefinitions>
+                            <CheckBox
+                                Grid.Column="1"
+                                Margin="0 4 0 0"
+                                VerticalAlignment="Top"
+                                Command="{Binding $parent[views:ModListView].DataContext.OnEnable}"
+                                CommandParameter="{Binding .}"
+                                IsChecked="{Binding EnabledIsChecked}"
+                                IsEnabled="{Binding Installed}"
+                                Content="Enabled?" 
+                                VerticalContentAlignment="Center"
+                            />
 
-                        <Expander Grid.Column="0">
-                            <Expander.Header>
-                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" MaxWidth="180" />
-                            </Expander.Header>
-                            <StackPanel>
-                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" MaxWidth="180" /> 
-                                <TextBlock Text="&#x0a;Dependencies:&#x0a;" FontWeight="Bold" IsVisible="{Binding HasDependencies}" />
-                                <TextBlock Text="{Binding DependenciesDesc}" IsVisible="{Binding HasDependencies}" />
-                            </StackPanel>
-                        </Expander>
+                            <CheckBox
+                                Grid.Column="2"
+                                Margin="0 4 0 0"
+                                VerticalAlignment="Top"
+                                Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
+                                CommandParameter="{Binding .}"
+                                IsChecked="{Binding InstalledIsChecked}"
+                                IsEnabled="{Binding !Installing}"
+                                Content="{Binding InstallText}"
+                                VerticalContentAlignment="Center"
+                           >
+                                <CheckBox.Resources>
+                                    <!-- ReSharper disable once Xaml.RedundantResource -->
+                                    <SolidColorBrush x:Key="HighlightBrush" Color="{Binding Color}" />
+                                    <!-- ReSharper disable once Xaml.RedundantResource -->
+                                    <sys:Double x:Key="ThemeDisabledOpacity">1</sys:Double>
+                                </CheckBox.Resources>
+                            </CheckBox>
 
-                        <CheckBox
-                            Grid.Column="1"
-                            Command="{Binding $parent[views:ModListView].DataContext.OnEnable}"
-                            CommandParameter="{Binding .}"
-                            IsChecked="{Binding EnabledIsChecked}"
-                            IsEnabled="{Binding Installed}"
-                            Content="Enabled?" />
-
-                        <CheckBox
-                            Grid.Column="2"
-                            Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
-                            CommandParameter="{Binding .}"
-                            IsChecked="{Binding InstalledIsChecked}"
-                            IsEnabled="{Binding !Installing}"
-                            Content="{Binding InstallText}">
-                            <CheckBox.Resources>
-                                <!-- ReSharper disable once Xaml.RedundantResource -->
-                                <SolidColorBrush x:Key="HighlightBrush" Color="{Binding Color}" />
-                                <!-- ReSharper disable once Xaml.RedundantResource -->
-                                <sys:Double x:Key="ThemeDisabledOpacity">1</sys:Double>
-                            </CheckBox.Resources>
-                        </CheckBox>
-
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </ScrollViewer>
     </DockPanel>
 </UserControl>
