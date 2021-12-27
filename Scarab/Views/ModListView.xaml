@@ -8,6 +8,7 @@
              xmlns:views="clr-namespace:Scarab.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
              x:Class="Scarab.Views.ModListView"
+             Name="UserControl"
              d:DataContext="{d:DesignInstance viewModels:ModListViewModel}">
     <DockPanel>
         <!-- Sidebar -->
@@ -92,6 +93,7 @@
 
         <TextBox
             x:Name="Search"
+            Name="Search"
             Watermark="Mod Search"
             DockPanel.Dock="Top"
             BorderThickness="0"
