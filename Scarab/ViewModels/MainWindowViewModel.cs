@@ -152,7 +152,7 @@ namespace Scarab.ViewModels
 
         private static async Task<string> GetSettingsPath()
         {
-            if (!Settings.TryAutoDetect(out string? path))
+            if (!Settings.TryAutoDetect(out ValidPath? path))
             {
                 IMsBoxWindow<ButtonResult> info = MessageBoxManager.GetMessageBoxStandardWindow
                 (
@@ -183,7 +183,7 @@ namespace Scarab.ViewModels
             ButtonResult res = await window.Show();
 
             return res == ButtonResult.Yes
-                ? Path.Combine(path, PathUtil.FindSuffix(path) ?? throw new InvalidOperationException("Found path but no valid suffix!"))
+                ? Path.Combine(path.Root, path.Suffix)
                 : await PathUtil.SelectPath();
         }
 

@@ -8,8 +8,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text.Json;
+using Avalonia.Styling;
 using Microsoft.Win32;
 using Scarab.Interfaces;
+using Scarab.Util;
 
 namespace Scarab
 {
@@ -66,12 +68,12 @@ namespace Scarab
             return dirPath;
         }
 
-        internal static bool TryAutoDetect([MaybeNullWhen(false)] out string path)
+        internal static bool TryAutoDetect([MaybeNullWhen(false)] out ValidPath path)
         {
-            path = STATIC_PATHS.FirstOrDefault(Directory.Exists);
+            path = STATIC_PATHS.Select(PathUtil.ValidateWithSuffix).FirstOrDefault(x => x is not null);
 
             // If that's valid, use it.
-            if (!string.IsNullOrEmpty(path))
+            if (path is not null)
                 return true;
 
             // Otherwise, we go through the user profile suffixes.
@@ -79,12 +81,13 @@ namespace Scarab
 
             path = USER_SUFFIX_PATHS
                    .Select(suffix => Path.Combine(home, suffix))
-                   .FirstOrDefault(Directory.Exists);
+                   .Select(PathUtil.ValidateWithSuffix)
+                   .FirstOrDefault(x => x is not null);
 
-            return !string.IsNullOrEmpty(path) || TryDetectFromRegistry(out path);
+            return path is not null || TryDetectFromRegistry(out path);
         }
 
-        private static bool TryDetectFromRegistry([MaybeNullWhen(false)] out string path)
+        private static bool TryDetectFromRegistry([MaybeNullWhen(false)] out ValidPath path)
         {
             path = null;
 
@@ -95,7 +98,7 @@ namespace Scarab
         }
 
         [SupportedOSPlatform(nameof(OSPlatform.Windows))]
-        private static bool TryDetectGogRegistry([MaybeNullWhen(false)] out string path)
+        private static bool TryDetectGogRegistry([MaybeNullWhen(false)] out ValidPath path)
         {
             path = null;
 
@@ -103,16 +106,16 @@ namespace Scarab
                 return false;
 
             // Double check, just in case.
-            if (!Directory.Exists(gog_path))
+            if (PathUtil.ValidateWithSuffix(gog_path) is not ValidPath vpath)
                 return false;
 
-            path = gog_path;
+            path = vpath;
 
             return true;
         }
 
         [SupportedOSPlatform(nameof(OSPlatform.Windows))]
-        private static bool TryDetectSteamRegistry([MaybeNullWhen(false)] out string path)
+        private static bool TryDetectSteamRegistry([MaybeNullWhen(false)] out ValidPath path)
         {
             path = null;
 
@@ -152,10 +155,10 @@ namespace Scarab
             IEnumerable<string> library_paths = lines.Select(Parse).OfType<string>();
 
             path = library_paths.Select(library_path => Path.Combine(library_path, "steamapps", "common", "Hollow Knight"))
-                                .Where(Directory.Exists)
-                                .FirstOrDefault();
+                                .Select(PathUtil.ValidateWithSuffix)
+                                .FirstOrDefault(x => x is not null);
 
-            return !string.IsNullOrEmpty(path);
+            return path is not null;
         }
 
         public static Settings? Load()

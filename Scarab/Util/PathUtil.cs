@@ -44,14 +44,14 @@ namespace Scarab.Util
 
                 if (result is null)
                     await MessageBoxManager.GetMessageBoxStandardWindow("Path", NO_SELECT).Show();
-                else if (!IsValid(result, out string? suffix))
+                else if (ValidateWithSuffix(result) is not (var managed, var suffix))
                     await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
                         ContentTitle = "Path",
                         ContentMessage = INVALID_PATH,
                         MinHeight = 140
                     }).Show();
                 else
-                    return Path.Combine(result, suffix);
+                    return Path.Combine(managed, suffix);
 
                 if (fail)
                     throw new PathInvalidOrUnselectedException();
@@ -74,21 +74,21 @@ namespace Scarab.Util
 
                 if (result is null or { Length: 0 })
                     await MessageBoxManager.GetMessageBoxStandardWindow("Path", NO_SELECT_MAC).Show();
-                else if (!IsValid(result.First(), out string? suffix))
+                else if (ValidateWithSuffix(result.First()) is not (var managed, var suffix))
                     await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
                         ContentTitle = "Path",
                         ContentMessage = INVALID_APP,
                         MinHeight = 140
                     }).Show();
                 else
-                    return Path.Combine(result.First(), suffix);
+                    return Path.Combine(managed, suffix);
 
                 if (fail)
                     throw new PathInvalidOrUnselectedException();
             }
         }
 
-        public static readonly string[] SUFFIXES =
+        private static readonly string[] SUFFIXES =
         {
             // Steam
             "hollow_knight_Data/Managed",
@@ -98,21 +98,17 @@ namespace Scarab.Util
             "Contents/Resources/Data/Managed"
         };
 
-        public static string? FindSuffix(string root)
+        public static ValidPath? ValidateWithSuffix(string root)
         {
-            return SUFFIXES.FirstOrDefault(s => Directory.Exists(Path.Combine(root, s)));
-        }
+            if (!Directory.Exists(root))
+                return null;
+            
+            string? suffix = SUFFIXES.FirstOrDefault(s => Directory.Exists(Path.Combine(root, s)));
 
-        private static bool IsValid(string result, [NotNullWhen(true)] out string? suffix)
-        {
-            suffix = null;
+            if (suffix is null || !File.Exists(Path.Combine(root, suffix, "Assembly-CSharp.dll")))
+                return null;
 
-            if (!Directory.Exists(result))
-                return false;
-
-            suffix = SUFFIXES.FirstOrDefault(s => Directory.Exists(Path.Combine(result, s)));
-
-            return suffix is not null && File.Exists(Path.Combine(result, suffix, "Assembly-CSharp.dll"));
+            return new ValidPath(root, suffix);
         }
     }
 }
