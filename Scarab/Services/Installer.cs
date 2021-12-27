@@ -232,6 +232,9 @@ namespace Scarab.Services
 
             var (data, filename) = await DownloadFile(mod.Link, setProgress);
 
+            // Sometimes our filename is quoted, remove those.
+            filename = filename.Trim('"');
+            
             string ext = Path.GetExtension(filename.ToLower());
 
             // Default to enabling
