@@ -151,6 +151,7 @@ namespace Scarab.ViewModels
                         return;
                     }
 
+                    ProgressBarIndeterminate = false;
                     Progress = percent;
                 }
             );

@@ -25,6 +25,7 @@ public static class HttpClientExt
                 Method = HttpMethod.Get,
                 RequestUri = uri
             },
+            HttpCompletionOption.ResponseHeadersRead,
             cts
         ).ConfigureAwait(false);
 
@@ -36,13 +37,15 @@ public static class HttpClientExt
 
         await using Stream stream = await content.ReadAsStreamAsync(cts).ConfigureAwait(false);
 
-        byte[] pool_buffer = ArrayPool<byte>.Shared.Rent(4096);
+        int dl_size = content.Headers.ContentLength is long len
+            ? (int) len
+            : 65536;
+
+        byte[] pool_buffer = ArrayPool<byte>.Shared.Rent(65536);
         
         Memory<byte> buf = pool_buffer;
 
-        MemoryStream memory = content.Headers.ContentLength is long value
-            ? new MemoryStream((int) value)
-            : new MemoryStream(1024);
+        var memory = new MemoryStream(dl_size);
 
         var args = new DownloadProgressArgs {
             TotalBytes = (int?) content.Headers.ContentLength,
