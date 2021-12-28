@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Net.Cache;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Scarab.Interfaces;
@@ -14,8 +13,11 @@ namespace Scarab.Services
 {
     public class ModDatabase : IModDatabase
     {
-        private const string MODLINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@latest/ModLinks.xml";
-        private const string APILINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@latest/ApiLinks.xml";
+        private const string MODLINKS_URI = "https://raw.githubusercontent.com/hk-modding/modlinks/main/ModLinks.xml";
+        private const string APILINKS_URI = "https://raw.githubusercontent.com/hk-modding/modlinks/main/ApiLinks.xml";
+        
+        private const string FALLBACK_MODLINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@latest/ModLinks.xml";
+        private const string FALLBACK_APILINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@latest/ApiLinks.xml";
 
         public (string Url, int Version) Api { get; }
 
@@ -83,16 +85,25 @@ namespace Scarab.Services
 
         private static async Task<ApiLinks> FetchApiLinks(HttpClient hc)
         {
-            var uri = new Uri(APILINKS_URI);
-
-            return FromString<ApiLinks>(await hc.GetStringAsync(uri));
+            return FromString<ApiLinks>(await FetchWithFallback(hc, new Uri(APILINKS_URI), new Uri(FALLBACK_APILINKS_URI)));
         }
         
         private static async Task<ModLinks> FetchModLinks(HttpClient hc)
         {
-            var uri = new Uri(MODLINKS_URI);
+            return FromString<ModLinks>(await FetchWithFallback(hc, new Uri(MODLINKS_URI), new Uri(FALLBACK_MODLINKS_URI)));
+        }
 
-            return FromString<ModLinks>(await hc.GetStringAsync(uri));
+        private static async Task<string> FetchWithFallback(HttpClient hc, Uri uri, Uri fallback)
+        {
+            try
+            {
+                var cts = new CancellationTokenSource(500);
+                return await hc.GetStringAsync(uri, cts.Token);
+            }
+            catch (Exception e) when (e is TaskCanceledException or HttpRequestException)
+            {
+                return await hc.GetStringAsync(fallback);
+            }
         }
     }
 }
