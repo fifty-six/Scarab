@@ -12,7 +12,7 @@ if len(argv) != 3:
 
 app_dir = Path(argv[1])
 publish = Path(argv[2])
-exe = Path(argv[2] + "/Scarab")
+exe = publish / "Scarab"
 
 if app_dir.suffix != ".app":
     print("Error: " + app_dir + " is not an .app folder.")
@@ -24,40 +24,53 @@ if not app_dir.exists():
 if not exe.exists():
     raise FileNotFoundError(ENOENT, strerror(ENOENT), exe)
 
-with ZipFile("out/mac.zip", 'w', ZIP_DEFLATED) as zip_f:
-    found_bin = False
+def write_executable(zfile, path, zip_path=None):
+    if zip_path is None:
+        zip_path = path
+
+    with open(path, 'rb') as f:
+        fbytes = f.read()
+
+    info = ZipInfo(str(zip_path))
+    info.date_time = localtime()
+    # -rwx-r---r--
+    info.external_attr = 0o100755 << 16
+    # UNIX host
+    info.create_system = 3
+
+    zip_f.writestr(info, fbytes, ZIP_DEFLATED)
     
+with ZipFile("out/mac.zip", 'w', ZIP_DEFLATED) as zip_f:
     for root, dirs, files in walk(app_dir):
+        root = Path(root)
 
         for fname in files:
+            if fname == "Scarab":
+                write_executable(zip_f, root / fname)
+                continue
+
             path = Path(root, fname)
             zip_f.write(path)
 
-        mac_os = next((x for x in dirs if x == "MacOS"), None)
-        
-        if not mac_os:
+        if root.name != "Contents":
             continue
 
         for publish_root, _, files in walk(publish):
+            publish_root = Path(publish_root)
             for fname in files:
                 if fname == "Scarab":
                     continue
-                path = Path(publish_root, fname)
-                zip_path = Path(root, mac_os, fname)
+
+                overrides = { 
+                        "Scarab.pdb": "run.pdb"
+                }
+
+                path = publish_root / fname
+                zip_path = root / "MacOS" / overrides.get(fname, fname)
+
                 zip_f.write(path, zip_path)
 
-        with open(exe, 'rb') as exe_f:
-            exe_bytes = exe_f.read()
+        write_executable(zip_f, publish_root / "Scarab", root / "MacOS" / "run")
 
-        info = ZipInfo(str(Path(root, mac_os, exe.name)))
-        info.date_time = localtime()
-        info.external_attr = 0o100755 << 16
-        # UNIX host
-        info.create_system = 3
-
-        print(oct(info.external_attr))
-        
-        zip_f.writestr(info, exe_bytes, ZIP_DEFLATED)
-        
 
 print("Created mac.zip")
