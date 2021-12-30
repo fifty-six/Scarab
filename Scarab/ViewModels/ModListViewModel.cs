@@ -111,9 +111,16 @@ namespace Scarab.ViewModels
             (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
         }
 
-        public void OpenModsDirectory() => Process.Start(new ProcessStartInfo(Path.Combine(_settings.ManagedFolder, "Mods")) {
-            UseShellExecute = true
-        });
+        public void OpenModsDirectory()
+        {
+            // Create the directory if it doesn't exist,
+            // so we don't open a non-existent folder.
+            Directory.CreateDirectory(_settings.ManagedFolder);
+            
+            Process.Start(new ProcessStartInfo(Path.Combine(_settings.ManagedFolder, "Mods")) {
+                    UseShellExecute = true
+            });
+        }
 
         public static void Donate() => Process.Start(new ProcessStartInfo("https://paypal.me/ybham") { UseShellExecute = true });
         
