@@ -175,7 +175,7 @@ namespace Scarab.ViewModels
                 new MessageBoxStandardParams
                 {
                     ContentHeader = "Detected path!",
-                    ContentMessage = $"Detected Hollow Knight install at {path}. Is this correct?",
+                    ContentMessage = $"Detected Hollow Knight install at {path.Root}. Is this correct?",
                     ButtonDefinitions = ButtonEnum.YesNo
                 }
             );
