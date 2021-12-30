@@ -90,10 +90,10 @@ namespace Scarab.Util
 
         private static readonly string[] SUFFIXES =
         {
-            // Steam
-            "hollow_knight_Data/Managed",
             // GoG
             "Hollow Knight_Data/Managed",
+            // Steam
+            "hollow_knight_Data/Managed",
             // Mac
             "Contents/Resources/Data/Managed"
         };
