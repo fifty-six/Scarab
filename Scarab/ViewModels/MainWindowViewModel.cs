@@ -50,6 +50,9 @@ namespace Scarab.ViewModels
             Trace.WriteLine("Loading settings.");
             Settings settings = Settings.Load() ?? Settings.Create(await GetSettingsPath());
 
+            if (!PathUtil.ValidateExisting(settings.ManagedFolder))
+                settings = await ResetSettings();
+
             Trace.WriteLine("Fetching links");
             (ModLinks, ApiLinks) content = await ModDatabase.FetchContent();
             
@@ -148,6 +151,24 @@ namespace Scarab.ViewModels
                 Trace.WriteLine($"Installer out of date! Version {current_version} with latest {version}!");
             }
             #endif
+        }
+        
+        private static async Task<Settings> ResetSettings()
+        {
+            Trace.WriteLine("Settings path is invalid, forcing re-selection.");
+
+            await MessageBoxManager.GetMessageBoxStandardWindow
+            (
+                new MessageBoxStandardParams {
+                    ContentHeader = "Warning",
+                    ContentMessage = "The saved Hollow Knight path is invalid, please re-select a valid path.",
+                    // The auto-resize for this lib is buggy, so 
+                    // ensure that the message doesn't get cut off 
+                    MinWidth = 550
+                }
+            ).Show();
+
+            return Settings.Create(await GetSettingsPath());
         }
 
         private static async Task<string> GetSettingsPath()

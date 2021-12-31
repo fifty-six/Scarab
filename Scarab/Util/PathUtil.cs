@@ -110,5 +110,16 @@ namespace Scarab.Util
 
             return new ValidPath(root, suffix);
         }
+
+        public static bool ValidateExisting(string managed)
+        {
+            // We have the extra case of UnityEngine's dll here
+            // because in cases with old directories or previous issues
+            // the assembly dll can still exist, but UnityEngine.dll
+            // is always unmodified, so we can rely on it.
+            return Directory.Exists(managed)
+                && File.Exists(Path.Combine(managed, "Assembly-CSharp.dll"))
+                && File.Exists(Path.Combine(managed, "UnityEngine.dll"));
+        }
     }
 }
