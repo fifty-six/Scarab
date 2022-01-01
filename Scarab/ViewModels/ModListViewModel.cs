@@ -89,16 +89,10 @@ namespace Scarab.ViewModels
         
         private async Task ChangePathAsync()
         {
-            string path;
-            
-            try
-            {
-                path = await PathUtil.SelectPath(fail: true);
-            }
-            catch (PathUtil.PathInvalidOrUnselectedException)
-            {
+            string? path = await PathUtil.SelectPathFailable();
+
+            if (path is null)
                 return;
-            }
 
             _settings.ManagedFolder = path;
             _settings.Save();
@@ -108,7 +102,7 @@ namespace Scarab.ViewModels
             await MessageBoxManager.GetMessageBoxStandardWindow("Changed path!", "Re-open the installer to use your new path.").Show();
             
             // Shutting down is easier than re-doing the source and all the items.
-            (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
+            (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Shutdown();
         }
 
         public void OpenModsDirectory()

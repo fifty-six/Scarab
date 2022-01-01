@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -15,8 +14,6 @@ namespace Scarab.Util
 {
     public static class PathUtil
     {
-        public class PathInvalidOrUnselectedException : Exception {}
-        
         private const string NO_SELECT = "No path was selected!";
         private const string NO_SELECT_MAC = "No application was selected!";
 
@@ -26,7 +23,11 @@ namespace Scarab.Util
         private const string INVALID_PATH = "Select the folder containing hollow_knight_Data or Hollow Knight_Data.";
         private const string INVALID_APP = "Missing Managed folder or Assembly-CSharp!";
         
-        public static async Task<string> SelectPath([DoesNotReturnIf(true)] bool fail = false)
+        // There isn't any [return: MaybeNullWhen(param is null)] so this overload will have to do
+        // Not really a huge point but it's nice to have the nullable static analysis
+        public static async Task<string?> SelectPathFailable() => await SelectPath(true);
+        
+        public static async Task<string> SelectPath(bool fail = false)
         {
             Debug.WriteLine("Selecting path...");
 
@@ -58,11 +59,11 @@ namespace Scarab.Util
                     return Path.Combine(managed, suffix);
 
                 if (fail)
-                    throw new PathInvalidOrUnselectedException();
+                    return null!;
             }
         }
 
-        private static async Task<string> SelectMacApp(Window parent, [DoesNotReturnIf(true)] bool fail)
+        private static async Task<string> SelectMacApp(Window parent, bool fail)
         {
             var dialog = new OpenFileDialog
             {
@@ -90,7 +91,7 @@ namespace Scarab.Util
                     return Path.Combine(managed, suffix);
 
                 if (fail)
-                    throw new PathInvalidOrUnselectedException();
+                    return null!;
             }
         }
 
