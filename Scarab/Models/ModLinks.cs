@@ -20,9 +20,9 @@ namespace Scarab.Models
         private Links? _links;
         private Link? _link;
 
-        public VersionWrapper Version;
+        public VersionWrapper Version = null!;
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         [XmlElement]
         public Link? Link
@@ -45,18 +45,11 @@ namespace Scarab.Models
 
         [XmlArray("Dependencies")]
         [XmlArrayItem("Dependency")]
-        public string[] Dependencies { get; set; }
+        public string[] Dependencies { get; set; } = null!;
 
-        public string Description { get; set; }
+        public string Description { get; set; } = null!;
 
         // For serializer and nullability
-        public Manifest()
-        {
-            Version = null!;
-            Name = null!;
-            Dependencies = null!;
-            Description = null!;
-        }
 
         public override string ToString()
         {
@@ -73,9 +66,7 @@ namespace Scarab.Models
     [Serializable]
     public record VersionWrapper : IXmlSerializable
     {
-        public VersionWrapper() => Value = null!;
-
-        public Version Value { get; set; }
+        public Version Value { get; set; } = null!;
 
         public XmlSchema? GetSchema() => null;
         public void ReadXml(XmlReader reader) => Value = Version.Parse(reader.ReadElementContentAsString());
