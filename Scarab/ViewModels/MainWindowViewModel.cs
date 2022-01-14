@@ -144,7 +144,7 @@ namespace Scarab.ViewModels
             {
                 Process.Start(new ProcessStartInfo("https://github.com/fifty-six/Scarab/releases/latest") { UseShellExecute = true });
                 
-                ((IClassicDesktopStyleApplicationLifetime) Application.Current.ApplicationLifetime).Shutdown();
+                ((IClassicDesktopStyleApplicationLifetime?) Application.Current?.ApplicationLifetime)?.Shutdown();
             }
             else
             {
