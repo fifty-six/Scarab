@@ -59,6 +59,14 @@ namespace Scarab.Services
         {
             if (mod.State is not InstalledState state)
                 throw new InvalidOperationException("Cannot enable mod which is not installed!");
+            
+            foreach (ModItem dep in mod.Dependencies.Select(x => _db.Items.First(i => i.Name == x)))
+            {
+                if (dep.State is InstalledState { Enabled: true } or NotInstalledState)
+                    continue;
+
+                Toggle(dep);
+            }
 
             CreateNeededDirectories();
 
