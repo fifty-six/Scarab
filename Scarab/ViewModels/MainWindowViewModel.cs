@@ -3,13 +3,19 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
+using System.Net.Http;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using JetBrains.Annotations;
 using MessageBox.Avalonia;
 using MessageBox.Avalonia.BaseWindows.Base;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
+using MessageBox.Avalonia.Models;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using Scarab.Interfaces;
@@ -17,19 +23,21 @@ using Scarab.Models;
 using Scarab.Services;
 using Scarab.Util;
 
-#if !DEBUG
-using System.Text.Json;
-using System.Net.Http;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using MessageBox.Avalonia.Models;
-#endif
-
 namespace Scarab.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        private static bool _Debug
+        {
+            get {
+                #if DEBUG
+                return true;
+                #else
+                return false;
+                #endif
+            }
+        }
+
         private ViewModelBase _content = null!;
 
         [UsedImplicitly]
@@ -72,21 +80,16 @@ namespace Scarab.ViewModels
             Content = sp.GetRequiredService<ModListViewModel>();
         }
 
-        private static 
-            #if !DEBUG
-            async 
-            #endif
-            Task CheckUpToDate()
+        private static async Task CheckUpToDate()
         {
             Version? current_version = Assembly.GetExecutingAssembly().GetName().Version;
             
             Debug.WriteLine($"Current version of installer is {current_version}");
-            
-            #if DEBUG
-            return Task.CompletedTask;
-            #else
-            const string gh_releases = "https://api.github.com/repos/fifty-six/Scarab/releases/latest";
 
+            if (!_Debug)
+                return; 
+
+            const string gh_releases = "https://api.github.com/repos/fifty-six/Scarab/releases/latest";
 
             string json;
             
@@ -150,7 +153,6 @@ namespace Scarab.ViewModels
             {
                 Trace.WriteLine($"Installer out of date! Version {current_version} with latest {version}!");
             }
-            #endif
         }
         
         private static async Task<Settings> ResetSettings()
