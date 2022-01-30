@@ -75,7 +75,18 @@ namespace Scarab.Models
 
         public bool Installed => State is InstalledState;
 
-        public bool HasDependencies => Dependencies.Length > 0;
+        public bool HasDependencies  => Dependencies.Length > 0;
+
+        public bool UpdateAvailable => _state is InstalledState s && s.Version < Version;
+
+        public string UpdateText  => $"\u279E {Version}";
+
+        public string VersionText => _state switch
+        {
+            InstalledState st => st.Version.ToString(),
+            NotInstalledState => Version.ToString(),
+            _ => throw new ArgumentOutOfRangeException(nameof(_state))
+        };
 
         public async Task OnInstall(IInstaller inst, Action<ModProgressArgs> setProgress)
         {

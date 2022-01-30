@@ -120,10 +120,27 @@
                                 <Expander.Header>
                                     <TextBlock Text="{Binding Name}" TextWrapping="Wrap" MaxWidth="180"/>
                                 </Expander.Header>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Margin="12 4 4 0"/>
-                                    <TextBlock Text="&#x0a;Dependencies:&#x0a;" FontWeight="Bold" IsVisible="{Binding HasDependencies}" Margin="12 0 0 0"/>
-                                    <TextBlock Text="{Binding DependenciesDesc}" IsVisible="{Binding HasDependencies}" Margin="12 0 0 0" />
+                                <StackPanel Margin="12 0 0 0">
+                                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Margin="0 4 4 0"/>
+                                    
+                                    <TextBlock Text="&#x0a;Version:&#x0a;" FontWeight="Bold" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding VersionText}" />
+                                        <TextBlock
+                                            Text="{Binding UpdateText}"
+                                            IsVisible="{Binding UpdateAvailable}"
+                                            Foreground="{DynamicResource Highlight}" 
+                                            Margin="4 0 0 0" 
+                                            FontWeight="Bold"
+                                        >
+                                            <TextBlock.Resources>
+                                                <SolidColorBrush x:Key="Highlight" Color="#f49107" />
+                                            </TextBlock.Resources>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    
+                                    <TextBlock Text="&#x0a;Dependencies:&#x0a;" FontWeight="Bold" IsVisible="{Binding HasDependencies}" />
+                                    <TextBlock Text="{Binding DependenciesDesc}" IsVisible="{Binding HasDependencies}" />
                                 </StackPanel>
                             </Expander>
 
