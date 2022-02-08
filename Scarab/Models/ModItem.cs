@@ -88,6 +88,11 @@ namespace Scarab.Models
             _ => throw new ArgumentOutOfRangeException(nameof(_state))
         };
 
+        // Gray out the Enabled text if the mod isn't installed and we can't enable/disable.
+        public Color EnabledColor => State is InstalledState
+            ? Color.Parse("#ffdedede")
+            : Color.Parse("#6d6d6d");
+
         public async Task OnInstall(IInstaller inst, Action<ModProgressArgs> setProgress)
         {
             if (State is InstalledState(var enabled, var updated))
