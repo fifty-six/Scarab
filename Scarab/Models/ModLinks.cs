@@ -92,17 +92,23 @@ namespace Scarab.Models
                 + "}";
         }
 
-        public string GetOSUrl()
+        public string SHA256 => Environment.OSVersion.Platform switch
         {
-            return Environment.OSVersion.Platform switch
-            {
-                PlatformID.Win32NT => Windows.URL,
-                PlatformID.MacOSX => Mac.URL,
-                PlatformID.Unix => Linux.URL,
+            PlatformID.Win32NT => Windows.SHA256,
+            PlatformID.MacOSX => Mac.SHA256,
+            PlatformID.Unix => Linux.SHA256,
+            
+            var val => throw new NotSupportedException(val.ToString())
+        };
 
-                var val => throw new NotSupportedException(val.ToString())
-            };
-        }
+        public string OSUrl => Environment.OSVersion.Platform switch
+        {
+            PlatformID.Win32NT => Windows.URL,
+            PlatformID.MacOSX => Mac.URL,
+            PlatformID.Unix => Linux.URL,
+
+            var val => throw new NotSupportedException(val.ToString())
+        };
     }
 
     public class Link
@@ -119,7 +125,7 @@ namespace Scarab.Models
         }
     }
 
-    [Serializable]
+    // [Serializable]
     public class ApiManifest
     {
         public int Version { get; set; }

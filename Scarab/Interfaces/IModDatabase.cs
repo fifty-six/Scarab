@@ -7,6 +7,6 @@ namespace Scarab.Interfaces
     {
         IEnumerable<ModItem> Items { get; }
         
-        (string Url, int Version) Api { get; }
+        (string Url, int Version, string SHA256) Api { get; }
     }
 }

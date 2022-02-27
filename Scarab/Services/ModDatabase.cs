@@ -19,7 +19,7 @@ namespace Scarab.Services
         private const string FALLBACK_MODLINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@latest/ModLinks.xml";
         private const string FALLBACK_APILINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@latest/ApiLinks.xml";
 
-        public (string Url, int Version) Api { get; }
+        public (string Url, int Version, string SHA256) Api { get; }
 
         public IEnumerable<ModItem> Items => _items;
 
@@ -31,9 +31,10 @@ namespace Scarab.Services
             {
                 var item = new ModItem
                 (
-                    link: mod.Links.GetOSUrl(),
+                    link: mod.Links.OSUrl,
                     version: mod.Version.Value,
                     name: mod.Name,
+                    shasum: mod.Links.SHA256,
                     description: mod.Description,
                     dependencies: mod.Dependencies,
                     
@@ -45,7 +46,7 @@ namespace Scarab.Services
 
             _items.Sort((a, b) => string.Compare(a.Name, b.Name));
 
-            Api = (al.Manifest.Links.GetOSUrl(), al.Manifest.Version);
+            Api = (al.Manifest.Links.OSUrl, al.Manifest.Version, al.Manifest.Links.SHA256);
         }
 
         public ModDatabase(IModSource mods, (ModLinks ml, ApiLinks al) links) : this(mods, links.ml, links.al) { }

@@ -30,6 +30,7 @@ namespace Scarab.Tests
                 new Version("1.3.2.2"),
                 Array.Empty<string>(),
                 string.Empty,
+                string.Empty,
                 "test",
                 "test"
             );

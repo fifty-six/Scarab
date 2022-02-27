@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using JetBrains.Annotations;
 using MessageBox.Avalonia;
+using MessageBox.Avalonia.Enums;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using Scarab.Interfaces;
 using Scarab.Models;
+using Scarab.Services;
 using Scarab.Util;
 
 namespace Scarab.ViewModels
@@ -53,6 +56,7 @@ namespace Scarab.ViewModels
             SelectedItems = _selectedItems = _items;
 
             OnInstall = ReactiveCommand.CreateFromTask<ModItem>(OnInstallAsync);
+            OnEnable = ReactiveCommand.CreateFromTask<ModItem>(OnEnableAsync);
             ToggleApi = ReactiveCommand.Create(ToggleApiCommand);
             ChangePath = ReactiveCommand.CreateFromTask(ChangePathAsync);
             UpdateApi = ReactiveCommand.CreateFromTask(UpdateApiAsync);
@@ -72,6 +76,8 @@ namespace Scarab.ViewModels
         private void RaisePropertyChanged(string name) => IReactiveObjectExtensions.RaisePropertyChanged(this, name);
 
         public ReactiveCommand<ModItem, Unit> OnInstall { get; }
+        
+        public ReactiveCommand<ModItem, Unit> OnEnable { get; }
         
         public ReactiveCommand<Unit, Unit> ToggleApi { get; }
         
@@ -126,12 +132,33 @@ namespace Scarab.ViewModels
 
         public void SelectEnabled() => SelectedItems = _items.Where(x => x.State is InstalledState { Enabled: true });
 
-        public void OnEnable(ModItem item) => _installer.Toggle(item);
+        private async Task OnEnableAsync(ModItem item)
+        {
+            try
+            {
+                _installer.Toggle(item);
+            }
+            catch (Exception e)
+            {
+                await DisplayGenericError("toggling", item.Name, e);
+            }
+        }
 
         private async Task UpdateApiAsync()
         {
-            await _installer.InstallApi();
-            
+            try
+            {
+                await _installer.InstallApi();
+            }
+            catch (HashMismatchException e)
+            {
+                await DisplayHashMismatch(e);
+            }
+            catch (Exception e)
+            {
+                await DisplayGenericError("updating", name: "the API", e);
+            }
+
             RaisePropertyChanged(nameof(ApiOutOfDate));
             RaisePropertyChanged(nameof(ApiButtonText));
             RaisePropertyChanged(nameof(EnableApiButton));
@@ -139,23 +166,43 @@ namespace Scarab.ViewModels
 
         private async Task OnInstallAsync(ModItem item)
         {
-            await item.OnInstall
-            (
-                _installer,
-                progress =>
-                {
-                    ProgressBarVisible = !progress.Completed;
-
-                    if (progress.Download?.PercentComplete is not double percent)
+            try 
+            {
+                await item.OnInstall
+                (
+                    _installer,
+                    progress =>
                     {
-                        ProgressBarIndeterminate = true;
-                        return;
-                    }
+                        ProgressBarVisible = !progress.Completed;
 
-                    ProgressBarIndeterminate = false;
-                    Progress = percent;
-                }
-            );
+                        if (progress.Download?.PercentComplete is not double percent)
+                        {
+                            ProgressBarIndeterminate = true;
+                            return;
+                        }
+
+                        ProgressBarIndeterminate = false;
+                        Progress = percent;
+                    }
+                );
+            }
+            catch (HashMismatchException e)
+            {
+                Trace.WriteLine($"Mod {item.Name} had a hash mismatch! Expected: {e.Expected}, got {e.Actual}");
+                await DisplayHashMismatch(e);
+            }
+            catch (HttpRequestException e)
+            {
+                await DisplayNetworkError(item.Name, e);
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"Failed to install mod {item.Name}. State = {item.State}, Link = {item.Link}");
+                await DisplayGenericError("installing or uninstalling", item.Name, e);
+            }
+
+            // Even if we threw, stop the progress bar.
+            ProgressBarVisible = false;
             
             RaisePropertyChanged(nameof(ApiButtonText));
             RaisePropertyChanged(nameof(EnableApiButton));
@@ -164,7 +211,41 @@ namespace Scarab.ViewModels
 
             _items.SortBy(Comparer);
         }
-        
+
+        private static async Task DisplayHashMismatch(HashMismatchException e)
+        {
+            await MessageBoxManager.GetMessageBoxStandardWindow
+            (
+                title: "Hash mismatch!",
+                text: $"The download hash for {e.Name} ({e.Actual}) didn't match the given signature ({e.Expected}). It is either corrupt or the entry is incorrect.",
+                icon: Icon.Error
+            ).Show();
+        }
+
+        private static async Task DisplayGenericError(string action, string name, Exception e)
+        {
+            Trace.TraceError(e.ToString());
+
+            await MessageBoxManager.GetMessageBoxStandardWindow
+            (
+                title: "Error!",
+                text: $"An exception occured while {action} {name}.",
+                icon: Icon.Error
+            ).Show();
+        }
+
+        private static async Task DisplayNetworkError(string name, HttpRequestException e)
+        {
+            Trace.WriteLine($"Failed to download {name}, {e}");
+
+            await MessageBoxManager.GetMessageBoxStandardWindow
+            (
+                title: "Network Error",
+                text: $"Unable to download {name}! The site may be down or you may lack network connectivity.",
+                icon: Icon.Error
+            ).Show();
+        }
+
         private static (int priority, string name) ModToOrderedTuple(ModItem m) =>
         (
             m.State is InstalledState { Updated : false } ? -1 : 1,

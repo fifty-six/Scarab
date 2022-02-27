@@ -102,6 +102,7 @@ namespace Scarab.Tests
                     new Version(3, 0, 0, 0),
                     new[] { "Vasi" },
                     "https://github.com/fifty-six/HollowKnight.QoL/releases/download/v3/QoL.zip",
+                    string.Empty,
                     "QoL",
                     "A collection of various quality of life improvements."
                 ),

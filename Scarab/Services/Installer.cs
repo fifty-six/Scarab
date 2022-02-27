@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Toolkit.HighPerformance;
@@ -15,6 +16,32 @@ using Scarab.Util;
 
 namespace Scarab.Services
 {
+    public class HashMismatchException : Exception
+    {
+        /// <summary>
+        /// The SHA256 value that was received
+        /// </summary>
+        public string Actual { get; }
+
+        /// <summary>
+        /// Expected SHA256 value
+        /// </summary>
+        public string Expected { get; }
+        
+        /// <summary>
+        ///  The name of the object being checked
+        /// </summary>
+        public string Name { get; }
+        
+        public HashMismatchException(string name, string actual, string expected)
+        {
+            Name = name;
+            Actual = actual;
+            Expected = expected;
+        }
+
+    }
+    
     public class Installer : IInstaller
     {
         private enum Update
@@ -113,7 +140,7 @@ namespace Scarab.Services
             }
         }
 
-        private async Task _InstallApi((string Url, int Version) manifest)
+        private async Task _InstallApi((string Url, int Version, string SHA256) manifest)
         {
             bool was_vanilla = true;
 
@@ -124,12 +151,14 @@ namespace Scarab.Services
 
                 was_vanilla = false;
             }
-
-            (string api_url, int ver) = manifest;
+            
+            (string api_url, int ver, string hash) = manifest;
 
             string managed = _config.ManagedFolder;
 
             (ArraySegment<byte> data, string _) = await DownloadFile(api_url, _ => { });
+            
+            ThrowIfInvalidHash("the API", data, hash);
 
             // Backup the vanilla assembly
             if (was_vanilla)
@@ -181,6 +210,13 @@ namespace Scarab.Services
                 await _InstallApi(_db.Api);
         }
 
+        /// <summary>
+        /// Installs the given mod.
+        /// </summary>
+        /// <param name="mod">Mod to install</param>
+        /// <param name="setProgress">Action called to indicate progress asynchronously</param>
+        /// <param name="enable">Whether the mod is enabled after installation</param>
+        /// <exception cref="HashMismatchException">Thrown if the download doesn't match the given hash</exception>
         public async Task Install(ModItem mod, Action<ModProgressArgs> setProgress, bool enable)
         {
             await InstallApi();
@@ -244,6 +280,8 @@ namespace Scarab.Services
 
             var (data, filename) = await DownloadFile(mod.Link, setProgress);
 
+            ThrowIfInvalidHash(mod.Name, data, mod.Sha256);
+
             // Sometimes our filename is quoted, remove those.
             filename = filename.Trim('"');
             
@@ -293,6 +331,18 @@ namespace Scarab.Services
             };
 
             await _installed.RecordInstalledState(mod);
+        }
+
+        private static void ThrowIfInvalidHash(string name, ArraySegment<byte> data, string modSha256)
+        {
+            var sha = SHA256.Create();
+
+            byte[] hash = sha.ComputeHash(data.AsMemory().AsStream());
+
+            string strHash = BitConverter.ToString(hash).Replace("-", string.Empty);
+
+            if (!string.Equals(strHash, modSha256, StringComparison.OrdinalIgnoreCase))
+                throw new HashMismatchException(name, actual: strHash, expected: modSha256);
         }
 
         private async Task<(ArraySegment<byte> data, string filename)> DownloadFile(string uri, Action<DownloadProgressArgs> setProgress)

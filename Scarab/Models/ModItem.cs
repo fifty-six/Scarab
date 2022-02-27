@@ -16,12 +16,14 @@ namespace Scarab.Models
             Version version,
             string[] dependencies,
             string link,
+            string shasum,
             string name,
             string description
         )
         {
             _state = state;
 
+            Sha256 = shasum;
             Version = version;
             Dependencies = dependencies;
             Link = link;
@@ -34,6 +36,7 @@ namespace Scarab.Models
         public Version  Version          { get; }
         public string[] Dependencies     { get; }
         public string   Link             { get; }
+        public string   Sha256           { get; }
         public string   Name             { get; }
         public string   Description      { get; }
         public string   DependenciesDesc { get; }
@@ -95,30 +98,44 @@ namespace Scarab.Models
 
         public async Task OnInstall(IInstaller inst, Action<ModProgressArgs> setProgress)
         {
-            if (State is InstalledState(var enabled, var updated))
+            ModState origState = State;
+            
+            try
             {
-                // If we're not updated, update
-                if (!updated)
+                if (State is InstalledState(var enabled, var updated))
                 {
-                    await inst.Install(this, setProgress, enabled);
+                    // If we're not updated, update
+                    if (!updated)
+                    {
+                        await inst.Install(this, setProgress, enabled);
+                    }
+                    // Otherwise the user wanted to uninstall.
+                    else
+                    {
+                        await inst.Uninstall(this);
+                    }
                 }
-                // Otherwise the user wanted to uninstall.
                 else
                 {
-                    await inst.Uninstall(this);
+                    State = (NotInstalledState) State with { Installing = true };
+
+                    setProgress(new ModProgressArgs());
+
+                    await inst.Install(this, setProgress, true);
+
+                    setProgress
+                    (
+                        new ModProgressArgs
+                        {
+                            Completed = true
+                        }
+                    );
                 }
             }
-            else
+            catch
             {
-                State = (NotInstalledState) State with { Installing = true };
-
-                setProgress(new ModProgressArgs());
-
-                await inst.Install(this, setProgress, true);
-
-                setProgress(new ModProgressArgs {
-                    Completed = true
-                });
+                State = origState;
+                throw;
             }
         }
         

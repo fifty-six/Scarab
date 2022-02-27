@@ -30,7 +30,7 @@ namespace Scarab
 
         private static void SetupLogging()
         {
-            using var fileListener = new TextWriterTraceListener
+            var fileListener = new TextWriterTraceListener
             (
                 Path.Combine
                 (
@@ -38,6 +38,8 @@ namespace Scarab
                     "ModInstaller.log"
                 )
             );
+
+            fileListener.TraceOutputOptions = TraceOptions.DateTime;
 
             Trace.AutoFlush = true;
 
@@ -70,7 +72,7 @@ namespace Scarab
             if (Debugger.IsAttached)
                 Debugger.Break();
 
-            Trace.WriteLine($"Caught exception, writing to log: {e.StackTrace}");
+            Trace.TraceError(e.ToString());
 
             File.WriteAllText(dir + $"ModInstaller_Error_{date}.log", e.ToString());
             File.WriteAllText(Path.Combine(Settings.GetOrCreateDirPath(), $"ModInstaller_Error_{date}.log"), e.ToString());
