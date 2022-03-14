@@ -92,23 +92,35 @@ namespace Scarab.Models
                 + "}";
         }
 
-        public string SHA256 => Environment.OSVersion.Platform switch
+        public string SHA256 
         {
-            PlatformID.Win32NT => Windows.SHA256,
-            PlatformID.MacOSX => Mac.SHA256,
-            PlatformID.Unix => Linux.SHA256,
-            
-            var val => throw new NotSupportedException(val.ToString())
-        };
+            get
+            {
+                if (OperatingSystem.IsWindows())
+                    return Windows.SHA256;
+                if (OperatingSystem.IsMacOS())
+                    return Mac.SHA256;
+                if (OperatingSystem.IsLinux())
+                    return Linux.SHA256;
 
-        public string OSUrl => Environment.OSVersion.Platform switch
+                throw new NotSupportedException(Environment.OSVersion.Platform.ToString());
+            }
+        }
+
+        public string OSUrl
         {
-            PlatformID.Win32NT => Windows.URL,
-            PlatformID.MacOSX => Mac.URL,
-            PlatformID.Unix => Linux.URL,
-
-            var val => throw new NotSupportedException(val.ToString())
-        };
+            get
+            {
+                if (OperatingSystem.IsWindows())
+                    return Windows.URL;
+                if (OperatingSystem.IsMacOS())
+                    return Mac.URL;
+                if (OperatingSystem.IsLinux())
+                    return Linux.URL;
+                
+                throw new NotSupportedException(Environment.OSVersion.Platform.ToString());
+            }
+        }
     }
 
     public class Link
