@@ -63,6 +63,7 @@ namespace Scarab.ViewModels
 
             Trace.WriteLine("Fetching links");
             (ModLinks, ApiLinks) content = await ModDatabase.FetchContent();
+            Trace.WriteLine("Fetched links successfully");
             
             sc.AddSingleton<ISettings>(_ => settings)
               .AddSingleton<IFileSystem, FileSystem>()
@@ -71,10 +72,12 @@ namespace Scarab.ViewModels
               .AddSingleton<IInstaller, Installer>()
               .AddSingleton<ModListViewModel>();
             
+            Trace.WriteLine("Building service provider");
             ServiceProvider sp = sc.BuildServiceProvider(new ServiceProviderOptions
             {
                 ValidateOnBuild = true
             });
+            Trace.WriteLine("Built service provider");
 
             Trace.WriteLine("Displaying model");
             Content = sp.GetRequiredService<ModListViewModel>();
