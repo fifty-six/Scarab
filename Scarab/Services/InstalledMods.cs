@@ -42,13 +42,13 @@ namespace Scarab.Services
                 return db;
             
             /*
-             * If the user deleted their API, we can deal with it at least.
-             * Similarly, if there's no current file, we can just install the API as a very budget remedy.
+             * If the user deleted their assembly, we can deal with it at least.
              * 
-             * This isn't ideal, but at least we won't crash and the user will be (relatively) okay.
+             * This isn't ideal, but at least we won't crash and the user will be
+             * (relatively) okay, and as a budget remedy we'll just put the API in
              */
             if (
-                !fs.File.Exists(Path.Combine(config.ManagedFolder, Installer.Modded)) ||
+                !fs.File.Exists(Path.Combine(config.ManagedFolder, Installer.Modded)) &&
                 !fs.File.Exists(Path.Combine(config.ManagedFolder, Installer.Current))
             )
                 db.ApiInstall = new NotInstalledState();

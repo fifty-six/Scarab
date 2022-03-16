@@ -69,8 +69,18 @@ namespace Scarab.ViewModels
                 : SelectedItems.Where(x => x.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
 
         public string ApiButtonText   => _mods.ApiInstall is InstalledState { Enabled: var enabled } ? (enabled ? "Disable API" : "Enable API") : "Toggle API";
-        public bool   EnableApiButton => _mods.ApiInstall is InstalledState;
         public bool   ApiOutOfDate    => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
+
+        public bool EnableApiButton => _mods.ApiInstall switch
+        {
+            NotInstalledState => false,
+            // Disabling, so we're putting back the vanilla assembly
+            InstalledState { Enabled: true } => File.Exists(Path.Combine(_settings.ManagedFolder, Installer.Vanilla)),
+            // Enabling, so take the modded one.
+            InstalledState { Enabled: false } => File.Exists(Path.Combine(_settings.ManagedFolder, Installer.Modded)),
+            // Unreachable
+            _ => throw new InvalidOperationException()
+        };
 
         // Needed for source generator to find it.
         private void RaisePropertyChanged(string name) => IReactiveObjectExtensions.RaisePropertyChanged(this, name);
