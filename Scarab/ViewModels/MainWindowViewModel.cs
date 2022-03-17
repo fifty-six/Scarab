@@ -62,7 +62,31 @@ namespace Scarab.ViewModels
                 settings = await ResetSettings();
 
             Trace.WriteLine("Fetching links");
-            (ModLinks, ApiLinks) content = await ModDatabase.FetchContent();
+            
+            (ModLinks, ApiLinks) content;
+            try
+            {
+                content = await ModDatabase.FetchContent();
+            }
+            catch (Exception e) when (e is TaskCanceledException or HttpRequestException)
+            {
+                string failedOp = e switch
+                {
+                    TaskCanceledException => "timed out",
+                    HttpRequestException http => $"failed with HTTP error {http.StatusCode}",
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                
+                await MessageBoxManager.GetMessageBoxStandardWindow
+                (
+                    title: "Error!",
+                    text: $"Unable to fetch modlinks, the operation {failedOp}",
+                    icon: Icon.Error
+                ).Show();
+                
+                return;
+            }
+
             Trace.WriteLine("Fetched links successfully");
             
             sc.AddSingleton<ISettings>(_ => settings)

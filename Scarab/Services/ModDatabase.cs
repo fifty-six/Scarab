@@ -98,12 +98,13 @@ namespace Scarab.Services
         {
             try
             {
-                var cts = new CancellationTokenSource(500);
+                var cts = new CancellationTokenSource(5000);
                 return await hc.GetStringAsync(uri, cts.Token);
             }
             catch (Exception e) when (e is TaskCanceledException or HttpRequestException)
             {
-                return await hc.GetStringAsync(fallback);
+                var cts = new CancellationTokenSource(10000);
+                return await hc.GetStringAsync(fallback, cts.Token);
             }
         }
     }
