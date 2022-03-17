@@ -113,7 +113,7 @@ namespace Scarab.ViewModels
             
             Debug.WriteLine($"Current version of installer is {current_version}");
 
-            if (!_Debug)
+            if (_Debug)
                 return; 
 
             const string gh_releases = "https://api.github.com/repos/fifty-six/Scarab/releases/latest";
