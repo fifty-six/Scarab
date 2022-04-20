@@ -152,7 +152,7 @@
                                 CommandParameter="{Binding .}"
                                 IsChecked="{Binding EnabledIsChecked}"
                                 IsEnabled="{Binding Installed}"
-                                Content="Enabled?" 
+                                Content="Enabled" 
                                 VerticalContentAlignment="Center"
                             >
                                 <CheckBox.Resources>
