@@ -144,23 +144,16 @@
                                 </StackPanel>
                             </Expander>
 
-                            <CheckBox
-                                Grid.Column="1"
-                                Margin="0 4 0 0"
+                            <ToggleSwitch
+                                Grid.Column = "1"
+                                Margin = "0 -2 0 0"
                                 VerticalAlignment="Top"
                                 Command="{Binding $parent[views:ModListView].DataContext.OnEnable}"
-                                CommandParameter="{Binding .}"
                                 IsChecked="{Binding EnabledIsChecked}"
-                                IsEnabled="{Binding Installed}"
-                                Content="Enabled?" 
+                                IsEnabled = "{Binding Installed}"
                                 VerticalContentAlignment="Center"
-                            >
-                                <CheckBox.Resources>
-                                    <!-- ReSharper disable once Xaml.RedundantResource -->
-                                    <SolidColorBrush x:Key="ThemeForegroundBrush" Color="{Binding EnabledColor}"/>
-                                </CheckBox.Resources>
-                            </CheckBox>
-
+                            />
+                            
                             <CheckBox
                                 Grid.Column="2"
                                 Margin="0 4 0 0"

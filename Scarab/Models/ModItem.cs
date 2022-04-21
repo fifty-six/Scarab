@@ -74,7 +74,13 @@ namespace Scarab.Models
 
         public Color Color => Color.Parse(State is InstalledState { Updated : true } ? "#ff086f9e" : "#f49107");
 
-        public string InstallText => State is InstalledState { Updated: false } ? "Out of date!" : "Installed?";
+        public string InstallText => State switch
+        {
+            InstalledState { Updated: false } => "Update",
+            InstalledState { Updated: true } => "Uninstall",
+            NotInstalledState => "Install",
+            _ => throw new InvalidOperationException("Unreachable")
+        };
 
         public bool Installed => State is InstalledState;
 
