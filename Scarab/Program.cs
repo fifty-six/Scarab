@@ -1,8 +1,11 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 
@@ -17,6 +20,11 @@ namespace Scarab
         public static void Main(string[] args)
         {
             SetupLogging();
+
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => Handler(null);
+            PosixSignalRegistration.Create(PosixSignal.SIGTERM, Handler);
+            PosixSignalRegistration.Create(PosixSignal.SIGINT, Handler);
+            Console.CancelKeyPress += (_, _) => Handler(null);
             
             try
             {
@@ -26,6 +34,15 @@ namespace Scarab
             {
                 WriteExceptionToLog(e);
             }
+        }
+
+        private static void Handler(PosixSignalContext? c)
+        {
+            Trace.WriteLine("Something sent a shutdown event, calling Application.Shutdown");
+            
+            (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Shutdown();
+            
+            Trace.WriteLine("Got past Application.Shutdown, did shutting down fail?");
         }
 
         private static void SetupLogging()
