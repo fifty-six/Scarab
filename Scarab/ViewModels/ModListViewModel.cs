@@ -43,6 +43,15 @@ namespace Scarab.ViewModels
 
         [Notify]
         private string? _search;
+        
+        public ReactiveCommand<ModItem, Unit> OnUpdate { get; }
+        public ReactiveCommand<ModItem, Unit> OnInstall { get; }
+        public ReactiveCommand<ModItem, Unit> OnEnable { get; }
+        
+        public ReactiveCommand<Unit, Unit> ToggleApi { get; }
+        public ReactiveCommand<Unit, Unit> UpdateApi { get; }
+        
+        public ReactiveCommand<Unit, Unit> ChangePath { get; }
 
         public ModListViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods)
         {
@@ -56,6 +65,7 @@ namespace Scarab.ViewModels
             SelectedItems = _selectedItems = _items;
 
             OnInstall = ReactiveCommand.CreateFromTask<ModItem>(OnInstallAsync);
+            OnUpdate = ReactiveCommand.CreateFromTask<ModItem>(OnUpdateAsync);
             OnEnable = ReactiveCommand.CreateFromTask<ModItem>(OnEnableAsync);
             ToggleApi = ReactiveCommand.Create(ToggleApiCommand);
             ChangePath = ReactiveCommand.CreateFromTask(ChangePathAsync);
@@ -84,16 +94,6 @@ namespace Scarab.ViewModels
 
         // Needed for source generator to find it.
         private void RaisePropertyChanged(string name) => IReactiveObjectExtensions.RaisePropertyChanged(this, name);
-
-        public ReactiveCommand<ModItem, Unit> OnInstall { get; }
-        
-        public ReactiveCommand<ModItem, Unit> OnEnable { get; }
-        
-        public ReactiveCommand<Unit, Unit> ToggleApi { get; }
-        
-        public ReactiveCommand<Unit, Unit> ChangePath { get; }
-
-        public ReactiveCommand<Unit, Unit> UpdateApi { get; }
 
         private async void ToggleApiCommand()
         {
@@ -176,11 +176,11 @@ namespace Scarab.ViewModels
             RaisePropertyChanged(nameof(EnableApiButton));
         }
 
-        private async Task OnInstallAsync(ModItem item)
+        private async Task InternalUpdateInstallAsync(ModItem item, Func<IInstaller, Action<ModProgressArgs>, Task> f)
         {
-            try 
+            try
             {
-                await item.OnInstall
+                await f
                 (
                     _installer,
                     progress =>
@@ -215,7 +215,7 @@ namespace Scarab.ViewModels
 
             // Even if we threw, stop the progress bar.
             ProgressBarVisible = false;
-            
+
             RaisePropertyChanged(nameof(ApiButtonText));
             RaisePropertyChanged(nameof(EnableApiButton));
 
@@ -223,6 +223,10 @@ namespace Scarab.ViewModels
 
             _items.SortBy(Comparer);
         }
+
+        private async Task OnUpdateAsync(ModItem item) => await InternalUpdateInstallAsync(item, item.OnUpdate);
+
+        private async Task OnInstallAsync(ModItem item) => await InternalUpdateInstallAsync(item, item.OnInstall);
 
         private static async Task DisplayHashMismatch(HashMismatchException e)
         {

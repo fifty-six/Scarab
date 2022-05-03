@@ -54,30 +54,26 @@ namespace Scarab.Models
             };
 
         // 
-        // Update required -> null
         // Installed -> true
         // Not installed -> false
         // Installing -> true, but different color.
         //
-        // We use null for updates so we get 
-        // a box in the UI, which is a nice indicator.
-        public bool? InstalledIsChecked =>
+        public bool InstalledIsChecked =>
             State switch
             {
-                InstalledState { Updated: true } => true,
-                InstalledState { Updated: false } => null,
+                InstalledState => true,
                 NotInstalledState { Installing: true } => true,
                 _ => false
             };
 
         public bool Installing => State is NotInstalledState { Installing: true };
 
-        public Color Color => Color.Parse(State is InstalledState { Updated : true } ? "#ff086f9e" : "#f49107");
+        // When we're installing we show an orange check instead of a blue one
+        public Color Color => Color.Parse(State is InstalledState ? "#ff086f9e" : "#f49107");
 
         public string InstallText => State switch
         {
-            InstalledState { Updated: false } => "Update",
-            InstalledState { Updated: true } => "Uninstall",
+            InstalledState => "Uninstall",
             NotInstalledState => "Install",
             _ => throw new InvalidOperationException("Unreachable")
         };
@@ -97,10 +93,27 @@ namespace Scarab.Models
             _ => throw new ArgumentOutOfRangeException(nameof(_state))
         };
 
-        // Gray out the Enabled text if the mod isn't installed and we can't enable/disable.
-        public Color EnabledColor => State is InstalledState
-            ? Color.Parse("#ffdedede")
-            : Color.Parse("#6d6d6d");
+        public async Task OnUpdate(IInstaller inst, Action<ModProgressArgs> setProgress)
+        {
+            ModState orig = State;
+
+            try
+            {
+                if (State is not InstalledState { Updated: false, Enabled: var enabled })
+                    throw new InvalidOperationException("Not able to be updated!");
+
+                setProgress(new ModProgressArgs());
+
+                await inst.Install(this, setProgress, enabled);
+                
+                setProgress(new ModProgressArgs { Completed = true });
+            }
+            catch
+            {
+                State = orig;
+                throw;
+            }
+        }
 
         public async Task OnInstall(IInstaller inst, Action<ModProgressArgs> setProgress)
         {
@@ -108,18 +121,9 @@ namespace Scarab.Models
             
             try
             {
-                if (State is InstalledState(var enabled, var updated))
+                if (State is InstalledState)
                 {
-                    // If we're not updated, update
-                    if (!updated)
-                    {
-                        await inst.Install(this, setProgress, enabled);
-                    }
-                    // Otherwise the user wanted to uninstall.
-                    else
-                    {
-                        await inst.Uninstall(this);
-                    }
+                    await inst.Uninstall(this);
                 }
                 else
                 {
@@ -129,13 +133,7 @@ namespace Scarab.Models
 
                     await inst.Install(this, setProgress, true);
 
-                    setProgress
-                    (
-                        new ModProgressArgs
-                        {
-                            Completed = true
-                        }
-                    );
+                    setProgress(new ModProgressArgs { Completed = true });
                 }
             }
             catch

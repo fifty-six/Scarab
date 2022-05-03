@@ -114,9 +114,10 @@
                                 <ColumnDefinition Width="*" MaxWidth="260" />
                                 <ColumnDefinition Width="*" MaxWidth="260" />
                                 <ColumnDefinition Width="*" MaxWidth="260" />
+                                <ColumnDefinition Width="*" MaxWidth="100" />
                             </Grid.ColumnDefinitions>
                             
-                            <Expander Grid.Column="0" Grid.ColumnSpan="3">
+                            <Expander Grid.Column="0" Grid.ColumnSpan="4">
                                 <Expander.Header>
                                     <TextBlock Text="{Binding Name}" TextWrapping="Wrap" MaxWidth="180"/>
                                 </Expander.Header>
@@ -164,7 +165,7 @@
                                 IsEnabled="{Binding !Installing}"
                                 Content="{Binding InstallText}"
                                 VerticalContentAlignment="Center"
-                           >
+                            >
                                 <CheckBox.Resources>
                                     <!-- ReSharper disable once Xaml.RedundantResource -->
                                     <SolidColorBrush x:Key="HighlightBrush" Color="{Binding Color}" />
@@ -173,6 +174,31 @@
                                 </CheckBox.Resources>
                             </CheckBox>
 
+                            <Grid 
+                                Grid.Column="3" 
+                                ColumnDefinitions="Auto,*" 
+                                IsVisible="{Binding UpdateAvailable}"
+                                VerticalAlignment="Top"
+                            >
+                                <Button
+                                    MaxHeight="18"
+                                    MaxWidth="18"
+                                    Margin="0 4 0 0"
+                                    Background="Transparent"
+                                    BorderBrush="{DynamicResource ThemeBorderMidBrush}"
+                                    Command="{Binding $parent[views:ModListView].DataContext.OnUpdate}"
+                                    CommandParameter="{Binding .}"
+                                >
+                                    <Image 
+                                        Source="avares://Scarab/Assets/update.png" 
+                                        Height="12" Width="12" 
+                                        VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center" 
+                                    />
+                                </Button>
+                                
+                                <ContentPresenter Grid.Column="1" Margin="4,4,0,0" VerticalAlignment="Center" Content="Update"/>
+                            </Grid>
                         </Grid>
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
