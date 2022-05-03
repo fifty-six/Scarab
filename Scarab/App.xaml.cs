@@ -25,7 +25,6 @@ namespace Scarab
                     DataContext = new MainWindowViewModel()
                 };
             }
-            else throw new NotImplementedException();
 
             base.OnFrameworkInitializationCompleted();
         }

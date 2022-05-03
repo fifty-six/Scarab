@@ -1,15 +1,20 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:sys="clr-namespace:System;assembly=netstandard"
-             xmlns:models="clr-namespace:Scarab.Models"
-             xmlns:viewModels="clr-namespace:Scarab.ViewModels"
-             xmlns:views="clr-namespace:Scarab.Views"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
-             x:Class="Scarab.Views.ModListView"
-             Name="UserControl"
-             d:DataContext="{d:DesignInstance viewModels:ModListViewModel}">
+<views:View x:TypeArguments="viewModels:ModListViewModel" 
+            xmlns="https://github.com/avaloniaui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:sys="clr-namespace:System;assembly=netstandard"
+            xmlns:models="clr-namespace:Scarab.Models"
+            xmlns:viewModels="clr-namespace:Scarab.ViewModels"
+            xmlns:views="clr-namespace:Scarab.Views"
+            mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
+            x:Class="Scarab.Views.ModListView"
+            Name="UserControl">
+    <!-- You'd *think* you want views:View.DataContext but the previewer doesn't like that -->
+    <UserControl.DataContext>
+        <viewModels:ModListViewModel />
+    </UserControl.DataContext>
+    
     <DockPanel>
         <!-- Sidebar -->
         <Menu DockPanel.Dock="Left" HorizontalAlignment="Left">
@@ -205,4 +210,4 @@
             </ItemsRepeater>
         </ScrollViewer>
     </DockPanel>
-</UserControl>
+</views:View>

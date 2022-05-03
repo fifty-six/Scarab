@@ -14,6 +14,7 @@ using MessageBox.Avalonia.Enums;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using Scarab.Interfaces;
+using Scarab.Mock;
 using Scarab.Models;
 using Scarab.Services;
 using Scarab.Util;
@@ -52,6 +53,8 @@ namespace Scarab.ViewModels
         public ReactiveCommand<Unit, Unit> UpdateApi { get; }
         
         public ReactiveCommand<Unit, Unit> ChangePath { get; }
+
+        public ModListViewModel() : this(null!, new MockDatabase(), null!, null!) { }
 
         public ModListViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods)
         {
