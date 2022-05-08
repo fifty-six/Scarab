@@ -123,11 +123,13 @@ namespace Scarab.ViewModels
 
         public void OpenModsDirectory()
         {
+            var modsFolder = Path.Combine(_settings.ManagedFolder, "Mods");
+
             // Create the directory if it doesn't exist,
             // so we don't open a non-existent folder.
-            Directory.CreateDirectory(_settings.ManagedFolder);
+            Directory.CreateDirectory(modsFolder);
             
-            Process.Start(new ProcessStartInfo(Path.Combine(_settings.ManagedFolder, "Mods")) {
+            Process.Start(new ProcessStartInfo(modsFolder) {
                     UseShellExecute = true
             });
         }
