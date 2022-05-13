@@ -4,4 +4,4 @@
 
 This is a mod manager for Hollow Knight aimed at making the process of installing mods easier for users.
 
-![screenshot](https://i.imgur.com/q8Fm7GQ.png)
+![screenshot](https://i.imgur.com/kJH4xGt.png)

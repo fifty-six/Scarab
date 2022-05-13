@@ -7,14 +7,11 @@
             xmlns:models="clr-namespace:Scarab.Models"
             xmlns:viewModels="clr-namespace:Scarab.ViewModels"
             xmlns:views="clr-namespace:Scarab.Views"
+            xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
             x:Class="Scarab.Views.ModListView"
+            d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
             Name="UserControl">
-    <!-- You'd *think* you want views:View.DataContext but the previewer doesn't like that -->
-    <UserControl.DataContext>
-        <viewModels:ModListViewModel />
-    </UserControl.DataContext>
-    
     <DockPanel>
         <!-- Sidebar -->
         <Menu DockPanel.Dock="Left" HorizontalAlignment="Left">
@@ -154,30 +151,22 @@
                                 Grid.Column = "1"
                                 Margin = "0 -2 0 0"
                                 VerticalAlignment="Top"
+                                CommandParameter="{Binding .}"
                                 Command="{Binding $parent[views:ModListView].DataContext.OnEnable}"
                                 IsChecked="{Binding EnabledIsChecked}"
                                 IsEnabled = "{Binding Installed}"
                                 VerticalContentAlignment="Center"
                             />
                             
-                            <CheckBox
+                            <Button 
                                 Grid.Column="2"
-                                Margin="0 4 0 0"
-                                VerticalAlignment="Top"
-                                Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
+                                MaxWidth="60"
                                 CommandParameter="{Binding .}"
-                                IsChecked="{Binding InstalledIsChecked}"
-                                IsEnabled="{Binding !Installing}"
                                 Content="{Binding InstallText}"
-                                VerticalContentAlignment="Center"
-                            >
-                                <CheckBox.Resources>
-                                    <!-- ReSharper disable once Xaml.RedundantResource -->
-                                    <SolidColorBrush x:Key="HighlightBrush" Color="{Binding Color}" />
-                                    <!-- ReSharper disable once Xaml.RedundantResource -->
-                                    <sys:Double x:Key="ThemeDisabledOpacity">1</sys:Double>
-                                </CheckBox.Resources>
-                            </CheckBox>
+                                IsEnabled="{Binding !Installing}"
+                                Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
+                                VerticalAlignment="Top"
+                            />
 
                             <Grid 
                                 Grid.Column="3" 
