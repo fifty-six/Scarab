@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Abstractions;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -32,7 +34,7 @@ namespace Scarab.Services
 
         private readonly IFileSystem _fs;
 
-        public static InstalledMods Load(IFileSystem fs, Settings config)
+        public static InstalledMods Load(IFileSystem fs, ISettings config)
         {
             InstalledMods db = File.Exists(ConfigPath)
                 ? JsonSerializer.Deserialize<InstalledMods>(File.ReadAllText(ConfigPath)) ?? throw new InvalidDataException()
@@ -40,6 +42,16 @@ namespace Scarab.Services
 
             if (db.ApiInstall is not InstalledState) 
                 return db;
+
+            // Validate that mods are installed in case of manual user intervention
+            foreach (string? name in db.Mods.Select(x => x.Key))
+            {
+                if (Directory.Exists(Path.Combine(config.ModsFolder, name))) 
+                    continue;
+                
+                Trace.TraceWarning($"Removing missing mod {name}!");
+                db.Mods.Remove(name);
+            }
             
             /*
              * If the user deleted their assembly, we can deal with it at least.
@@ -47,11 +59,15 @@ namespace Scarab.Services
              * This isn't ideal, but at least we won't crash and the user will be
              * (relatively) okay, and as a budget remedy we'll just put the API in
              */
+            // ReSharper disable once InvertIf
             if (
                 !fs.File.Exists(Path.Combine(config.ManagedFolder, Installer.Modded)) &&
                 !fs.File.Exists(Path.Combine(config.ManagedFolder, Installer.Current))
-            )
+            ) 
+            {
+                Trace.TraceWarning("Assembly missing, marking API as uninstalled!");
                 db.ApiInstall = new NotInstalledState();
+            }
 
             return db;
         }
