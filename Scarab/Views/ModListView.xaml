@@ -1,4 +1,4 @@
-<views:View x:TypeArguments="viewModels:ModListViewModel" 
+<views:View x:TypeArguments="viewModels:ModListViewModel"
             xmlns="https://github.com/avaloniaui"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,7 +8,8 @@
             xmlns:viewModels="clr-namespace:Scarab.ViewModels"
             xmlns:views="clr-namespace:Scarab.Views"
             xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
-            mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
+            xmlns:util="clr-namespace:Scarab.Util"
+            mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="550"
             x:Class="Scarab.Views.ModListView"
             d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
             Name="UserControl">
@@ -119,10 +120,42 @@
                                 <ColumnDefinition Width="*" MaxWidth="100" />
                             </Grid.ColumnDefinitions>
                             
+                            <!-- 
+                                We register a phantom textblock to use as the width for the one inside the expander header 
+                                The margin accounts for where the arrow would be if this was in the expander              
+                                The hit test visibility allows us to click through into the expander
+                            -->
+                            <TextBlock 
+                                x:Name="phantom" 
+                                Margin="20 3 0 0" 
+                                Grid.Column="0" 
+                                TextWrapping="Wrap" 
+                                IsHitTestVisible="False"
+                            />
+                            
                             <Expander Grid.Column="0" Grid.ColumnSpan="4">
                                 <Expander.Header>
-                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" MaxWidth="180"/>
+                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap">
+                                        <TextBlock.Resources>
+                                            <sys:Double x:Key="decrement">-20.0</sys:Double>
+                                        </TextBlock.Resources>
+
+                                        <!-- 
+                                            Set the width to that of our phantom minus a bit to
+                                            make sure it doesn't get too close to the slider 
+                                            
+                                            We need the width here as inside the expander the contents
+                                            don't follow the grid so it would overflow the column
+                                        -->
+                                        <TextBlock.Width>
+                                            <MultiBinding Converter="{x:Static util:AddConverter.Instance}">
+                                                <Binding Source="{StaticResource decrement}"/>
+                                                <Binding ElementName="phantom" Path="Bounds.Width"/>
+                                            </MultiBinding>
+                                        </TextBlock.Width>
+                                    </TextBlock>
                                 </Expander.Header>
+                                
                                 <StackPanel Margin="12 0 0 0">
                                     <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Margin="0 4 4 0"/>
                                     

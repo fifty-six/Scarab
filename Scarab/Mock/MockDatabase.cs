@@ -45,6 +45,17 @@ public class MockDatabase : IModDatabase
                 "sha",
                 "NotInstalledEx",
                 "An example"
+            ),
+            // Example with a really long name
+            new
+            (
+                new NotInstalledState(),
+                new Version(1, 0),
+                Array.Empty<string>(),
+                "link",
+                "sha",
+                "SomethingSomethingSomethingAmongUs",
+                "An example"
             )
         };
     }
