@@ -82,11 +82,11 @@ namespace Scarab.Models
 
         public bool HasDependencies  => Dependencies.Length > 0;
 
-        public bool UpdateAvailable => _state is InstalledState s && s.Version < Version;
+        public bool UpdateAvailable => State is InstalledState s && s.Version < Version;
 
         public string UpdateText  => $"\u279E {Version}";
 
-        public string VersionText => _state switch
+        public string VersionText => State switch
         {
             InstalledState st => st.Version.ToString(),
             NotInstalledState => Version.ToString(),
