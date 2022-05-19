@@ -7,9 +7,11 @@ using System.Net.Http;
 using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using JetBrains.Annotations;
 using MessageBox.Avalonia;
+using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
@@ -178,6 +180,20 @@ namespace Scarab.ViewModels
 
         private async Task InternalUpdateInstallAsync(ModItem item, Func<IInstaller, Action<ModProgressArgs>, Task> f)
         {
+            if (Process.GetProcesses().FirstOrDefault(x => x.ProcessName.StartsWith("hollow_knight")) is Process proc)
+            {
+                var res = await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
+                    ContentTitle = "Warning!",
+                    ContentMessage = "Hollow Knight is open! This may lead to issues when installing mods. Close Hollow Knight?",
+                    ButtonDefinitions = ButtonEnum.YesNo,
+                    MinHeight = 200,
+                    SizeToContent = SizeToContent.WidthAndHeight,
+                }).Show();
+
+                if (res == ButtonResult.Yes)
+                    proc.Kill();
+            }
+            
             try
             {
                 await f
