@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Scarab.Models;
-using Scarab.Util;
 
 namespace Scarab.Interfaces
 {

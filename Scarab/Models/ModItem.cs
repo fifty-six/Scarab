@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia.Media;
 using PropertyChanged.SourceGenerator;
 using Scarab.Interfaces;
 
@@ -44,32 +43,15 @@ namespace Scarab.Models
         [Notify]
         private ModState _state;
 
-        public bool EnabledIsChecked =>
-            State switch
-            {
-                InstalledState { Enabled: var x } => x,
+        public bool EnabledIsChecked => State switch
+        {
+            InstalledState { Enabled: var x } => x,
 
-                // Can't enable what isn't installed.
-                _ => false
-            };
-
-        // 
-        // Installed -> true
-        // Not installed -> false
-        // Installing -> true, but different color.
-        //
-        public bool InstalledIsChecked =>
-            State switch
-            {
-                InstalledState => true,
-                NotInstalledState { Installing: true } => true,
-                _ => false
-            };
+            // Can't enable what isn't installed.
+            _ => false
+        };
 
         public bool Installing => State is NotInstalledState { Installing: true };
-
-        // When we're installing we show an orange check instead of a blue one
-        public Color Color => Color.Parse(State is InstalledState ? "#ff086f9e" : "#f49107");
 
         public string InstallText => State switch
         {
