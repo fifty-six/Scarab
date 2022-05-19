@@ -5,6 +5,8 @@ on: [push, pull_request]
 jobs:
   build-windows:
     runs-on: windows-latest
+    env:
+      NUGET_CERT_REVOCATION_MODE: offline
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
@@ -12,11 +14,11 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore -r win-x64
     - name: Build
       run: |
         cd Scarab
-        dotnet publish -r win-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
+        dotnet publish --no-restore -r win-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
         cd ..
     - name: Upload Binary
       uses: actions/upload-artifact@v2
@@ -33,7 +35,7 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore -r linux-x64
     - name: Build
       run: | 
         cd Scarab
@@ -47,6 +49,8 @@ jobs:
 
   build-macos:
     runs-on: macos-latest
+    env:
+      NUGET_CERT_REVOCATION_MODE: offline
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
@@ -54,11 +58,11 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore -r osx-x64
     - name: Build
       run: |
         cd Scarab
-        dotnet publish -r osx-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
+        dotnet publish --no-restore -r osx-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
         cd ..
         mkdir out
         python3 make_app.py Scarab.app Scarab/bin/Release/net6.0/osx-x64/publish
