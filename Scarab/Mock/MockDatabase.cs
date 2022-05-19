@@ -22,7 +22,8 @@ public class MockDatabase : IModDatabase
                 "link",
                 "sha",
                 "NormalEx",
-                "An example"
+                "An example", 
+                "github.com/fifty-six/no"
             ),
             // Installed but out of date
             new
@@ -33,7 +34,8 @@ public class MockDatabase : IModDatabase
                 "link",
                 "sha",
                 "OutOfDateEx",
-                "An example"
+                "An example",
+                "https://github.com/fifty-six/yup"
             ),
             // Not installed
             new
@@ -44,7 +46,8 @@ public class MockDatabase : IModDatabase
                 "link",
                 "sha",
                 "NotInstalledEx",
-                "An example"
+                "An example",
+                "example.com"
             ),
             // Example with a really long name
             new
@@ -55,7 +58,8 @@ public class MockDatabase : IModDatabase
                 "link",
                 "sha",
                 "SomethingSomethingSomethingAmongUs",
-                "An example"
+                "An example",
+                "example.com"
             )
         };
     }

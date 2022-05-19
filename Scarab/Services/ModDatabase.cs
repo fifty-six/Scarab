@@ -36,6 +36,7 @@ namespace Scarab.Services
                     name: mod.Name,
                     shasum: mod.Links.SHA256,
                     description: mod.Description,
+                    repository: mod.Repository,
                     dependencies: mod.Dependencies,
                     
                     state: mods.FromManifest(mod)

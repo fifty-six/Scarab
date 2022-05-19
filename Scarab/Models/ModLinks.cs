@@ -24,6 +24,8 @@ namespace Scarab.Models
 
         public string Name { get; set; } = null!;
 
+        public string Repository { get; set; } = null!;
+
         [XmlElement]
         public Link? Link
         {
@@ -48,8 +50,6 @@ namespace Scarab.Models
         public string[] Dependencies { get; set; } = null!;
 
         public string Description { get; set; } = null!;
-
-        // For serializer and nullability
 
         public override string ToString()
         {
@@ -137,7 +137,7 @@ namespace Scarab.Models
         }
     }
 
-    // [Serializable]
+    [Serializable]
     public class ApiManifest
     {
         public int Version { get; set; }

@@ -30,6 +30,10 @@ namespace Scarab.Tests
                     <Dependencies>
                         <Dependency>Vasi</Dependency>
                     </Dependencies>
+
+                    <Repository>
+                        <![CDATA[https://github.com/fifty-six/HollowKnight.QoL/]]>
+                    </Repository>
                 </Manifest>
                 <Manifest>
                     <Name>Vasi</Name>
@@ -41,6 +45,10 @@ namespace Scarab.Tests
                     </Link>
                     
                     <Dependencies />
+
+                    <Repository>
+                        <![CDATA[https://github.com/fifty-six/HollowKnight.Vasi/]]>
+                    </Repository>
                 </Manifest>
             </ModLinks>
         ".Trim();
@@ -104,7 +112,8 @@ namespace Scarab.Tests
                     "https://github.com/fifty-six/HollowKnight.QoL/releases/download/v3/QoL.zip",
                     string.Empty,
                     "QoL",
-                    "A collection of various quality of life improvements."
+                    "A collection of various quality of life improvements.",
+                    "https://github.com/fifty-six/HollowKnight.QoL"
                 ),
                 db.Items.First(x => x.Name == "QoL")
             );

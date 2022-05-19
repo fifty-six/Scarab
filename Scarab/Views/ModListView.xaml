@@ -159,6 +159,21 @@
                                 <StackPanel Margin="12 0 0 0">
                                     <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Margin="0 4 4 0"/>
                                     
+                                    <TextBlock Text="&#x0a;Repository:&#x0a;" FontWeight="Bold" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock 
+                                            Text="{Binding Repository}" 
+                                            TextWrapping="Wrap" 
+                                            Margin="0 4 4 0" 
+                                            PointerReleased="RepositoryTextClick"
+                                            Foreground="{DynamicResource Highlight}"
+                                        >
+                                            <TextBlock.Resources>
+                                                <SolidColorBrush x:Key="Highlight" Color="#1ebbff"/>
+                                            </TextBlock.Resources>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    
                                     <TextBlock Text="&#x0a;Version:&#x0a;" FontWeight="Bold" />
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding VersionText}" />

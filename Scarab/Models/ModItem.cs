@@ -17,7 +17,8 @@ namespace Scarab.Models
             string link,
             string shasum,
             string name,
-            string description
+            string description,
+            string repository
         )
         {
             _state = state;
@@ -28,6 +29,7 @@ namespace Scarab.Models
             Link = link;
             Name = name;
             Description = description;
+            Repository = repository;
 
             DependenciesDesc = string.Join(Environment.NewLine, Dependencies);
         }
@@ -38,6 +40,7 @@ namespace Scarab.Models
         public string   Sha256           { get; }
         public string   Name             { get; }
         public string   Description      { get; }
+        public string   Repository       { get; }
         public string   DependenciesDesc { get; }
 
         [Notify]

@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -36,6 +38,34 @@ namespace Scarab.Views
         private void PrepareElement(object? sender, ItemsRepeaterElementClearingEventArgs e)
         {
             e.Element.VisualChildren.OfType<Expander>().First().IsExpanded = false;
+        }
+
+        [UsedImplicitly]
+        private void RepositoryTextClick(object? sender, PointerReleasedEventArgs _)
+        {
+            if (sender is not TextBlock txt)
+            {
+                Trace.TraceWarning($"{nameof(RepositoryTextClick)} called with non TextBlock sender!");
+                return;
+            }
+
+            Trace.WriteLine(txt.Text);
+
+            try
+            {
+
+                Process.Start
+                (
+                    new ProcessStartInfo(txt.Text)
+                    {
+                        UseShellExecute = true
+                    }
+                );
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError($"{nameof(RepositoryTextClick)} process spawn failed with error {e}");
+            }
         }
     }
 }
