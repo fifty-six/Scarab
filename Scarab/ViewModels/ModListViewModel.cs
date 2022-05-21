@@ -180,7 +180,12 @@ namespace Scarab.ViewModels
 
         private async Task InternalUpdateInstallAsync(ModItem item, Func<IInstaller, Action<ModProgressArgs>, Task> f)
         {
-            if (Process.GetProcesses().FirstOrDefault(x => x.ProcessName.StartsWith("hollow_knight")) is Process proc)
+            static bool IsHollowKnight(Process p) => (
+                   p.ProcessName.StartsWith("hollow_knight")
+                || p.ProcessName.StartsWith("Hollow Knight")
+            );
+            
+            if (Process.GetProcesses().FirstOrDefault(IsHollowKnight) is Process proc)
             {
                 var res = await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
                     ContentTitle = "Warning!",
