@@ -48,6 +48,9 @@ namespace Scarab.Services
             {
                 if (Directory.Exists(Path.Combine(config.ModsFolder, name))) 
                     continue;
+
+                if (Directory.Exists(Path.Combine(config.DisabledFolder, name)))
+                    continue;
                 
                 Trace.TraceWarning($"Removing missing mod {name}!");
                 db.Mods.Remove(name);
