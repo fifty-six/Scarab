@@ -99,7 +99,7 @@ namespace Scarab.Services
         {
             try
             {
-                var cts = new CancellationTokenSource(5000);
+                var cts = new CancellationTokenSource(10000);
                 return await hc.GetStringAsync(uri, cts.Token);
             }
             catch (Exception e) when (e is TaskCanceledException or HttpRequestException)
