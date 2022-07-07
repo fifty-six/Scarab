@@ -20,18 +20,10 @@ namespace Scarab
         {
             SetupLogging();
 
-            AppDomain.CurrentDomain.ProcessExit += (_, _) =>
-            {
-                Trace.WriteLine("AppDomain ProcessExit!");
-                Handler(null);
-            };
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => Handler(null);
             PosixSignalRegistration.Create(PosixSignal.SIGTERM, Handler);
             PosixSignalRegistration.Create(PosixSignal.SIGINT, Handler);
-            Console.CancelKeyPress += (_, e) =>
-            {
-                Trace.WriteLine($"Console.CancelKeyPress {e.SpecialKey}");
-                Handler(null);
-            };
+            Console.CancelKeyPress += (_, _) => Handler(null);
             
             try
             {
@@ -46,11 +38,10 @@ namespace Scarab
         private static void Handler(PosixSignalContext? c)
         {
             Trace.WriteLine("Something sent a shutdown event, calling Application.Shutdown");
-            Trace.WriteLine(c is null ? "No PosixSignalContext." : $"sig: {c.Signal}");
-
-            // (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Shutdown();
             
-            // Trace.WriteLine("Got past Application.Shutdown, did shutting down fail?");
+            (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Shutdown();
+            
+            Trace.WriteLine("Got past Application.Shutdown, did shutting down fail?");
         }
 
         private static void SetupLogging()
