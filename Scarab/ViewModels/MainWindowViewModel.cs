@@ -64,11 +64,12 @@ namespace Scarab.ViewModels
             Trace.WriteLine("Fetching links");
             
             (ModLinks, ApiLinks) content;
+            
             try
             {
                 content = await ModDatabase.FetchContent();
             }
-            catch (Exception e) when (e is TaskCanceledException or HttpRequestException)
+            catch (Exception e) when (e is TaskCanceledException { CancellationToken.IsCancellationRequested: true } or HttpRequestException)
             {
                 string failedOp = e switch
                 {
