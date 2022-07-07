@@ -43,7 +43,11 @@ namespace Scarab
 
         private static string ConfigPath => Path.Combine
         (
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            Environment.GetFolderPath
+            (
+                Environment.SpecialFolder.ApplicationData,
+                Environment.SpecialFolderOption.Create
+            ),
             "HKModInstaller",
             "HKInstallerSettings.json"
         );
