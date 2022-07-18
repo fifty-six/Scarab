@@ -36,6 +36,7 @@ namespace Scarab
         private static readonly ImmutableList<string> USER_SUFFIX_PATHS = new List<string>
         {
             ".local/.share/Steam/steamapps/common/Hollow Knight",
+            ".local/share/Steam/steamapps/common/Hollow Knight", // Steam Deck
             "Library/Application Support/Steam/steamapps/common/Hollow Knight/hollow_knight.app"
         }
         .ToImmutableList();
