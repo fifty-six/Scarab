@@ -246,7 +246,7 @@ namespace Scarab.ViewModels
             }
             catch (Exception e)
             {
-                Trace.WriteLine(e.StackTrace);
+                Trace.WriteLine(e);
                 Trace.Flush();
 
                 if (Debugger.IsAttached)
