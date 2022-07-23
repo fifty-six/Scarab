@@ -180,9 +180,15 @@ namespace Scarab
 
             string content = File.ReadAllText(ConfigPath);
 
-            var settings = JsonSerializer.Deserialize<Settings>(content);
-
-            return settings;
+            try
+            {
+                return JsonSerializer.Deserialize<Settings>(content);
+            }
+            // The JSON is malformed, act as if we don't have settings as a backup
+            catch (Exception e) when (e is JsonException or ArgumentNullException)
+            {
+                return null;
+            }
         }
 
         public static Settings Create(string path)
