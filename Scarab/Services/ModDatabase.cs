@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -56,19 +58,77 @@ namespace Scarab.Services
         
         public static async Task<(ModLinks, ApiLinks)> FetchContent()
         {
-            using var hc = new HttpClient {
-                DefaultRequestHeaders = {
-                    CacheControl = new CacheControlHeaderValue {
-                        NoCache = true,
-                        MustRevalidate = true
-                    }
-                }
-            };
-            
-            Task<ModLinks> ml = FetchModLinks(hc);
-            Task<ApiLinks> al = FetchApiLinks(hc);
+            async Task<(ModLinks, ApiLinks)> TryFetch(HttpClient hc)
+            {
+                var ml = FetchModLinks(hc);
+                var al = FetchApiLinks(hc);
 
-            return (await ml, await al);
+                return (await ml, await al);
+            }
+
+            HttpClient AddSettings(HttpClient hc)
+            {
+                hc.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
+                {
+                    NoCache = true,
+                    MustRevalidate = true
+                };
+                
+                hc.DefaultRequestHeaders.Add("User-Agent", "Scarab");
+
+                return hc;
+            }
+
+            using var hc = AddSettings(new HttpClient());
+            
+            hc.DefaultRequestHeaders.Add("User-Agent", "Scarab");
+
+            try
+            {
+                return await TryFetch(hc);
+            }
+            catch (TaskCanceledException)
+            {
+                Trace.WriteLine("Normal HttpClient timed out, trying work-around client.");
+                
+                using HttpClient workaround = AddSettings(CreateWorkaroundClient());
+
+                return await TryFetch(hc);
+            }
+        }
+        
+        // .NET has a thing with using IPv6 for IPv4 stuff, so on
+        // networks and/or drivers w/ poor support this fails.
+        // https://github.com/dotnet/runtime/issues/47267
+        // https://github.com/fifty-six/Scarab/issues/47
+        private static HttpClient CreateWorkaroundClient()
+        {
+            SocketsHttpHandler handler = new SocketsHttpHandler
+            {
+                ConnectCallback = IPv4ConnectAsync
+            };
+            return new HttpClient(handler);
+        
+            static async ValueTask<Stream> IPv4ConnectAsync(SocketsHttpConnectionContext context, CancellationToken cancellationToken)
+            {
+                // By default, we create dual-mode sockets:
+                // Socket socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+        
+                // Defaults to dual-mode sockets, which uses IPv6 for IPv4 stuff.
+                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                socket.NoDelay = true;
+        
+                try
+                {
+                    await socket.ConnectAsync(context.DnsEndPoint, cancellationToken).ConfigureAwait(false);
+                    return new NetworkStream(socket, ownsSocket: true);
+                }
+                catch
+                {
+                    socket.Dispose();
+                    throw;
+                }
+            }
         }
 
         private static T FromString<T>(string xml)
@@ -99,12 +159,12 @@ namespace Scarab.Services
         {
             try
             {
-                var cts = new CancellationTokenSource(10000);
+                var cts = new CancellationTokenSource(3000);
                 return await hc.GetStringAsync(uri, cts.Token);
             }
             catch (Exception e) when (e is TaskCanceledException or HttpRequestException)
             {
-                var cts = new CancellationTokenSource(10000);
+                var cts = new CancellationTokenSource(3000);
                 return await hc.GetStringAsync(fallback, cts.Token);
             }
         }
