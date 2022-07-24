@@ -39,9 +39,7 @@ namespace Scarab
         {
             Trace.WriteLine("Something sent a shutdown event, calling Application.Shutdown");
             
-            (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Shutdown();
-            
-            Trace.WriteLine("Got past Application.Shutdown, did shutting down fail?");
+            Environment.Exit(-1);
         }
 
         private static void SetupLogging()
