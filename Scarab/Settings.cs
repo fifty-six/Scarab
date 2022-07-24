@@ -20,6 +20,8 @@ namespace Scarab
         public string ManagedFolder { get; set; }
 
         public bool AutoRemoveDeps { get; }
+        
+        public bool RequiresWorkaroundClient { get; set; }
 
         // @formatter:off
         private static readonly ImmutableList<string> STATIC_PATHS = new List<string>

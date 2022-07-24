@@ -67,7 +67,7 @@ namespace Scarab.ViewModels
             
             try
             {
-                content = await ModDatabase.FetchContent();
+                content = await ModDatabase.FetchContent(settings);
             }
             catch (Exception e) when (e is TaskCanceledException { CancellationToken.IsCancellationRequested: true } or HttpRequestException)
             {

@@ -56,12 +56,12 @@ namespace Scarab.Services
 
         public ModDatabase(IModSource mods, string modlinks, string apilinks) : this(mods, FromString<ModLinks>(modlinks), FromString<ApiLinks>(apilinks)) { }
         
-        public static async Task<(ModLinks, ApiLinks)> FetchContent()
+        public static async Task<(ModLinks, ApiLinks)> FetchContent(Settings settings)
         {
             async Task<(ModLinks, ApiLinks)> TryFetch(HttpClient hc)
             {
-                var ml = FetchModLinks(hc);
-                var al = FetchApiLinks(hc);
+                Task<ModLinks> ml = FetchModLinks(hc);
+                Task<ApiLinks> al = FetchApiLinks(hc);
 
                 return (await ml, await al);
             }
@@ -79,22 +79,31 @@ namespace Scarab.Services
                 return hc;
             }
 
-            using var hc = AddSettings(new HttpClient());
+            if (!settings.RequiresWorkaroundClient)
+            {
+                using var hc = AddSettings(new HttpClient());
+
+                hc.DefaultRequestHeaders.Add("User-Agent", "Scarab");
+
+                try
+                {
+                    return await TryFetch(hc);
+                }
+                catch (TaskCanceledException)
+                {
+                    Trace.WriteLine("Normal HttpClient timed out, trying work-around client.");
+                }
+            }
+
+            using HttpClient workaround = AddSettings(CreateWorkaroundClient());
+
+            Task<(ModLinks, ApiLinks)> res = TryFetch(workaround);
             
-            hc.DefaultRequestHeaders.Add("User-Agent", "Scarab");
+            // Since this suceeded, don't make the user wait 6s for
+            // the normal client to fail in the future.
+            settings.RequiresWorkaroundClient = true;
 
-            try
-            {
-                return await TryFetch(hc);
-            }
-            catch (TaskCanceledException)
-            {
-                Trace.WriteLine("Normal HttpClient timed out, trying work-around client.");
-                
-                using HttpClient workaround = AddSettings(CreateWorkaroundClient());
-
-                return await TryFetch(hc);
-            }
+            return await res;
         }
         
         // .NET has a thing with using IPv6 for IPv4 stuff, so on
