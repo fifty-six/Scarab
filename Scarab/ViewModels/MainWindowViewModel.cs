@@ -84,8 +84,8 @@ namespace Scarab.ViewModels
                     text: $"Unable to fetch modlinks, the operation {failedOp}",
                     icon: Icon.Error
                 ).Show();
-                
-                return;
+
+                throw;
             }
 
             Trace.WriteLine("Fetched links successfully");
@@ -246,7 +246,7 @@ namespace Scarab.ViewModels
             }
             catch (Exception e)
             {
-                Trace.WriteLine(e);
+                Trace.TraceError(e.ToString());
                 Trace.Flush();
 
                 if (Debugger.IsAttached)
