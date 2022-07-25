@@ -56,90 +56,14 @@ namespace Scarab.Services
 
         public ModDatabase(IModSource mods, string modlinks, string apilinks) : this(mods, FromString<ModLinks>(modlinks), FromString<ApiLinks>(apilinks)) { }
         
-        public static async Task<(ModLinks, ApiLinks)> FetchContent(Settings settings)
+        public static async Task<(ModLinks, ApiLinks)> FetchContent(HttpClient hc)
         {
-            async Task<(ModLinks, ApiLinks)> TryFetch(HttpClient hc)
-            {
-                Task<ModLinks> ml = FetchModLinks(hc);
-                Task<ApiLinks> al = FetchApiLinks(hc);
+            Task<ModLinks> ml = FetchModLinks(hc);
+            Task<ApiLinks> al = FetchApiLinks(hc);
 
-                return (await ml, await al);
-            }
-
-            HttpClient AddSettings(HttpClient hc)
-            {
-                hc.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
-                {
-                    NoCache = true,
-                    MustRevalidate = true
-                };
-                
-                hc.DefaultRequestHeaders.Add("User-Agent", "Scarab");
-
-                return hc;
-            }
-
-            if (!settings.RequiresWorkaroundClient)
-            {
-                using var hc = AddSettings(new HttpClient());
-
-                hc.DefaultRequestHeaders.Add("User-Agent", "Scarab");
-
-                try
-                {
-                    return await TryFetch(hc);
-                }
-                catch (TaskCanceledException)
-                {
-                    Trace.WriteLine("Normal HttpClient timed out, trying work-around client.");
-                }
-            }
-
-            using HttpClient workaround = AddSettings(CreateWorkaroundClient());
-
-            Task<(ModLinks, ApiLinks)> res = TryFetch(workaround);
-            
-            // Since this suceeded, don't make the user wait 6s for
-            // the normal client to fail in the future.
-            settings.RequiresWorkaroundClient = true;
-
-            return await res;
+            return (await ml, await al);
         }
         
-        // .NET has a thing with using IPv6 for IPv4 stuff, so on
-        // networks and/or drivers w/ poor support this fails.
-        // https://github.com/dotnet/runtime/issues/47267
-        // https://github.com/fifty-six/Scarab/issues/47
-        private static HttpClient CreateWorkaroundClient()
-        {
-            SocketsHttpHandler handler = new SocketsHttpHandler
-            {
-                ConnectCallback = IPv4ConnectAsync
-            };
-            return new HttpClient(handler);
-        
-            static async ValueTask<Stream> IPv4ConnectAsync(SocketsHttpConnectionContext context, CancellationToken cancellationToken)
-            {
-                // By default, we create dual-mode sockets:
-                // Socket socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
-        
-                // Defaults to dual-mode sockets, which uses IPv6 for IPv4 stuff.
-                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                socket.NoDelay = true;
-        
-                try
-                {
-                    await socket.ConnectAsync(context.DnsEndPoint, cancellationToken).ConfigureAwait(false);
-                    return new NetworkStream(socket, ownsSocket: true);
-                }
-                catch
-                {
-                    socket.Dispose();
-                    throw;
-                }
-            }
-        }
-
         private static T FromString<T>(string xml)
         {
             var serializer = new XmlSerializer(typeof(T));

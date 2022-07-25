@@ -63,14 +63,15 @@ namespace Scarab.Services
         // ReSharper restore MemberCanBePrivate.Global
 
         private readonly SemaphoreSlim _semaphore = new (1);
-        private readonly HttpClient _hc = new ();
+        private readonly HttpClient _hc;
 
-        public Installer(ISettings config, IModSource installed, IModDatabase db, IFileSystem fs)
+        public Installer(ISettings config, IModSource installed, IModDatabase db, IFileSystem fs, HttpClient hc)
         {
             _config = config;
             _installed = installed;
             _db = db;
             _fs = fs;
+            _hc = hc;
         }
 
         private void CreateNeededDirectories()

@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -64,10 +65,36 @@ namespace Scarab.ViewModels
             Trace.WriteLine("Fetching links");
             
             (ModLinks, ApiLinks) content;
+
+            void AddSettings(HttpClient hc)
+            {
+                hc.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
+                {
+                    NoCache = true,
+                    MustRevalidate = true
+                };
+                
+                hc.DefaultRequestHeaders.Add("User-Agent", "Scarab");
+            }
+
+            HttpClient hc;
             
             try
             {
-                content = await ModDatabase.FetchContent(settings);
+                var res = await WorkaroundHttpClient.TryWithWorkaroundAsync(
+                    settings.RequiresWorkaroundClient 
+                        ? WorkaroundHttpClient.Settings.OnlyWorkaround
+                        : WorkaroundHttpClient.Settings.TryBoth,
+                    ModDatabase.FetchContent,
+                    AddSettings
+                );
+
+                content = res.Result;
+                
+                if (res.NeededWorkaround)
+                    settings.RequiresWorkaroundClient = true;
+
+                hc = res.Client;
             }
             catch (Exception e) when (e is TaskCanceledException { CancellationToken.IsCancellationRequested: true } or HttpRequestException)
             {
@@ -90,7 +117,9 @@ namespace Scarab.ViewModels
 
             Trace.WriteLine("Fetched links successfully");
             
-            sc.AddSingleton<ISettings>(_ => settings)
+            sc
+              .AddSingleton(hc)
+              .AddSingleton<ISettings>(_ => settings)
               .AddSingleton<IFileSystem, FileSystem>()
               .AddSingleton<IModSource>(services => InstalledMods.Load(services.GetRequiredService<IFileSystem>(), settings))
               .AddSingleton<IModDatabase, ModDatabase>(sp => new ModDatabase(sp.GetRequiredService<IModSource>(), content))
