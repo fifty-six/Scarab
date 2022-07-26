@@ -90,9 +90,12 @@ namespace Scarab.ViewModels
                 );
 
                 content = res.Result;
-                
-                if (res.NeededWorkaround)
+
+                if (res.NeededWorkaround && !settings.RequiresWorkaroundClient)
+                {
                     settings.RequiresWorkaroundClient = true;
+                    settings.Save();
+                }
 
                 hc = res.Client;
             }
