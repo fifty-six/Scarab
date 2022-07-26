@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Microsoft.Toolkit.HighPerformance.Helpers;
 using Scarab.Interfaces;
 using Scarab.Models;
 
@@ -34,25 +35,55 @@ namespace Scarab.Services
 
         private readonly IFileSystem _fs;
 
-        public static InstalledMods Load(IFileSystem fs, ISettings config)
+        public static InstalledMods Load(IFileSystem fs, ISettings config, ModLinks ml)
         {
-            InstalledMods db = File.Exists(ConfigPath)
-                ? JsonSerializer.Deserialize<InstalledMods>(File.ReadAllText(ConfigPath)) ?? throw new InvalidDataException()
-                : new InstalledMods();
+            InstalledMods db;
+
+            bool ModExists(string name, out bool enabled)
+            {
+                enabled = false;
+                
+                if (Directory.Exists(Path.Combine(config.DisabledFolder, name)))
+                    return true;
+
+                if (!Directory.Exists(Path.Combine(config.DisabledFolder, name))) 
+                    return false;
+                
+                return (enabled = true);
+            }
+
+            try
+            {
+                db = File.Exists(ConfigPath)
+                    ? JsonSerializer.Deserialize<InstalledMods>(File.ReadAllText(ConfigPath)) ?? throw new InvalidDataException()
+                    : new InstalledMods();
+            } catch (Exception e) when (e is InvalidDataException or JsonException)
+            {
+                // If we have malformed JSON, try and recover the installed mods
+                // Better than crashing and we overwrite mods anyways so it's not *too* bad
+                db = new InstalledMods();
+
+                foreach (string name in ml.Manifests.Select(x => x.Name))
+                {
+                    if (!ModExists(name, out bool enabled)) 
+                        continue;
+                    
+                    // Pretend it's out of date because we aren't sure of the version.
+                    db.Mods.Add(name, new InstalledState(enabled, new Version(0, 0), false));
+                }
+            }
 
             if (db.ApiInstall is not InstalledState) 
                 return db;
 
             // Validate that mods are installed in case of manual user intervention
-            foreach (string? name in db.Mods.Select(x => x.Key))
+            foreach (string name in db.Mods.Select(x => x.Key))
             {
-                if (Directory.Exists(Path.Combine(config.ModsFolder, name))) 
-                    continue;
-
-                if (Directory.Exists(Path.Combine(config.DisabledFolder, name)))
+                if (!ModExists(name, out _))
                     continue;
                 
                 Trace.TraceWarning($"Removing missing mod {name}!");
+                
                 db.Mods.Remove(name);
             }
             
