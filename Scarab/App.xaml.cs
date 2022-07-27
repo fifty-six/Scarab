@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using JetBrains.Annotations;
@@ -19,6 +20,8 @@ namespace Scarab
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
+                desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
+                
                 desktop.MainWindow = new MainWindow
                 {
                     DataContext = new MainWindowViewModel()
