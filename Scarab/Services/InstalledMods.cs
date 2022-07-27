@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Microsoft.Toolkit.HighPerformance.Helpers;
 using Scarab.Interfaces;
 using Scarab.Models;
 
@@ -43,24 +42,19 @@ namespace Scarab.Services
             {
                 enabled = false;
                 
-                if (Directory.Exists(Path.Combine(config.DisabledFolder, name)))
-                    return true;
+                if (Directory.Exists(Path.Combine(config.ModsFolder, name)))
+                    return enabled = true;
 
-                if (!Directory.Exists(Path.Combine(config.DisabledFolder, name))) 
-                    return false;
-                
-                return (enabled = true);
+                return Directory.Exists(Path.Combine(config.DisabledFolder, name));
             }
 
             try
             {
-                db = File.Exists(ConfigPath)
-                    ? JsonSerializer.Deserialize<InstalledMods>(File.ReadAllText(ConfigPath)) ?? throw new InvalidDataException()
-                    : new InstalledMods();
-            } catch (Exception e) when (e is InvalidDataException or JsonException)
+                db = JsonSerializer.Deserialize<InstalledMods>(File.ReadAllText(ConfigPath))
+                    ?? throw new InvalidDataException();
+            } catch (Exception e) when (e is InvalidDataException or JsonException or FileNotFoundException)
             {
-                // If we have malformed JSON, try and recover the installed mods
-                // Better than crashing and we overwrite mods anyways so it's not *too* bad
+                // If we have malformed JSON or it's a new install, try and recover any installed mods
                 db = new InstalledMods();
 
                 foreach (string name in ml.Manifests.Select(x => x.Name))
@@ -79,7 +73,7 @@ namespace Scarab.Services
             // Validate that mods are installed in case of manual user intervention
             foreach (string name in db.Mods.Select(x => x.Key))
             {
-                if (!ModExists(name, out _))
+                if (ModExists(name, out _))
                     continue;
                 
                 Trace.TraceWarning($"Removing missing mod {name}!");
