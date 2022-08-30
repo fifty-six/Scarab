@@ -36,31 +36,34 @@
                 </Style>
             </Menu.Styles>
 
-            <MenuItem Header="All" Command="{Binding SelectAll}" DockPanel.Dock="Top"/>
+            <MenuItem Header="All" Command="{Binding SelectAll}" DockPanel.Dock="Top" ToolTip.Tip="Show all available mods"/>
             <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="Installed" Command="{Binding SelectInstalled}" DockPanel.Dock="Top" />
+            <MenuItem Header="Installed" Command="{Binding SelectInstalled}" DockPanel.Dock="Top" ToolTip.Tip="Show all installed mods"/>
             <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="Enabled" Command="{Binding SelectEnabled}" DockPanel.Dock="Top" />
+            <MenuItem Header="Enabled" Command="{Binding SelectEnabled}" DockPanel.Dock="Top" ToolTip.Tip="Show all installed and enabled mods"/>
             <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="Out of date" Command="{Binding SelectUnupdated}" DockPanel.Dock="Top" />
+            <MenuItem Header="Out of date" Command="{Binding SelectUnupdated}" DockPanel.Dock="Top" ToolTip.Tip="Show all mods that need updating"/>
             <MenuItem Header="-" DockPanel.Dock="Top" />
 
             <MenuItem
                 Command="{Binding ChangePath}"
                 Header="Change Path"
                 DockPanel.Dock="Bottom"
-                VerticalAlignment="Bottom" />
+                VerticalAlignment="Bottom" 
+                ToolTip.Tip="Change the folder location of the modded game"/>
             <MenuItem
                 Command="{Binding OpenModsDirectory}"
                 Header="Open Mods"
                 DockPanel.Dock="Bottom"
-                VerticalAlignment="Bottom" />
+                VerticalAlignment="Bottom" 
+                ToolTip.Tip="Open the local folder containing mods"/>
             <MenuItem
                 Command="{Binding ToggleApi}"
                 Header="{Binding ApiButtonText}"
                 IsEnabled="{Binding EnableApiButton}"
                 DockPanel.Dock="Bottom"
-                VerticalAlignment="Bottom" />
+                VerticalAlignment="Bottom"
+                ToolTip.Tip="{Binding ApiButtonTooltip}"/>
             <MenuItem
                 Command="{Binding UpdateApi}"
                 Header="Update API"
@@ -112,9 +115,10 @@
             <Panel Grid.Column="1">
                 <Label>Search Options</Label>
                 <ComboBox 
-                Name="Tag">
-                <RadioButton IsChecked="{Binding NormalSearch}" GroupName="SearchMode" Content="Normal Search"/>
-                <RadioButton IsChecked="{Binding ReverseSearch}" GroupName="SearchMode" Content="Reverse Dependency Search" />
+                Name="Tag"
+                ToolTip.Tip="Change the way mods are searched for">
+                <RadioButton IsChecked="{Binding NormalSearch}" GroupName="SearchMode" Content="Normal Search" ToolTip.Tip="Search by the mod name"/>
+                <RadioButton IsChecked="{Binding ReverseSearch}" GroupName="SearchMode" Content="Reverse Dependency Search" ToolTip.Tip="Use this mode to search for all mods that integrate with or depend on that mod"/>
                 <StackPanel Orientation="Horizontal">
                     <Label>By Tag:</Label>
                     <ComboBox Items="{Binding TagList}" SelectedIndex="0" SelectedItem="{Binding SelectedTag}"></ComboBox>

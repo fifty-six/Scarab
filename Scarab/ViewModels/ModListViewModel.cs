@@ -226,6 +226,7 @@ namespace Scarab.ViewModels
         }
 
         public string ApiButtonText => _mods.ApiInstall is InstalledState { Enabled: var enabled } ? (enabled ? "Disable API" : "Enable API") : "Toggle API";
+        public string ApiButtonTooltip => _mods.ApiInstall is InstalledState { Enabled: var enabled } ? (enabled ? "Disable the modding API to make the game vanilla" : "Enable the modding API to make the game modded") : "Toggle API";
         public bool ApiOutOfDate => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
 
         public bool EnableApiButton => _mods.ApiInstall switch
@@ -247,6 +248,7 @@ namespace Scarab.ViewModels
             await _installer.ToggleApi();
             
             RaisePropertyChanged(nameof(ApiButtonText));
+            RaisePropertyChanged(nameof(ApiButtonTooltip));
             RaisePropertyChanged(nameof(EnableApiButton));
         }
         
@@ -336,6 +338,7 @@ namespace Scarab.ViewModels
 
             RaisePropertyChanged(nameof(ApiOutOfDate));
             RaisePropertyChanged(nameof(ApiButtonText));
+            RaisePropertyChanged(nameof(ApiButtonTooltip));
             RaisePropertyChanged(nameof(EnableApiButton));
         }
 
@@ -399,6 +402,7 @@ namespace Scarab.ViewModels
             ProgressBarVisible = false;
 
             RaisePropertyChanged(nameof(ApiButtonText));
+            RaisePropertyChanged(nameof(ApiButtonTooltip));
             RaisePropertyChanged(nameof(EnableApiButton));
             
             static int Comparer(ModItem x, ModItem y) => ModToOrderedTuple(x).CompareTo(ModToOrderedTuple(y));
