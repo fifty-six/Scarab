@@ -33,7 +33,9 @@ namespace Scarab.Tests
                 string.Empty,
                 "test",
                 "test",
-                "repo"
+                "repo",
+                Array.Empty<string>(),
+                Array.Empty<string>()
             );
             
             await ms.RecordInstalledState(item);
