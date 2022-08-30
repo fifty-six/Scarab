@@ -93,7 +93,7 @@ namespace Scarab.ViewModels
                 _reverseSearch = value;
                 RaisePropertyChanged(nameof(FilteredItems));
             }
-        } 
+        }
 
         public ModListViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods)
         {
@@ -106,6 +106,23 @@ namespace Scarab.ViewModels
 
             _modnameDictionary = _allModItems.ToDictionary(x => x.Name, x => x);
 
+            //get all tags on the mods
+            TagList = new ObservableCollection<string>()
+            {
+                "All Tags" //this isn't a tag but we need it for the combobox
+            };
+            foreach (var mod in _allModItems)
+            {
+                if (mod.Tags is null) continue;
+                foreach (var tag in mod.Tags)
+                {
+                    if (!TagList.Contains(tag))
+                    {
+                        TagList.Add(tag);
+                    }
+                }
+            }
+
             SelectedItems = _selectedItems = _allModItems;
 
             OnInstall = ReactiveCommand.CreateFromTask<ModItem>(OnInstallAsync);
@@ -114,16 +131,6 @@ namespace Scarab.ViewModels
             ToggleApi = ReactiveCommand.Create(ToggleApiCommand);
             ChangePath = ReactiveCommand.CreateFromTask(ChangePathAsync);
             UpdateApi = ReactiveCommand.CreateFromTask(UpdateApiAsync);
-            TagList = new ObservableCollection<string>()
-            {
-                "All Tags", 
-                "Boss", 
-                "Cosmetic", 
-                "Expansion", 
-                "Gameplay", 
-                "Library",
-                "Utility"
-            };
         }
 
         private void DisplayModsCorrectly()
