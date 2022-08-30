@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -40,7 +37,8 @@ namespace Scarab.Services
                     description: mod.Description,
                     repository: mod.Repository,
                     dependencies: mod.Dependencies,
-                    
+                    tags: mod.Tags,
+                    integrations:mod.Integrations,
                     state: mods.FromManifest(mod)
                 );
                 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -54,7 +55,50 @@ namespace Scarab.ViewModels
         public ReactiveCommand<Unit, Unit> UpdateApi { get; }
         
         public ReactiveCommand<Unit, Unit> ChangePath { get; }
+
+        public ObservableCollection<string> TagList { get; set; }
+
+        enum ModViewState
+        {
+            All, Installed, Enabled, OutOfDate
+        }
+
+        private ModViewState _modViewState = ModViewState.All;
         
+        
+        private string _selectedTag = "All Tags";
+        public string SelectedTag
+        {
+            get => _selectedTag;
+            set
+            {
+                _selectedTag = value;
+                DisplayModsCorrectly();
+            }
+        }
+
+        private bool _normalSearch = true;
+        public bool NormalSearch
+        {
+            get => _normalSearch;
+            set
+            {
+                _normalSearch = value;
+                RaisePropertyChanged(nameof(FilteredItems));
+            }
+        } 
+
+        private bool _reverseSearch = false;
+        public bool ReverseSearch
+        {
+            get => _reverseSearch;
+            set
+            {
+                _reverseSearch = value;
+                RaisePropertyChanged(nameof(FilteredItems));
+            }
+        } 
+
         public ModListViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods)
         {
             _settings = settings;
@@ -72,16 +116,117 @@ namespace Scarab.ViewModels
             ToggleApi = ReactiveCommand.Create(ToggleApiCommand);
             ChangePath = ReactiveCommand.CreateFromTask(ChangePathAsync);
             UpdateApi = ReactiveCommand.CreateFromTask(UpdateApiAsync);
+            TagList = new ObservableCollection<string>()
+            {
+                "All Tags", 
+                "Boss", 
+                "Cosmetic", 
+                "Expansion", 
+                "Gameplay", 
+                "Library",
+                "Utility"
+            };
+        }
+
+        private void DisplayModsCorrectly()
+        {
+            IEnumerable<ModItem> newList = _items;
+                
+            if (SelectedTag != "All Tags")
+            {
+                newList = _items.Where(x =>
+                {
+                    if (x.Tags == null!) return false;
+                    return x.Tags.Contains(SelectedTag);
+                });
+            }
+
+            SelectedItems = _modViewState switch
+            {
+                ModViewState.All => newList,
+                ModViewState.Installed => newList.Where(x => x.Installed),
+                ModViewState.Enabled => newList.Where(x=> x.State is InstalledState { Enabled: true }),
+                ModViewState.OutOfDate => newList.Where(x=> x.State is InstalledState { Updated: false }),
+                _ => throw new InvalidOperationException("Unreachable") 
+            };
         }
 
         [UsedImplicitly]
-        private IEnumerable<ModItem> FilteredItems =>
-            string.IsNullOrEmpty(Search)
-                ? SelectedItems
-                : SelectedItems.Where(x => x.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
+        private IEnumerable<ModItem> FilteredItems
+        {
+            get
+            {
+                if (NormalSearch)
+                {
+                    return string.IsNullOrEmpty(Search)
+                        ? SelectedItems
+                        : SelectedItems.Where(x => x.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
+                    
+                }
+                else
+                {
+                    return string.IsNullOrEmpty(Search)
+                        ? SelectedItems
+                        : GetFullReverseDependencies();
+                }
+            }
+        }
+        
 
-        public string ApiButtonText   => _mods.ApiInstall is InstalledState { Enabled: var enabled } ? (enabled ? "Disable API" : "Enable API") : "Toggle API";
-        public bool   ApiOutOfDate    => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
+        private IEnumerable<ModItem> GetFullReverseDependencies()
+        {
+            List<ModItem> AllDependents = new();
+
+            //check to see if the search is actually a mod or not to not waste the effort
+            var searchedMod = GetMod(Search!);
+            if (searchedMod != null)
+            {
+                foreach (var mod in SelectedItems)
+                {
+                    if (mod.HasIntegrations)
+                    {
+                        if (mod.Integrations.Contains(searchedMod.Name))
+                        {
+                            AllDependents.Add(mod);
+                            continue;
+                        }
+                    }
+                    if (RecursiveCheckDependency(mod, searchedMod))
+                    {
+                        AllDependents.Add(mod);
+                    }
+                }
+            }
+            return AllDependents;
+        }
+
+        private bool RecursiveCheckDependency(ModItem Mod, ModItem ToSearchDependencyMod)
+        {
+            if (!Mod.HasDependencies) return false;
+
+            foreach (var dependency in Mod.Dependencies)
+            {
+                var dependencyMod = GetMod(dependency); 
+
+                if (dependencyMod == null) continue;
+
+                if (dependencyMod.Name.Equals(ToSearchDependencyMod.Name, StringComparison.OrdinalIgnoreCase))
+                    return true;
+
+                if (RecursiveCheckDependency(dependencyMod, ToSearchDependencyMod)) return true;
+            }
+
+            return false;
+        }
+        
+        private ModItem? GetMod(string name)
+        {
+            return _items.FirstOrDefault(x =>
+                x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public string ApiButtonText => _mods.ApiInstall is InstalledState { Enabled: var enabled } ? (enabled ? "Disable API" : "Enable API") : "Toggle API";
+        public bool ApiOutOfDate => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
 
         public bool EnableApiButton => _mods.ApiInstall switch
         {
@@ -137,16 +282,32 @@ namespace Scarab.ViewModels
         }
 
         public static void Donate() => Process.Start(new ProcessStartInfo("https://paypal.me/ybham") { UseShellExecute = true });
-        
-        public void SelectAll() => SelectedItems = _items;
 
-        public void SelectInstalled() => SelectedItems = _items.Where(x => x.Installed);
+        public void SelectAll()
+        {
+            _modViewState = ModViewState.All;
+            DisplayModsCorrectly();
+        }
 
-        public void SelectUnupdated() => SelectedItems = _items.Where(x => x.State is InstalledState { Updated: false });
+        public void SelectInstalled()
+        {
+            _modViewState = ModViewState.Installed;
+            DisplayModsCorrectly();
+        }
 
-        public void SelectEnabled() => SelectedItems = _items.Where(x => x.State is InstalledState { Enabled: true });
+        public void SelectUnupdated()
+        {
+            _modViewState = ModViewState.OutOfDate;
+            DisplayModsCorrectly();
+        }
 
-        private async Task OnEnableAsync(ModItem item)
+        public void SelectEnabled()
+        {
+            _modViewState = ModViewState.Enabled;
+            DisplayModsCorrectly();
+        }
+
+        private async Task OnEnableAsync(ModItem item) 
         {
             try
             {
@@ -239,9 +400,9 @@ namespace Scarab.ViewModels
 
             RaisePropertyChanged(nameof(ApiButtonText));
             RaisePropertyChanged(nameof(EnableApiButton));
-
+            
             static int Comparer(ModItem x, ModItem y) => ModToOrderedTuple(x).CompareTo(ModToOrderedTuple(y));
-
+            
             _items.SortBy(Comparer);
         }
 
@@ -282,12 +443,11 @@ namespace Scarab.ViewModels
                 icon: Icon.Error
             ).Show();
         }
-
+        
         private static (int priority, string name) ModToOrderedTuple(ModItem m) =>
         (
             m.State is InstalledState { Updated : false } ? -1 : 1,
             m.Name
         );
-        
     }
 }

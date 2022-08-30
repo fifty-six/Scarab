@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -48,9 +49,18 @@ namespace Scarab.Models
         [XmlArray("Dependencies")]
         [XmlArrayItem("Dependency")]
         public string[] Dependencies { get; set; } = null!;
-
+        
+        [XmlArray(ElementName = "Tags", IsNullable = true)]
+        [XmlArrayItem(ElementName = "Tag", IsNullable = true)]
+        
+        public string[] Tags { get; set; }
+        
+        [XmlArray(ElementName = "Integrations", IsNullable = true)]
+        [XmlArrayItem(ElementName = "Integration", IsNullable = true)]
+        
+        public string[] Integrations { get; set; }
         public string Description { get; set; } = null!;
-
+        
         public override string ToString()
         {
             return "{\n"
@@ -59,6 +69,8 @@ namespace Scarab.Models
                 + $"\t{nameof(Links)}: {(object?) _link ?? Links},\n"
                 + $"\t{nameof(Dependencies)}: {string.Join(", ", Dependencies)},\n"
                 + $"\t{nameof(Description)}: {Description}\n"
+                + $"\t{nameof(Tags)}: {string.Join(", ", Tags)}\n"
+                + $"\t{nameof(Integrations)}: {string.Join(", ", Integrations)}\n"
                 + "}";
         }
     }
