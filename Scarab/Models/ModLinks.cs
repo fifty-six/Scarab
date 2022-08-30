@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -50,16 +49,15 @@ namespace Scarab.Models
         [XmlArrayItem("Dependency")]
         public string[] Dependencies { get; set; } = null!;
         
+        public string Description { get; set; } = null!;
+        
         [XmlArray(ElementName = "Tags", IsNullable = true)]
         [XmlArrayItem(ElementName = "Tag", IsNullable = true)]
-        
-        public string[] Tags { get; set; }
+        public string[]? Tags { get; set; }
         
         [XmlArray(ElementName = "Integrations", IsNullable = true)]
         [XmlArrayItem(ElementName = "Integration", IsNullable = true)]
-        
-        public string[] Integrations { get; set; }
-        public string Description { get; set; } = null!;
+        public string[]? Integrations { get; set; }
         
         public override string ToString()
         {

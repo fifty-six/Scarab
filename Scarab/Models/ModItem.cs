@@ -37,7 +37,7 @@ namespace Scarab.Models
 
             DependenciesDesc = string.Join(Environment.NewLine, Dependencies);
 
-            if (Integrations != null!)
+            if (Integrations != null)
             {
                 IntegrationsDesc = string.Join(Environment.NewLine, Integrations);
             }
@@ -48,12 +48,12 @@ namespace Scarab.Models
         public string[] Dependencies     { get; }
         public string   Link             { get; }
         public string   Sha256           { get; }
-        public string   Name             { get; set; }
+        public string   Name             { get; }
         public string   Description      { get; }
         public string   Repository       { get; }
         public string   DependenciesDesc { get; }
-        public string[]   Tags { get; }
-        public string[]   Integrations { get; }
+        public string[]?   Tags { get; }
+        public string[]?   Integrations { get; }
         public string   IntegrationsDesc { get; }
 
         [Notify]
@@ -79,7 +79,7 @@ namespace Scarab.Models
         public bool Installed => State is InstalledState;
 
         public bool HasDependencies  => Dependencies.Length > 0;
-        public bool HasIntegrations  => Integrations != null! && Integrations.Length > 0;
+        public bool HasIntegrations  => Integrations is { Length: > 0 };
 
         public bool UpdateAvailable => State is InstalledState s && s.Version < Version;
 
@@ -141,7 +141,7 @@ namespace Scarab.Models
                 throw;
             }
         }
-        
+
         #region Equality
         public bool Equals(ModItem? other)
         {

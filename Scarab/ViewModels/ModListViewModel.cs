@@ -25,7 +25,8 @@ namespace Scarab.ViewModels
 {
     public partial class ModListViewModel : ViewModelBase
     {
-        private readonly SortableObservableCollection<ModItem> _items;
+        private readonly SortableObservableCollection<ModItem> _allModItems;
+        private readonly Dictionary<string, ModItem> _modnameDictionary;
         
         private readonly ISettings _settings;
         private readonly IInstaller _installer;
@@ -57,11 +58,6 @@ namespace Scarab.ViewModels
         public ReactiveCommand<Unit, Unit> ChangePath { get; }
 
         public ObservableCollection<string> TagList { get; set; }
-
-        enum ModViewState
-        {
-            All, Installed, Enabled, OutOfDate
-        }
 
         private ModViewState _modViewState = ModViewState.All;
         
@@ -106,9 +102,11 @@ namespace Scarab.ViewModels
             _mods = mods;
             _db = db;
 
-            _items = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
+            _allModItems = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
 
-            SelectedItems = _selectedItems = _items;
+            _modnameDictionary = _allModItems.ToDictionary(x => x.Name, x => x);
+
+            SelectedItems = _selectedItems = _allModItems;
 
             OnInstall = ReactiveCommand.CreateFromTask<ModItem>(OnInstallAsync);
             OnUpdate = ReactiveCommand.CreateFromTask<ModItem>(OnUpdateAsync);
@@ -130,13 +128,13 @@ namespace Scarab.ViewModels
 
         private void DisplayModsCorrectly()
         {
-            IEnumerable<ModItem> newList = _items;
+            IEnumerable<ModItem> newList = _allModItems;
                 
             if (SelectedTag != "All Tags")
             {
-                newList = _items.Where(x =>
+                newList = _allModItems.Where(x =>
                 {
-                    if (x.Tags == null!) return false;
+                    if (x.Tags == null) return false;
                     return x.Tags.Contains(SelectedTag);
                 });
             }
@@ -145,8 +143,8 @@ namespace Scarab.ViewModels
             {
                 ModViewState.All => newList,
                 ModViewState.Installed => newList.Where(x => x.Installed),
-                ModViewState.Enabled => newList.Where(x=> x.State is InstalledState { Enabled: true }),
-                ModViewState.OutOfDate => newList.Where(x=> x.State is InstalledState { Updated: false }),
+                ModViewState.Enabled => newList.Where(x => x.State is InstalledState { Enabled: true }),
+                ModViewState.OutOfDate => newList.Where(x => x.State is InstalledState { Updated: false }),
                 _ => throw new InvalidOperationException("Unreachable") 
             };
         }
@@ -172,57 +170,48 @@ namespace Scarab.ViewModels
             }
         }
         
-
         private IEnumerable<ModItem> GetFullReverseDependencies()
         {
-            List<ModItem> AllDependents = new();
+            List<ModItem> dependants = new();
 
             //check to see if the search is actually a mod or not to not waste the effort
-            var searchedMod = GetMod(Search!);
-            if (searchedMod != null)
+            var searchedMod = _allModItems.FirstOrDefault(x => x.Name.Equals(Search, StringComparison.OrdinalIgnoreCase));
+            
+            if (searchedMod == null) return dependants;
+            
+            foreach (var mod in SelectedItems)
             {
-                foreach (var mod in SelectedItems)
+                if (mod.Integrations is not null)
                 {
-                    if (mod.HasIntegrations)
+                    if (mod.Integrations.Contains(searchedMod.Name))
                     {
-                        if (mod.Integrations.Contains(searchedMod.Name))
-                        {
-                            AllDependents.Add(mod);
-                            continue;
-                        }
-                    }
-                    if (RecursiveCheckDependency(mod, searchedMod))
-                    {
-                        AllDependents.Add(mod);
+                        dependants.Add(mod);
+                        continue;
                     }
                 }
+                if (HasDependent(mod, searchedMod))
+                {
+                    dependants.Add(mod);
+                }
             }
-            return AllDependents;
+            return dependants;
         }
 
-        private bool RecursiveCheckDependency(ModItem Mod, ModItem ToSearchDependencyMod)
+        private bool HasDependent(ModItem mod, ModItem targetDependencyMod)
         {
-            if (!Mod.HasDependencies) return false;
+            if (!mod.HasDependencies) return false;
 
-            foreach (var dependency in Mod.Dependencies)
+            foreach (var dependency in mod.Dependencies)
             {
-                var dependencyMod = GetMod(dependency); 
+                var dependencyMod = _modnameDictionary[dependency];
 
-                if (dependencyMod == null) continue;
-
-                if (dependencyMod.Name.Equals(ToSearchDependencyMod.Name, StringComparison.OrdinalIgnoreCase))
+                if (dependencyMod.Name.Equals(targetDependencyMod.Name, StringComparison.OrdinalIgnoreCase))
                     return true;
 
-                if (RecursiveCheckDependency(dependencyMod, ToSearchDependencyMod)) return true;
+                if (HasDependent(dependencyMod, targetDependencyMod)) return true;
             }
 
             return false;
-        }
-        
-        private ModItem? GetMod(string name)
-        {
-            return _items.FirstOrDefault(x =>
-                x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
         public string ApiButtonText => _mods.ApiInstall is InstalledState { Enabled: var enabled } ? (enabled ? "Disable API" : "Enable API") : "Toggle API";
@@ -407,7 +396,7 @@ namespace Scarab.ViewModels
             
             static int Comparer(ModItem x, ModItem y) => ModToOrderedTuple(x).CompareTo(ModToOrderedTuple(y));
             
-            _items.SortBy(Comparer);
+            _allModItems.SortBy(Comparer);
         }
 
         private async Task OnUpdateAsync(ModItem item)
@@ -457,5 +446,13 @@ namespace Scarab.ViewModels
             m.State is InstalledState { Updated : false } ? -1 : 1,
             m.Name
         );
+    }
+    
+    public enum ModViewState
+    {
+        All, 
+        Installed, 
+        Enabled,
+        OutOfDate
     }
 }
