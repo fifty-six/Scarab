@@ -410,7 +410,11 @@ namespace Scarab.ViewModels
             _items.SortBy(Comparer);
         }
 
-        private async Task OnUpdateAsync(ModItem item) => await InternalUpdateInstallAsync(item, item.OnUpdate);
+        private async Task OnUpdateAsync(ModItem item)
+        {
+            await InternalUpdateInstallAsync(item, item.OnUpdate);
+            RaisePropertyChanged(nameof(FilteredItems));
+        }
 
         private async Task OnInstallAsync(ModItem item) => await InternalUpdateInstallAsync(item, item.OnInstall);
 
