@@ -36,13 +36,13 @@
                 </Style>
             </Menu.Styles>
 
-            <MenuItem Header="All" Command="{Binding SelectAll}" DockPanel.Dock="Top" ToolTip.Tip="Show all available mods"/>
+            <MenuItem Header="All" Command="{Binding SelectMods}" CommandParameter="{x:Static viewModels:ModViewState.All}" DockPanel.Dock="Top" ToolTip.Tip="Show all available mods"/>
             <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="Installed" Command="{Binding SelectInstalled}" DockPanel.Dock="Top" ToolTip.Tip="Show all installed mods"/>
+            <MenuItem Header="Installed" Command="{Binding SelectMods}" CommandParameter="{x:Static viewModels:ModViewState.Installed}" DockPanel.Dock="Top" ToolTip.Tip="Show all installed mods"/>
             <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="Enabled" Command="{Binding SelectEnabled}" DockPanel.Dock="Top" ToolTip.Tip="Show all installed and enabled mods"/>
+            <MenuItem Header="Enabled" Command="{Binding SelectMods}" CommandParameter="{x:Static viewModels:ModViewState.Enabled}" DockPanel.Dock="Top" ToolTip.Tip="Show all installed and enabled mods"/>
             <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="Out of date" Command="{Binding SelectUnupdated}" DockPanel.Dock="Top" ToolTip.Tip="Show all mods that need updating"/>
+            <MenuItem Header="Out of date" Command="{Binding SelectMods}" CommandParameter="{x:Static viewModels:ModViewState.OutOfDate}" DockPanel.Dock="Top" ToolTip.Tip="Show all mods that need updating"/>
             <MenuItem Header="-" DockPanel.Dock="Top" />
 
             <MenuItem

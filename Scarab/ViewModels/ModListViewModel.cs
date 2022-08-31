@@ -281,27 +281,9 @@ namespace Scarab.ViewModels
 
         public static void Donate() => Process.Start(new ProcessStartInfo("https://paypal.me/ybham") { UseShellExecute = true });
 
-        public void SelectAll()
+        public void SelectMods(ModViewState modviewState)
         {
-            _modViewState = ModViewState.All;
-            DisplayModsCorrectly();
-        }
-
-        public void SelectInstalled()
-        {
-            _modViewState = ModViewState.Installed;
-            DisplayModsCorrectly();
-        }
-
-        public void SelectUnupdated()
-        {
-            _modViewState = ModViewState.OutOfDate;
-            DisplayModsCorrectly();
-        }
-
-        public void SelectEnabled()
-        {
-            _modViewState = ModViewState.Enabled;
+            _modViewState = modviewState;
             DisplayModsCorrectly();
         }
 
