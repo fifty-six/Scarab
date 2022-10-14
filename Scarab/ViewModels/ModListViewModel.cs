@@ -43,6 +43,10 @@ namespace Scarab.ViewModels
 
         [Notify] private string? _search;
 
+        [Notify] private bool _normalSearch = true;
+        
+        [Notify] private bool _reverseSearch = false;
+
         public ReactiveCommand<ModItem, Unit> OnUpdate { get; }
         public ReactiveCommand<ModItem, Unit> OnInstall { get; }
         public ReactiveCommand<ModItem, Unit> OnEnable { get; }
@@ -65,30 +69,6 @@ namespace Scarab.ViewModels
             {
                 _selectedTag = value;
                 FilterMods();
-            }
-        }
-
-        private bool _normalSearch = true;
-
-        public bool NormalSearch
-        {
-            get => _normalSearch;
-            set
-            {
-                _normalSearch = value;
-                RaisePropertyChanged(nameof(FilteredItems));
-            }
-        }
-
-        private bool _reverseSearch = false;
-
-        public bool ReverseSearch
-        {
-            get => _reverseSearch;
-            set
-            {
-                _reverseSearch = value;
-                RaisePropertyChanged(nameof(FilteredItems));
             }
         }
 
@@ -165,12 +145,15 @@ namespace Scarab.ViewModels
                         : SelectedItems.Where(x => x.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
 
                 }
-                else
+                if (ReverseSearch) //guaranteed
                 {
                     return string.IsNullOrEmpty(Search)
                         ? SelectedItems
                         : GetFullReverseDependencies();
                 }
+
+                //not going to reach here
+                return SelectedItems;
             }
         }
 
