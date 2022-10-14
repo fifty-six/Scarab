@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -24,37 +25,73 @@ namespace Scarab.ViewModels
 {
     public partial class ModListViewModel : ViewModelBase
     {
-        private readonly SortableObservableCollection<ModItem> _items;
-        
+        private readonly SortableObservableCollection<ModItem> _allModItems;
+        private readonly Dictionary<string, ModItem> _modnameDictionary;
+
         private readonly ISettings _settings;
         private readonly IInstaller _installer;
         private readonly IModSource _mods;
         private readonly IModDatabase _db;
-        
-        [Notify("ProgressBarVisible")]
-        private bool _pbVisible;
 
-        [Notify("ProgressBarIndeterminate")]
-        private bool _pbIndeterminate;
+        [Notify("ProgressBarVisible")] private bool _pbVisible;
 
-        [Notify("Progress")]
-        private double _pbProgress;
+        [Notify("ProgressBarIndeterminate")] private bool _pbIndeterminate;
 
-        [Notify]
-        private IEnumerable<ModItem> _selectedItems;
+        [Notify("Progress")] private double _pbProgress;
 
-        [Notify]
-        private string? _search;
-        
+        [Notify] private IEnumerable<ModItem> _selectedItems;
+
+        [Notify] private string? _search;
+
         public ReactiveCommand<ModItem, Unit> OnUpdate { get; }
         public ReactiveCommand<ModItem, Unit> OnInstall { get; }
         public ReactiveCommand<ModItem, Unit> OnEnable { get; }
-        
+
         public ReactiveCommand<Unit, Unit> ToggleApi { get; }
         public ReactiveCommand<Unit, Unit> UpdateApi { get; }
-        
+
         public ReactiveCommand<Unit, Unit> ChangePath { get; }
-        
+
+        public ObservableCollection<string> TagList { get; set; }
+
+        private ModViewState _modViewState = ModViewState.All;
+
+        private string _selectedTag = "All Tags";
+
+        public string SelectedTag
+        {
+            get => _selectedTag;
+            set
+            {
+                _selectedTag = value;
+                FilterMods();
+            }
+        }
+
+        private bool _normalSearch = true;
+
+        public bool NormalSearch
+        {
+            get => _normalSearch;
+            set
+            {
+                _normalSearch = value;
+                RaisePropertyChanged(nameof(FilteredItems));
+            }
+        }
+
+        private bool _reverseSearch = false;
+
+        public bool ReverseSearch
+        {
+            get => _reverseSearch;
+            set
+            {
+                _reverseSearch = value;
+                RaisePropertyChanged(nameof(FilteredItems));
+            }
+        }
+
         public ModListViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods)
         {
             _settings = settings;
@@ -62,9 +99,28 @@ namespace Scarab.ViewModels
             _mods = mods;
             _db = db;
 
-            _items = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
+            _allModItems = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
 
-            SelectedItems = _selectedItems = _items;
+            _modnameDictionary = _allModItems.ToDictionary(x => x.Name, x => x);
+
+            //get all tags on the mods
+            TagList = new ObservableCollection<string>()
+            {
+                "All Tags" //this isn't a tag but we need it for the combobox
+            };
+            foreach (var mod in _allModItems)
+            {
+                if (mod.Tags is null) continue;
+                foreach (var tag in mod.Tags)
+                {
+                    if (!TagList.Contains(tag))
+                    {
+                        TagList.Add(tag);
+                    }
+                }
+            }
+
+            SelectedItems = _selectedItems = _allModItems;
 
             OnInstall = ReactiveCommand.CreateFromTask<ModItem>(OnInstallAsync);
             OnUpdate = ReactiveCommand.CreateFromTask<ModItem>(OnUpdateAsync);
@@ -74,14 +130,109 @@ namespace Scarab.ViewModels
             UpdateApi = ReactiveCommand.CreateFromTask(UpdateApiAsync);
         }
 
-        [UsedImplicitly]
-        private IEnumerable<ModItem> FilteredItems =>
-            string.IsNullOrEmpty(Search)
-                ? SelectedItems
-                : SelectedItems.Where(x => x.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
+        private void FilterMods()
+        {
+            IEnumerable<ModItem> newList = _allModItems;
 
-        public string ApiButtonText   => _mods.ApiInstall is InstalledState { Enabled: var enabled } ? (enabled ? "Disable API" : "Enable API") : "Toggle API";
-        public bool   ApiOutOfDate    => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
+            if (SelectedTag != "All Tags")
+            {
+                newList = _allModItems.Where(x =>
+                {
+                    if (x.Tags == null) return false;
+                    return x.Tags.Contains(SelectedTag);
+                });
+            }
+
+            SelectedItems = _modViewState switch
+            {
+                ModViewState.All => newList,
+                ModViewState.Installed => newList.Where(x => x.Installed),
+                ModViewState.Enabled => newList.Where(x => x.State is InstalledState { Enabled: true }),
+                ModViewState.OutOfDate => newList.Where(x => x.State is InstalledState { Updated: false }),
+                _ => throw new InvalidOperationException("Unreachable")
+            };
+        }
+
+        [UsedImplicitly]
+        private IEnumerable<ModItem> FilteredItems
+        {
+            get
+            {
+                if (NormalSearch)
+                {
+                    return string.IsNullOrEmpty(Search)
+                        ? SelectedItems
+                        : SelectedItems.Where(x => x.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
+
+                }
+                else
+                {
+                    return string.IsNullOrEmpty(Search)
+                        ? SelectedItems
+                        : GetFullReverseDependencies();
+                }
+            }
+        }
+
+        private IEnumerable<ModItem> GetFullReverseDependencies()
+        {
+            List<ModItem> dependants = new();
+
+            //check to see if the search is actually a mod or not to not waste the effort
+            var searchedMod =
+                _allModItems.FirstOrDefault(x => x.Name.Equals(Search, StringComparison.OrdinalIgnoreCase));
+
+            if (searchedMod == null) return dependants;
+
+            foreach (var mod in SelectedItems)
+            {
+                if (mod.Integrations is not null)
+                {
+                    if (mod.Integrations.Contains(searchedMod.Name))
+                    {
+                        dependants.Add(mod);
+                        continue;
+                    }
+                }
+
+                if (HasDependent(mod, searchedMod))
+                {
+                    dependants.Add(mod);
+                }
+            }
+
+            return dependants;
+        }
+
+        private bool HasDependent(ModItem mod, ModItem targetDependencyMod)
+        {
+            if (!mod.HasDependencies) return false;
+
+            foreach (var dependency in mod.Dependencies)
+            {
+                var dependencyMod = _modnameDictionary[dependency];
+
+                if (dependencyMod.Name.Equals(targetDependencyMod.Name, StringComparison.OrdinalIgnoreCase))
+                    return true;
+
+                if (HasDependent(dependencyMod, targetDependencyMod)) return true;
+            }
+
+            return false;
+        }
+
+        public string ApiButtonText => _mods.ApiInstall is InstalledState { Enabled: var enabled }
+            ? (enabled ? "Disable API" : "Enable API")
+            : "Toggle API";
+
+        public string ApiButtonToolTip => _mods.ApiInstall is InstalledState { Enabled: var enabled }
+            ? (enabled
+                ? "Disable the modding API to make the game vanilla"
+                : "Enable the modding API to make the game modded")
+            : "Toggle API";
+
+        public bool ApiOutOfDate => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
+
 
         public bool EnableApiButton => _mods.ApiInstall switch
         {
@@ -100,11 +251,12 @@ namespace Scarab.ViewModels
         private async void ToggleApiCommand()
         {
             await _installer.ToggleApi();
-            
+
             RaisePropertyChanged(nameof(ApiButtonText));
+            RaisePropertyChanged(nameof(ApiButtonToolTip));
             RaisePropertyChanged(nameof(EnableApiButton));
         }
-        
+
         private async Task ChangePathAsync()
         {
             string? path = await PathUtil.SelectPathFailable();
@@ -117,8 +269,9 @@ namespace Scarab.ViewModels
 
             await _mods.Reset();
 
-            await MessageBoxManager.GetMessageBoxStandardWindow("Changed path!", "Re-open the installer to use your new path.").Show();
-            
+            await MessageBoxManager
+                .GetMessageBoxStandardWindow("Changed path!", "Re-open the installer to use your new path.").Show();
+
             // Shutting down is easier than re-doing the source and all the items.
             (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Shutdown();
         }
@@ -130,21 +283,21 @@ namespace Scarab.ViewModels
             // Create the directory if it doesn't exist,
             // so we don't open a non-existent folder.
             Directory.CreateDirectory(modsFolder);
-            
-            Process.Start(new ProcessStartInfo(modsFolder) {
-                    UseShellExecute = true
+
+            Process.Start(new ProcessStartInfo(modsFolder)
+            {
+                UseShellExecute = true
             });
         }
 
-        public static void Donate() => Process.Start(new ProcessStartInfo("https://paypal.me/ybham") { UseShellExecute = true });
-        
-        public void SelectAll() => SelectedItems = _items;
+        public static void Donate() => Process.Start(new ProcessStartInfo("https://paypal.me/ybham")
+            { UseShellExecute = true });
 
-        public void SelectInstalled() => SelectedItems = _items.Where(x => x.Installed);
-
-        public void SelectUnupdated() => SelectedItems = _items.Where(x => x.State is InstalledState { Updated: false });
-
-        public void SelectEnabled() => SelectedItems = _items.Where(x => x.State is InstalledState { Enabled: true });
+        public void SelectMods(ModViewState modviewState)
+        {
+            _modViewState = modviewState;
+            FilterMods();
+        }
 
         private async Task OnEnableAsync(ModItem item)
         {
@@ -175,21 +328,24 @@ namespace Scarab.ViewModels
 
             RaisePropertyChanged(nameof(ApiOutOfDate));
             RaisePropertyChanged(nameof(ApiButtonText));
+            RaisePropertyChanged(nameof(ApiButtonToolTip));
             RaisePropertyChanged(nameof(EnableApiButton));
         }
 
         private async Task InternalUpdateInstallAsync(ModItem item, Func<IInstaller, Action<ModProgressArgs>, Task> f)
         {
             static bool IsHollowKnight(Process p) => (
-                   p.ProcessName.StartsWith("hollow_knight")
+                p.ProcessName.StartsWith("hollow_knight")
                 || p.ProcessName.StartsWith("Hollow Knight")
             );
-            
+
             if (Process.GetProcesses().FirstOrDefault(IsHollowKnight) is Process proc)
             {
-                var res = await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
+                var res = await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams
+                {
                     ContentTitle = "Warning!",
-                    ContentMessage = "Hollow Knight is open! This may lead to issues when installing mods. Close Hollow Knight?",
+                    ContentMessage =
+                        "Hollow Knight is open! This may lead to issues when installing mods. Close Hollow Knight?",
                     ButtonDefinitions = ButtonEnum.YesNo,
                     MinHeight = 200,
                     SizeToContent = SizeToContent.WidthAndHeight,
@@ -198,7 +354,7 @@ namespace Scarab.ViewModels
                 if (res == ButtonResult.Yes)
                     proc.Kill();
             }
-            
+
             try
             {
                 await f
@@ -238,11 +394,12 @@ namespace Scarab.ViewModels
             ProgressBarVisible = false;
 
             RaisePropertyChanged(nameof(ApiButtonText));
+            RaisePropertyChanged(nameof(ApiButtonToolTip));
             RaisePropertyChanged(nameof(EnableApiButton));
 
             static int Comparer(ModItem x, ModItem y) => ModToOrderedTuple(x).CompareTo(ModToOrderedTuple(y));
 
-            _items.SortBy(Comparer);
+            _allModItems.SortBy(Comparer);
         }
 
         private async Task OnUpdateAsync(ModItem item) => await InternalUpdateInstallAsync(item, item.OnUpdate);
@@ -254,7 +411,8 @@ namespace Scarab.ViewModels
             await MessageBoxManager.GetMessageBoxStandardWindow
             (
                 title: "Hash mismatch!",
-                text: $"The download hash for {e.Name} ({e.Actual}) didn't match the given signature ({e.Expected}). It is either corrupt or the entry is incorrect.",
+                text:
+                $"The download hash for {e.Name} ({e.Actual}) didn't match the given signature ({e.Expected}). It is either corrupt or the entry is incorrect.",
                 icon: Icon.Error
             ).Show();
         }
@@ -288,6 +446,13 @@ namespace Scarab.ViewModels
             m.State is InstalledState { Updated : false } ? -1 : 1,
             m.Name
         );
-        
+    }
+
+    public enum ModViewState
+    {
+        All,
+        Installed,
+        Enabled,
+        OutOfDate
     }
 }

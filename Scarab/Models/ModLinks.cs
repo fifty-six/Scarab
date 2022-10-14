@@ -51,15 +51,36 @@ namespace Scarab.Models
 
         public string Description { get; set; } = null!;
 
+        [XmlArray(ElementName = "Tags", IsNullable = true)]
+        [XmlArrayItem(ElementName = "Tag", IsNullable = true)]
+        public string[]? Tags { get; set; }
+
+
+        [XmlArray(ElementName = "Integrations", IsNullable = true)]
+        [XmlArrayItem(ElementName = "Integration", IsNullable = true)]
+        public string[]? Integrations { get; set; }
+
         public override string ToString()
         {
-            return "{\n"
-                + $"\t{nameof(Version)}: {Version},\n"
-                + $"\t{nameof(Name)}: {Name},\n"
-                + $"\t{nameof(Links)}: {(object?) _link ?? Links},\n"
-                + $"\t{nameof(Dependencies)}: {string.Join(", ", Dependencies)},\n"
-                + $"\t{nameof(Description)}: {Description}\n"
-                + "}";
+            string toString = "{\n"
+                         + $"\t{nameof(Version)}: {Version},\n"
+                         + $"\t{nameof(Name)}: {Name},\n"
+                         + $"\t{nameof(Links)}: {(object?)_link ?? Links},\n"
+                         + $"\t{nameof(Dependencies)}: {string.Join(", ", Dependencies)},\n"
+                         + $"\t{nameof(Description)}: {Description}\n";
+            if (Tags != null)
+            {
+                toString += $"\t{nameof(Tags)}: {string.Join(", ", Tags)}\n";
+            }
+
+            if (Integrations != null)
+            {
+                toString += $"\t{nameof(Integrations)}: {string.Join(", ", Integrations)}\n";
+            }
+                
+            toString += "}";
+
+            return toString;
         }
     }
 

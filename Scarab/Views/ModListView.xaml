@@ -36,30 +36,34 @@
                 </Style>
             </Menu.Styles>
 
-            <MenuItem Header="All" Command="{Binding SelectAll}" DockPanel.Dock="Top" />
+           <MenuItem Header="All" Command="{Binding SelectMods}" CommandParameter="{x:Static viewModels:ModViewState.All}" DockPanel.Dock="Top" ToolTip.Tip="Show all available mods"/>
             <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="Installed" Command="{Binding SelectInstalled}" DockPanel.Dock="Top" />
+            <MenuItem Header="Installed" Command="{Binding SelectMods}" CommandParameter="{x:Static viewModels:ModViewState.Installed}" DockPanel.Dock="Top" ToolTip.Tip="Show all installed mods"/>
             <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="Enabled" Command="{Binding SelectEnabled}" DockPanel.Dock="Top" />
+            <MenuItem Header="Enabled" Command="{Binding SelectMods}" CommandParameter="{x:Static viewModels:ModViewState.Enabled}" DockPanel.Dock="Top" ToolTip.Tip="Show all installed and enabled mods"/>
             <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="Out of date" Command="{Binding SelectUnupdated}" DockPanel.Dock="Top" />
+            <MenuItem Header="Out of date" Command="{Binding SelectMods}" CommandParameter="{x:Static viewModels:ModViewState.OutOfDate}" DockPanel.Dock="Top" ToolTip.Tip="Show all mods that need updating"/>
+            <MenuItem Header="-" DockPanel.Dock="Top" />
 
             <MenuItem
                 Command="{Binding ChangePath}"
                 Header="Change Path"
                 DockPanel.Dock="Bottom"
-                VerticalAlignment="Bottom" />
+                VerticalAlignment="Bottom" 
+                ToolTip.Tip="Change the folder location of the modded game"/>
             <MenuItem
                 Command="{Binding OpenModsDirectory}"
                 Header="Open Mods"
                 DockPanel.Dock="Bottom"
-                VerticalAlignment="Bottom" />
+                VerticalAlignment="Bottom" 
+                ToolTip.Tip="Open the local folder containing mods"/>
             <MenuItem
                 Command="{Binding ToggleApi}"
                 Header="{Binding ApiButtonText}"
                 IsEnabled="{Binding EnableApiButton}"
                 DockPanel.Dock="Bottom"
-                VerticalAlignment="Bottom" />
+                VerticalAlignment="Bottom"
+                ToolTip.Tip="{Binding ApiButtonToolTip}"/>
             <MenuItem
                 Command="{Binding UpdateApi}"
                 Header="Update API"
@@ -94,14 +98,32 @@
             Maximum="100"
             Value="{Binding Progress}" />
 
-        <TextBox
-            x:Name="Search"
-            Name="Search"
-            Watermark="Mod Search"
-            DockPanel.Dock="Top"
-            BorderThickness="0"
-            Margin="6 6"
-            Text="{Binding Search}" />
+        <Grid Margin="6,6,6,6"
+              DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="400" MaxWidth="800"/>
+                <ColumnDefinition Width="*" MinWidth="100" MaxWidth="100"/>
+            </Grid.ColumnDefinitions>
+            <TextBox
+                x:Name="Search"
+                Name="Search"
+                Watermark="Mod Search"
+                BorderThickness="0"
+                Margin="6 6"
+                Text="{Binding Search}" 
+                Grid.Column="0"/>
+            <Panel Grid.Column="1">
+                <Label>Search Options</Label>
+                <ComboBox Name="Tag" ToolTip.Tip="Change the way mods are searched for">
+                    <RadioButton IsChecked="{Binding NormalSearch}" GroupName="SearchMode" Content="Normal Search" ToolTip.Tip="Search by the mod name"/>
+                    <RadioButton IsChecked="{Binding ReverseSearch}" GroupName="SearchMode" Content="Reverse Dependency Search" ToolTip.Tip="Use this mode to search for all mods that integrate with or depend on that mod"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label>By Tag:</Label>
+                        <ComboBox Items="{Binding TagList}" SelectedIndex="0" SelectedItem="{Binding SelectedTag}"/>
+                    </StackPanel>
+            </ComboBox>
+            </Panel>
+        </Grid>
 
         <Separator
             DockPanel.Dock="Top"
@@ -192,6 +214,8 @@
                                     
                                     <TextBlock Text="&#x0a;Dependencies:&#x0a;" FontWeight="Bold" IsVisible="{Binding HasDependencies}" />
                                     <TextBlock Text="{Binding DependenciesDesc}" IsVisible="{Binding HasDependencies}" />
+                                    <TextBlock Text="&#x0a;Integrations:&#x0a;" FontWeight="Bold" IsVisible="{Binding HasIntegrations}" />
+                                    <TextBlock Text="{Binding IntegrationsDesc}" IsVisible="{Binding HasIntegrations}" />
                                 </StackPanel>
                             </Expander>
 
