@@ -13,6 +13,7 @@ namespace Scarab.Views
     public class ModListView : View<ModListViewModel>
     {
         private readonly TextBox _search;
+        private readonly ComboBox _searchOptionsBox;
 
         public ModListView()
         {
@@ -21,6 +22,14 @@ namespace Scarab.Views
             this.FindControl<UserControl>(nameof(UserControl)).KeyDown += OnKeyDown;
             
             _search = this.FindControl<TextBox>("Search");
+
+            _searchOptionsBox = this.FindControl<ComboBox>("Search Option Box");
+
+            _searchOptionsBox.SelectionChanged += (_, _) =>
+            {
+                _searchOptionsBox.SelectedIndex = -1;
+                _searchOptionsBox.SelectedItem = null;
+            };
         }
 
         private void OnKeyDown(object? sender, KeyEventArgs e)

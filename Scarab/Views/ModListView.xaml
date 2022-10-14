@@ -114,7 +114,7 @@
                 Grid.Column="0"/>
             <Panel Grid.Column="1">
                 <Label>Search Options</Label>
-                <ComboBox Name="Tag" ToolTip.Tip="Change the way mods are searched for">
+                <ComboBox Name="Search Option Box" ToolTip.Tip="Change the way mods are searched for">
                     <RadioButton IsChecked="{Binding NormalSearch}" GroupName="SearchMode" Content="Normal Search" ToolTip.Tip="Search by the mod name"/>
                     <RadioButton IsChecked="{Binding ReverseSearch}" GroupName="SearchMode" Content="Reverse Dependency Search" ToolTip.Tip="Use this mode to search for all mods that integrate with or depend on that mod"/>
                     <StackPanel Orientation="Horizontal">
