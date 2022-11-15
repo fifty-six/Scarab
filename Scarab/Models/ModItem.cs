@@ -67,7 +67,7 @@ namespace Scarab.Models
 
         public bool HasDependencies  => Dependencies.Length > 0;
 
-        public bool UpdateAvailable => State is InstalledState s && s.Version < Version;
+        public bool UpdateAvailable => State is InstalledState s && s.Version != Version;
 
         public string UpdateText  => $"\u279E {Version}";
 

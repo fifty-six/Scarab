@@ -125,7 +125,7 @@ namespace Scarab.Services
             {
                 return existing with
                 {
-                    Updated = existing.Version >= manifest.Version.Value
+                    Updated = existing.Version == manifest.Version.Value
                 };
             }
 
