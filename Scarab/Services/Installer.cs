@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Toolkit.HighPerformance;
+using Mono.Cecil;
 using Scarab.Interfaces;
 using Scarab.Models;
 using Scarab.Util;
@@ -65,6 +66,8 @@ namespace Scarab.Services
         private readonly SemaphoreSlim _semaphore = new (1);
         private readonly HttpClient _hc;
 
+        public bool HasVanilla { get; private set; }
+
         public Installer(ISettings config, IModSource installed, IModDatabase db, IFileSystem fs, HttpClient hc)
         {
             _config = config;
@@ -72,6 +75,14 @@ namespace Scarab.Services
             _db = db;
             _fs = fs;
             _hc = hc;
+
+            try
+            {
+                CheckAPI().Wait();
+            } catch(Exception)
+            {
+
+            }
         }
 
         private void CreateNeededDirectories()
@@ -127,6 +138,7 @@ namespace Scarab.Services
 
             try
             {
+                await CheckAPI();
                 if (_installed.ApiInstall is InstalledState { Enabled: false })
                 {
                     // Don't have the toggle update it for us, as that'll infinitely loop.
@@ -140,14 +152,60 @@ namespace Scarab.Services
                 _semaphore.Release();
             }
         }
-
+        private int? GetAPIVersion(string asm_name)
+        {
+            string asm = Path.Combine(_config.ManagedFolder, asm_name);
+            if (!_fs.File.Exists(asm)) return null;
+            using (AssemblyDefinition asm_definition = AssemblyDefinition.ReadAssembly(asm))
+            {
+                TypeDefinition? t_modhooks = asm_definition.MainModule.GetType("Modding.ModHooks");
+                if (t_modhooks is null) return null;
+                FieldDefinition? ver = t_modhooks.Fields.FirstOrDefault(x => x.Name == "_modVersion");
+                if (ver is null || !ver.IsLiteral) throw new InvalidOperationException("Invalid ModdingAPI file");
+                return (int)ver.Constant;
+            }
+        }
+        public async Task<bool> CheckAPI()
+        {
+            if(!_fs.File.Exists(Path.Combine(_config.ManagedFolder, Vanilla)) || GetAPIVersion(Vanilla) != null)
+            {
+                HasVanilla = false;
+            }
+            else
+            {
+                HasVanilla = true;
+            }
+            int? cur_ver = GetAPIVersion(Current);
+            bool enabled = true;
+            if(cur_ver == null)
+            {
+                enabled = false;
+                cur_ver = GetAPIVersion(Modded);
+            }
+            InstalledState? api_state = _installed.ApiInstall as InstalledState;
+            if (api_state == null)
+            {
+                if (cur_ver == null) return false;
+                await _installed.RecordApiState(new InstalledState(enabled, new((int)cur_ver, 0, 0), false));
+                return true;
+            }
+            if (cur_ver == null)
+            {
+                await _installed.RecordApiState(new NotInstalledState());
+                return false;
+            }
+            if(api_state.Version.Major != cur_ver || api_state.Enabled != enabled)
+            {
+                await _installed.RecordApiState(new InstalledState(enabled, new((int)cur_ver, 0, 0), api_state.Updated));
+            }
+            return true;
+        }
         private async Task _InstallApi((string Url, int Version, string SHA256) manifest)
         {
             bool was_vanilla = true;
-
-            if (_installed.ApiInstall is InstalledState { Version: var version })
+            if (await CheckAPI())
             {
-                if (version.Major > manifest.Version)
+                if (((InstalledState)_installed.ApiInstall).Version.Major > manifest.Version)
                     return;
 
                 was_vanilla = false;
@@ -186,12 +244,14 @@ namespace Scarab.Services
 
         private async Task _ToggleApi(Update update = Update.ForceUpdate)
         {
+            if (!await CheckAPI()) return;
+
             string managed = _config.ManagedFolder;
 
             Contract.Assert(_installed.ApiInstall is InstalledState);
 
             var st = (InstalledState) _installed.ApiInstall;
-
+            if (st.Enabled && !HasVanilla) return;
             var (move_to, move_from) = st.Enabled
                 // If the api is enabled, move the current (modded) dll
                 // to .m and then take from .v

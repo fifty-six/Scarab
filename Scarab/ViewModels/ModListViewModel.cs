@@ -80,14 +80,27 @@ namespace Scarab.ViewModels
                 ? SelectedItems
                 : SelectedItems.Where(x => x.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
 
-        public string ApiButtonText   => _mods.ApiInstall is InstalledState { Enabled: var enabled } ? (enabled ? "Disable API" : "Enable API") : "Toggle API";
-        public bool   ApiOutOfDate    => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
+        public string ApiButtonText
+        {
+            get
+            {
+                _installer.CheckAPI().Wait();
+                if (_mods.ApiInstall is InstalledState { Enabled: var enabled })
+                {
+                    if (!enabled) return "Enable API";
+                    if (_installer.HasVanilla) return "Disable API";
+                    return "Vanilla not found";
+                }
+                return "Toggle API";
+            }
+        }
+        public bool  ApiOutOfDate => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
 
         public bool EnableApiButton => _mods.ApiInstall switch
         {
             NotInstalledState => false,
             // Disabling, so we're putting back the vanilla assembly
-            InstalledState { Enabled: true } => File.Exists(Path.Combine(_settings.ManagedFolder, Installer.Vanilla)),
+            InstalledState { Enabled: true }  => _installer.HasVanilla,
             // Enabling, so take the modded one.
             InstalledState { Enabled: false } => File.Exists(Path.Combine(_settings.ManagedFolder, Installer.Modded)),
             // Unreachable

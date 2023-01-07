@@ -38,6 +38,7 @@
         <PackageReference Include="MessageBox.Avalonia" Version="1.8.1-night" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0-preview.5.21301.5" />
         <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="7.1.2" />
+        <PackageReference Include="Mono.Cecil" Version="0.11.4" />
         <PackageReference Include="PropertyChanged.SourceGenerator" Version="1.0.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

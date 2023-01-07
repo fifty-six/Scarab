@@ -15,5 +15,7 @@ namespace Scarab.Interfaces
         public Task InstallApi();
 
         public Task ToggleApi();
+        public bool HasVanilla { get; }
+        public Task<bool> CheckAPI();
     }
 }
