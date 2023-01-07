@@ -58,8 +58,8 @@ namespace Scarab.Models
 
         public string InstallText => State switch
         {
-            InstalledState => "Uninstall",
-            NotInstalledState => "Install",
+            InstalledState => Resources.MI_InstallText_Installed,
+            NotInstalledState => Resources.MI_InstallText_NotInstalled,
             _ => throw new InvalidOperationException("Unreachable")
         };
 

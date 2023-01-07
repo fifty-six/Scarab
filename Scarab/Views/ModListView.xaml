@@ -9,6 +9,7 @@
             xmlns:views="clr-namespace:Scarab.Views"
             xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
             xmlns:util="clr-namespace:Scarab.Util"
+            xmlns:ext="clr-namespace:Scarab.Extensions"
             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="550"
             x:Class="Scarab.Views.ModListView"
             d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
@@ -36,22 +37,22 @@
                 </Style>
             </Menu.Styles>
 
-            <MenuItem Header="All" Command="{Binding SelectAll}" DockPanel.Dock="Top" />
+            <MenuItem Header="{ext:Localize XAML_ModsFilter_All}" Command="{Binding SelectAll}" DockPanel.Dock="Top" />
             <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="Installed" Command="{Binding SelectInstalled}" DockPanel.Dock="Top" />
+            <MenuItem Header="{ext:Localize XAML_ModsFilter_Installed}" Command="{Binding SelectInstalled}" DockPanel.Dock="Top" />
             <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="Enabled" Command="{Binding SelectEnabled}" DockPanel.Dock="Top" />
+            <MenuItem Header="{ext:Localize XAML_ModsFilter_Enabled}" Command="{Binding SelectEnabled}" DockPanel.Dock="Top" />
             <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="Out of date" Command="{Binding SelectUnupdated}" DockPanel.Dock="Top" />
+            <MenuItem Header="{ext:Localize XAML_ModsFilter_OutOfDate}" Command="{Binding SelectUnupdated}" DockPanel.Dock="Top" />
 
             <MenuItem
                 Command="{Binding ChangePath}"
-                Header="Change Path"
+                Header="{ext:Localize XAML_ChangPath}"
                 DockPanel.Dock="Bottom"
                 VerticalAlignment="Bottom" />
             <MenuItem
                 Command="{Binding OpenModsDirectory}"
-                Header="Open Mods"
+                Header="{ext:Localize XAML_OpenMods}"
                 DockPanel.Dock="Bottom"
                 VerticalAlignment="Bottom" />
             <MenuItem
@@ -62,13 +63,13 @@
                 VerticalAlignment="Bottom" />
             <MenuItem
                 Command="{Binding UpdateApi}"
-                Header="Update API"
+                Header="{ext:Localize XAML_UpdateAPI}"
                 IsEnabled="{Binding ApiOutOfDate}"
                 DockPanel.Dock="Bottom"
                 VerticalAlignment="Bottom" />
             <MenuItem
                 Command="{Binding Donate}"
-                Header="Donate"
+                Header="{ext:Localize XAML_Donate}"
                 DockPanel.Dock="Bottom"
                 VerticalAlignment="Bottom" />
         </Menu>
@@ -97,7 +98,7 @@
         <TextBox
             x:Name="Search"
             Name="Search"
-            Watermark="Mod Search"
+            Watermark="{ext:Localize XAML_SearchMark}"
             DockPanel.Dock="Top"
             BorderThickness="0"
             Margin="6 6"
@@ -158,8 +159,8 @@
                                 
                                 <StackPanel Margin="12 0 0 0">
                                     <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Margin="0 4 4 0"/>
-                                    
-                                    <TextBlock Text="&#x0a;Repository:&#x0a;" FontWeight="Bold" />
+
+                                    <TextBlock Text="{ext:Localize XAML_Repository}" FontWeight="Bold" />
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock 
                                             Text="{Binding Repository}" 
@@ -173,8 +174,8 @@
                                             </TextBlock.Resources>
                                         </TextBlock>
                                     </StackPanel>
-                                    
-                                    <TextBlock Text="&#x0a;Version:&#x0a;" FontWeight="Bold" />
+
+                                    <TextBlock Text="{ext:Localize XAML_Version}" FontWeight="Bold" />
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding VersionText}" />
                                         <TextBlock
@@ -189,8 +190,8 @@
                                             </TextBlock.Resources>
                                         </TextBlock>
                                     </StackPanel>
-                                    
-                                    <TextBlock Text="&#x0a;Dependencies:&#x0a;" FontWeight="Bold" IsVisible="{Binding HasDependencies}" />
+
+                                    <TextBlock Text="{ext:Localize XAML_Dependencies}" FontWeight="Bold" IsVisible="{Binding HasDependencies}" />
                                     <TextBlock Text="{Binding DependenciesDesc}" IsVisible="{Binding HasDependencies}" />
                                 </StackPanel>
                             </Expander>
