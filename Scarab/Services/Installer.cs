@@ -66,8 +66,6 @@ namespace Scarab.Services
         private readonly SemaphoreSlim _semaphore = new (1);
         private readonly HttpClient _hc;
 
-        public bool HasVanilla { get; private set; }
-
         public Installer(ISettings config, IModSource installed, IModDatabase db, IFileSystem fs, HttpClient hc)
         {
             _config = config;
@@ -169,11 +167,11 @@ namespace Scarab.Services
         {
             if(!_fs.File.Exists(Path.Combine(_config.ManagedFolder, Vanilla)) || GetAPIVersion(Vanilla) != null)
             {
-                HasVanilla = false;
+                _installed.HasVanilla = false;
             }
             else
             {
-                HasVanilla = true;
+                _installed.HasVanilla = true;
             }
             int? cur_ver = GetAPIVersion(Current);
             bool enabled = true;
@@ -251,7 +249,7 @@ namespace Scarab.Services
             Contract.Assert(_installed.ApiInstall is InstalledState);
 
             var st = (InstalledState) _installed.ApiInstall;
-            if (st.Enabled && !HasVanilla) return;
+            if (st.Enabled && !_installed.HasVanilla) return;
             var (move_to, move_from) = st.Enabled
                 // If the api is enabled, move the current (modded) dll
                 // to .m and then take from .v

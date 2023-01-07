@@ -88,7 +88,7 @@ namespace Scarab.ViewModels
                 if (_mods.ApiInstall is InstalledState { Enabled: var enabled })
                 {
                     if (!enabled) return "Enable API";
-                    if (_installer.HasVanilla) return "Disable API";
+                    if (_mods.HasVanilla) return "Disable API";
                     return "Vanilla not found";
                 }
                 return "Toggle API";
@@ -100,7 +100,7 @@ namespace Scarab.ViewModels
         {
             NotInstalledState => false,
             // Disabling, so we're putting back the vanilla assembly
-            InstalledState { Enabled: true }  => _installer.HasVanilla,
+            InstalledState { Enabled: true }  => _mods.HasVanilla,
             // Enabling, so take the modded one.
             InstalledState { Enabled: false } => File.Exists(Path.Combine(_settings.ManagedFolder, Installer.Modded)),
             // Unreachable
