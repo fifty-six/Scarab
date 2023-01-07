@@ -103,15 +103,15 @@ namespace Scarab.ViewModels
             {
                 string failedOp = e switch
                 {
-                    TaskCanceledException => "timed out",
-                    HttpRequestException http => $"failed with HTTP error {http.StatusCode}",
+                    TaskCanceledException => Resources.MWVM_Impl_Error_Fetch_ModLinks_Timeout,
+                    HttpRequestException http => string.Format(Resources.MWVM_Impl_Error_Fetch_ModLinks_Error, http.StatusCode),
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 
                 await MessageBoxManager.GetMessageBoxStandardWindow
                 (
-                    title: "Error!",
-                    text: $"Unable to fetch modlinks, the operation {failedOp}",
+                    title: Resources.MWVM_Impl_Error_Fetch_ModLinks_Msgbox_Title,
+                    text: string.Format(Resources.MWVM_Impl_Error_Fetch_ModLinks_Msgbox_Text, failedOp),
                     icon: Icon.Error
                 ).Show();
 

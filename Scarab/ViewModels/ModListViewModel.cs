@@ -80,7 +80,7 @@ namespace Scarab.ViewModels
                 ? SelectedItems
                 : SelectedItems.Where(x => x.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
 
-        public string ApiButtonText   => _mods.ApiInstall is InstalledState { Enabled: var enabled } ? (enabled ? "Disable API" : "Enable API") : "Toggle API";
+        public string ApiButtonText   => _mods.ApiInstall is InstalledState { Enabled: var enabled } ? (enabled ? Resources.MLVM_ApiButtonText_DisableAPI : Resources.MLVM_ApiButtonText_EnableAPI) : Resources.MLVM_ApiButtonText_ToggleAPI;
         public bool   ApiOutOfDate    => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
 
         public bool EnableApiButton => _mods.ApiInstall switch
@@ -117,7 +117,8 @@ namespace Scarab.ViewModels
 
             await _mods.Reset();
 
-            await MessageBoxManager.GetMessageBoxStandardWindow("Changed path!", "Re-open the installer to use your new path.").Show();
+            await MessageBoxManager.GetMessageBoxStandardWindow(Resources.MLVM_ChangePathAsync_Msgbox_Title, 
+                Resources.MLVM_ChangePathAsync_Msgbox_Text).Show();
             
             // Shutting down is easier than re-doing the source and all the items.
             (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Shutdown();
@@ -188,8 +189,8 @@ namespace Scarab.ViewModels
             if (Process.GetProcesses().FirstOrDefault(IsHollowKnight) is Process proc)
             {
                 var res = await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
-                    ContentTitle = "Warning!",
-                    ContentMessage = "Hollow Knight is open! This may lead to issues when installing mods. Close Hollow Knight?",
+                    ContentTitle = Resources.MLVM_InternalUpdateInstallAsync_Msgbox_W_Title,
+                    ContentMessage = Resources.MLVM_InternalUpdateInstallAsync_Msgbox_W_Text,
                     ButtonDefinitions = ButtonEnum.YesNo,
                     MinHeight = 200,
                     SizeToContent = SizeToContent.WidthAndHeight,
@@ -253,8 +254,8 @@ namespace Scarab.ViewModels
         {
             await MessageBoxManager.GetMessageBoxStandardWindow
             (
-                title: "Hash mismatch!",
-                text: $"The download hash for {e.Name} ({e.Actual}) didn't match the given signature ({e.Expected}). It is either corrupt or the entry is incorrect.",
+                title: Resources.MLVM_DisplayHashMismatch_Msgbox_Title,
+                text: string.Format(Resources.MLVM_DisplayHashMismatch_Msgbox_Text, e.Name, e.Actual, e.Expected),
                 icon: Icon.Error
             ).Show();
         }
@@ -277,8 +278,8 @@ namespace Scarab.ViewModels
 
             await MessageBoxManager.GetMessageBoxStandardWindow
             (
-                title: "Network Error",
-                text: $"Unable to download {name}! The site may be down or you may lack network connectivity.",
+                title: Resources.MLVM_DisplayNetworkError_Msgbox_Title,
+                text: string.Format(Resources.MLVM_DisplayNetworkError_Msgbox_Text, name),
                 icon: Icon.Error
             ).Show();
         }
