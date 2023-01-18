@@ -320,5 +320,178 @@ namespace Scarab {
                 return ResourceManager.GetString("XAML_Version", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   No path was selected!
+        /// </summary>
+        internal static string PU_NoSelect {
+            get {
+                return ResourceManager.GetString("PU_NoSelect", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   No application was selected!
+        /// </summary>
+        internal static string PU_NoSelectMac {
+            get {
+                return ResourceManager.GetString("PU_NoSelectMac", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Invalid Hollow Knight path!
+        /// </summary>
+        internal static string PU_InvalidPathHeader {
+            get {
+                return ResourceManager.GetString("PU_InvalidPathHeader", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Invalid Hollow Knight app!
+        /// </summary>
+        internal static string PU_InvalidAppHeader {
+            get {
+                return ResourceManager.GetString("PU_InvalidAppHeader", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Select the folder containing hollow_knight_Data or Hollow Knight_Data.
+        /// </summary>
+        internal static string PU_InvalidPath {
+            get {
+                return ResourceManager.GetString("PU_InvalidPath", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Missing Managed folder or Assembly-CSharp!
+        /// </summary>
+        internal static string PU_InvalidApp {
+            get {
+                return ResourceManager.GetString("PU_InvalidApp", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Select your Hollow Knight folder.
+        /// </summary>
+        internal static string PU_SelectPath {
+            get {
+                return ResourceManager.GetString("PU_SelectPath", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///  Path 
+        /// </summary>
+        internal static string PU_InvalidPathTitle {
+            get {
+                return ResourceManager.GetString("PU_InvalidPathTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Select your Hollow Knight app.
+        /// </summary>
+        internal static string PU_SelectApp {
+            get {
+                return ResourceManager.GetString("PU_SelectApp", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Get the latest release
+        /// </summary>
+        internal static string MWVM_OutOfDate_GetLatest {
+            get {
+                return ResourceManager.GetString("MWVM_OutOfDate_GetLatest", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Continue anyways.
+        /// </summary>
+        internal static string MWVM_OutOfDate_ContinueAnyways {
+            get {
+                return ResourceManager.GetString("MWVM_OutOfDate_ContinueAnyways", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Out of date!
+        /// </summary>
+        internal static string MWVM_OutOfDate_Title {
+            get {
+                return ResourceManager.GetString("MWVM_OutOfDate_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   This program is out of date! It may not function correctly.
+        /// </summary>
+        internal static string MWVM_OutOfDate_Message {
+            get {
+                return ResourceManager.GetString("MWVM_OutOfDate_Message", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Warning
+        /// </summary>
+        internal static string MWVM_Warning {
+            get {
+                return ResourceManager.GetString("MWVM_Warning", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   The saved Hollow Knight path is invalid, please re-select a valid path.
+        /// </summary>
+        internal static string MWVM_InvalidSavedPath_Message {
+            get {
+                return ResourceManager.GetString("MWVM_InvalidSavedPath_Message", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Info
+        /// </summary>
+        internal static string MWVM_Info {
+            get {
+                return ResourceManager.GetString("MWVM_Info", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Unable to detect your Hollow Knight installation. Please select it.
+        /// </summary>
+        internal static string MWVM_UnableToDetect_Message {
+            get {
+                return ResourceManager.GetString("MWVM_UnableToDetect_Message", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Detected path!
+        /// </summary>
+        internal static string MWVM_DetectedPath_Title {
+            get {
+                return ResourceManager.GetString("MWVM_DetectedPath_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Detected Hollow Knight install at {path.Root}. Is this correct?
+        /// </summary>
+        internal static string MWVM_DetectedPath_Message {
+            get {
+                return ResourceManager.GetString("MWVM_DetectedPath_Message", resourceCulture);
+            }
+        }
+        
+
     }
 }
