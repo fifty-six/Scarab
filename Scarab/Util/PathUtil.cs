@@ -14,15 +14,6 @@ namespace Scarab.Util
 {
     public static class PathUtil
     {
-        private const string NO_SELECT = "No path was selected!";
-        private const string NO_SELECT_MAC = "No application was selected!";
-
-        private const string INVALID_PATH_HEADER = "Invalid Hollow Knight path!";
-        private const string INVALID_APP_HEADER = "Invalid Hollow Knight app!";
-        
-        private const string INVALID_PATH = "Select the folder containing hollow_knight_Data or Hollow Knight_Data.";
-        private const string INVALID_APP = "Missing Managed folder or Assembly-CSharp!";
-        
         // There isn't any [return: MaybeNullWhen(param is null)] so this overload will have to do
         // Not really a huge point but it's nice to have the nullable static analysis
         public static async Task<string?> SelectPathFailable() => await SelectPath(true);
@@ -39,7 +30,7 @@ namespace Scarab.Util
 
             var dialog = new OpenFolderDialog
             {
-                Title = "Select your Hollow Knight folder.",
+                Title = Resources.PU_SelectPath,
             };
 
             while (true)
@@ -47,12 +38,12 @@ namespace Scarab.Util
                 string? result = await dialog.ShowAsync(parent);
 
                 if (result is null)
-                    await MessageBoxManager.GetMessageBoxStandardWindow("Path", NO_SELECT).Show();
+                    await MessageBoxManager.GetMessageBoxStandardWindow(Resources.PU_InvalidPathTitle, Resources.PU_NoSelect).Show();
                 else if (ValidateWithSuffix(result) is not (var managed, var suffix))
                     await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
-                        ContentTitle = "Path",
-                        ContentHeader = INVALID_PATH_HEADER,
-                        ContentMessage = INVALID_PATH,
+                        ContentTitle = Resources.PU_InvalidPathTitle,
+                        ContentHeader = Resources.PU_InvalidPathHeader,
+                        ContentMessage = Resources.PU_InvalidPath,
                         MinHeight = 140
                     }).Show();
                 else
@@ -67,7 +58,7 @@ namespace Scarab.Util
         {
             var dialog = new OpenFileDialog
             {
-                Title = "Select your Hollow Knight app.",
+                Title = Resources.PU_SelectApp,
                 Directory = "/Applications",
                 AllowMultiple = false
             };
@@ -79,12 +70,12 @@ namespace Scarab.Util
                 string[]? result = await dialog.ShowAsync(parent);
 
                 if (result is null or { Length: 0 })
-                    await MessageBoxManager.GetMessageBoxStandardWindow("Path", NO_SELECT_MAC).Show();
+                    await MessageBoxManager.GetMessageBoxStandardWindow(Resources.PU_InvalidPathTitle, Resources.PU_NoSelectMac).Show();
                 else if (ValidateWithSuffix(result.First()) is not (var managed, var suffix))
                     await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
-                        ContentTitle = "Path",
-                        ContentHeader = INVALID_APP_HEADER,
-                        ContentMessage = INVALID_APP,
+                        ContentTitle = Resources.PU_InvalidPathTitle,
+                        ContentHeader = Resources.PU_InvalidAppHeader,
+                        ContentMessage = Resources.PU_InvalidApp,
                         MinHeight = 200
                     }).Show();
                 else

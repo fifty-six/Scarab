@@ -118,147 +118,147 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="MI_InstallText_Installed" xml:space="preserve">
-    <value>卸载</value>
+    <value>Desinstalar</value>
   </data>
   <data name="MI_InstallText_NotInstalled" xml:space="preserve">
-    <value>安装</value>
+    <value>Instalar</value>
   </data>
   <data name="MLVM_ApiButtonText_DisableAPI" xml:space="preserve">
-    <value>禁用API</value>
+    <value>Desativar API</value>
   </data>
   <data name="MLVM_ApiButtonText_EnableAPI" xml:space="preserve">
-    <value>启用API</value>
+    <value>Ativar API</value>
   </data>
   <data name="MLVM_ApiButtonText_ToggleAPI" xml:space="preserve">
-    <value>切换API</value>
+    <value>Ativar/Desativar API</value>
   </data>
   <data name="MLVM_ChangePathAsync_Msgbox_Text" xml:space="preserve">
-    <value>请重新启动Scarab以应用更改</value>
+    <value>Reabra o Scarab para aplicar seu novo caminho.</value>
   </data>
   <data name="MLVM_ChangePathAsync_Msgbox_Title" xml:space="preserve">
-    <value>游戏路径已更改</value>
+    <value>Caminho Alterado!</value>
   </data>
   <data name="MLVM_DisplayHashMismatch_Msgbox_Text" xml:space="preserve">
-    <value>{0}({1}) 的哈希值与给定的哈希值{2}不匹配，它已损坏。</value>
+    <value>O hash da transferência de {0} ({1}) não correspondeu com a assinatura concedida ({2}). Ele está corrompido ou o registro está incorreto.</value>
   </data>
   <data name="MLVM_DisplayHashMismatch_Msgbox_Title" xml:space="preserve">
-    <value>哈希值不匹配</value>
+    <value>Discrepância de hash!</value>
   </data>
   <data name="MLVM_DisplayNetworkError_Msgbox_Text" xml:space="preserve">
-    <value>无法下载{0}！资源可能已删除，或者未连接网络</value>
+    <value>Impossível baixar {0}! O site pode estar fora do ar ou você não possui conexão de rede.</value>
   </data>
   <data name="MLVM_DisplayNetworkError_Msgbox_Title" xml:space="preserve">
-    <value>网络错误</value>
+    <value>Erro de Rede</value>
   </data>
   <data name="MLVM_InternalUpdateInstallAsync_Msgbox_W_Text" xml:space="preserve">
-    <value>游戏正在运行，这可能会导致一些问题。是否关闭游戏？</value>
+    <value>Hollow Knight está aberto! Isto pode acarretar em problemas ao instalar mods. Deseja fechar o Hollow Knight?</value>
   </data>
   <data name="MLVM_InternalUpdateInstallAsync_Msgbox_W_Title" xml:space="preserve">
-    <value>警告</value>
+    <value>Aviso!</value>
   </data>
   <data name="MWVM_Impl_Error_Fetch_ModLinks_Error" xml:space="preserve">
-    <value>HTTP错误{0}</value>
+    <value>falhou com erro HTTP {0}</value>
   </data>
   <data name="MWVM_Impl_Error_Fetch_ModLinks_Msgbox_Text" xml:space="preserve">
-    <value>无法获取ModLinks，原因：{0}</value>
+    <value>Impossível obter o modlinks, a operação {0}</value>
   </data>
   <data name="MWVM_Impl_Error_Fetch_ModLinks_Msgbox_Title" xml:space="preserve">
-    <value>错误</value>
+    <value>Erro!</value>
   </data>
   <data name="MWVM_Impl_Error_Fetch_ModLinks_Timeout" xml:space="preserve">
-    <value>超时</value>
+    <value>excedeu o tempo limite</value>
   </data>
   <data name="MWVM_OutOfDate_GetLatest" xml:space="preserve">
-    <value>Get the latest release</value>
+    <value>Obter a última versão</value>
   </data>
   <data name="MWVM_OutOfDate_ContinueAnyways" xml:space="preserve">
-    <value>Continue anyways.</value>
+    <value>Continuar mesmo assim.</value>
   </data>
   <data name="MWVM_OutOfDate_Title" xml:space="preserve">
-    <value>Out of date!</value>
+    <value>Desatualizado!</value>
   </data>
   <data name="MWVM_OutOfDate_Message" xml:space="preserve">
-    <value>This program is out of date! It may not function correctly.</value>
+    <value>Este programa está desatualizado! Ele pode não funcionar corretamente.</value>
   </data>
   <data name="MWVM_Warning" xml:space="preserve">
-    <value>Warning</value>
+    <value>Aviso</value>
   </data>
   <data name="MWVM_InvalidSavedPath_Message" xml:space="preserve">
-    <value>The saved Hollow Knight path is invalid, please re-select a valid path.</value>
+    <value>O caminho salvo do Hollow Knight é inválido. Por favor, selecione novamente um caminho válido.</value>
   </data>
   <data name="MWVM_Info" xml:space="preserve">
     <value>Info</value>
   </data>
   <data name="MWVM_UnableToDetect_Message" xml:space="preserve">
-    <value>Unable to detect your Hollow Knight installation. Please select it.</value>
+    <value>Não foi possível detectar a sua instalação do Hollow Knight. Por favor, selecione-a.</value>
   </data>
   <data name="MWVM_DetectedPath_Title" xml:space="preserve">
-    <value>Detected path!</value>
+    <value>Caminho detectado!</value>
   </data>
   <data name="MWVM_DetectedPath_Message" xml:space="preserve">
-    <value>Detected Hollow Knight install at {path.Root}. Is this correct?</value>
+    <value>Detectada uma instalação do Hollow Knight em {path.Root}. Isto está correto?</value>
   </data>
   <data name="XAML_ChangPath" xml:space="preserve">
-    <value>更改游戏目录</value>
+    <value>Alterar Caminho</value>
   </data>
   <data name="XAML_Dependencies" xml:space="preserve">
-    <value>依赖Mods：</value>
+    <value>\nDependências:\n</value>
   </data>
   <data name="XAML_Donate" xml:space="preserve">
-    <value>捐赠</value>
+    <value>Doar</value>
   </data>
   <data name="XAML_ModsFilter_All" xml:space="preserve">
-    <value>所有Mods</value>
+    <value>Todos</value>
   </data>
   <data name="XAML_ModsFilter_Enabled" xml:space="preserve">
-    <value>已启用</value>
+    <value>Ativos</value>
   </data>
   <data name="XAML_ModsFilter_Installed" xml:space="preserve">
-    <value>已安装</value>
+    <value>Instalados</value>
   </data>
   <data name="XAML_ModsFilter_OutOfDate" xml:space="preserve">
-    <value>已过时</value>
+    <value>Desatualizados</value>
   </data>
   <data name="XAML_OpenMods" xml:space="preserve">
-    <value>打开Mods文件夹</value>
+    <value>Abrir Mods</value>
   </data>
   <data name="XAML_Repository" xml:space="preserve">
-    <value>代码仓库：</value>
+    <value>\nRepositório:\n</value>
   </data>
   <data name="XAML_SearchMark" xml:space="preserve">
-    <value>搜索Mod</value>
+    <value>Pesquisar Mod</value>
   </data>
   <data name="XAML_UpdateAPI" xml:space="preserve">
-    <value>更新API</value>
+    <value>Atualizar API</value>
   </data>
   <data name="XAML_Version" xml:space="preserve">
-    <value>版本：</value>
+    <value>\nVersão:\n</value>
   </data>
   <data name="PU_NoSelect" xml:space="preserve">
-    <value>No path was selected!</value>
+    <value>Nenhum caminho foi selecionado!</value>
   </data>
   <data name="PU_NoSelectMac" xml:space="preserve">
-    <value>No application was selected!</value>
+    <value>Nenhuma aplicação foi selecionada!</value>
   </data>
   <data name="PU_InvalidPathHeader" xml:space="preserve">
-    <value>Invalid Hollow Knight path!</value>
+    <value>Caminho do Hollow Knight inválido!</value>
   </data>
   <data name="PU_InvalidAppHeader" xml:space="preserve">
-    <value>Invalid Hollow Knight app!</value>
+    <value>Aplicativo do Hollow Knight inválido!</value>
   </data>
   <data name="PU_InvalidPath" xml:space="preserve">
-    <value>Select the folder containing hollow_knight_Data or Hollow Knight_Data.</value>
+    <value>Selecione a pasta que contém hollow_knight_Data ou Hollow Knight_Data.</value>
   </data>
   <data name="PU_InvalidApp" xml:space="preserve">
-    <value>Missing Managed folder or Assembly-CSharp!</value>
+    <value>A pasta Managed ou o Assembly-CSharp está ausente!</value>
   </data>
   <data name="PU_SelectPath" xml:space="preserve">
-    <value>Select your Hollow Knight folder.</value>
+    <value>Selecione a sua pasta do Hollow Knight.</value>
   </data>
   <data name="PU_InvalidPathTitle" xml:space="preserve">
-    <value>Path</value>
+    <value>Caminho</value>
   </data>
   <data name="PU_SelectApp" xml:space="preserve">
-    <value>Select your Hollow Knight app.</value>
+    <value>Selecione o seu app do Hollow Knight.</value>
   </data>
 </root>

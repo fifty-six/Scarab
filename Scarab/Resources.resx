@@ -168,6 +168,36 @@
   <data name="MWVM_Impl_Error_Fetch_ModLinks_Timeout" xml:space="preserve">
     <value>timed out</value>
   </data>
+  <data name="MWVM_OutOfDate_GetLatest" xml:space="preserve">
+    <value>Get the latest release</value>
+  </data>
+  <data name="MWVM_OutOfDate_ContinueAnyways" xml:space="preserve">
+    <value>Continue anyways.</value>
+  </data>
+  <data name="MWVM_OutOfDate_Title" xml:space="preserve">
+    <value>Out of date!</value>
+  </data>
+  <data name="MWVM_OutOfDate_Message" xml:space="preserve">
+    <value>This program is out of date! It may not function correctly.</value>
+  </data>
+  <data name="MWVM_Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="MWVM_InvalidSavedPath_Message" xml:space="preserve">
+    <value>The saved Hollow Knight path is invalid, please re-select a valid path.</value>
+  </data>
+  <data name="MWVM_Info" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="MWVM_UnableToDetect_Message" xml:space="preserve">
+    <value>Unable to detect your Hollow Knight installation. Please select it.</value>
+  </data>
+  <data name="MWVM_DetectedPath_Title" xml:space="preserve">
+    <value>Detected path!</value>
+  </data>
+  <data name="MWVM_DetectedPath_Message" xml:space="preserve">
+    <value>Detected Hollow Knight install at {path.Root}. Is this correct?</value>
+  </data>
   <data name="XAML_ChangPath" xml:space="preserve">
     <value>Change Path</value>
   </data>
@@ -204,4 +234,32 @@
   <data name="XAML_Version" xml:space="preserve">
     <value>\nVersion:\n</value>
   </data>
+  <data name="PU_NoSelect" xml:space="preserve">
+    <value>No path was selected!</value>
+  </data>
+  <data name="PU_NoSelectMac" xml:space="preserve">
+    <value>No application was selected!</value>
+  </data>
+  <data name="PU_InvalidPathHeader" xml:space="preserve">
+    <value>Invalid Hollow Knight path!</value>
+  </data>
+  <data name="PU_InvalidAppHeader" xml:space="preserve">
+    <value>Invalid Hollow Knight app!</value>
+  </data>
+  <data name="PU_InvalidPath" xml:space="preserve">
+    <value>Select the folder containing hollow_knight_Data or Hollow Knight_Data.</value>
+  </data>
+  <data name="PU_InvalidApp" xml:space="preserve">
+    <value>Missing Managed folder or Assembly-CSharp!</value>
+  </data>
+  <data name="PU_SelectPath" xml:space="preserve">
+    <value>Select your Hollow Knight folder.</value>
+  </data>
+  <data name="PU_InvalidPathTitle" xml:space="preserve">
+    <value>Path</value>
+  </data>
+  <data name="PU_SelectApp" xml:space="preserve">
+    <value>Select your Hollow Knight app.</value>
+  </data>
+  
 </root>

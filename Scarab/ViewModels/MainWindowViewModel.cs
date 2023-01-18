@@ -195,19 +195,19 @@ namespace Scarab.ViewModels
                         new ButtonDefinition {
                             IsDefault = true,
                             IsCancel = true,
-                            Name = "Get the latest release"
+                            Name = Resources.MWVM_OutOfDate_GetLatest
                         },
                         new ButtonDefinition {
-                            Name = "Continue anyways."
+                            Name = Resources.MWVM_OutOfDate_ContinueAnyways
                         }
                     },
-                    ContentTitle = "Out of date!",
-                    ContentMessage = "This program is out of date! It may not function correctly.",
+                    ContentTitle = Resources.MWVM_OutOfDate_Title,
+                    ContentMessage = Resources.MWVM_OutOfDate_Message,
                     SizeToContent = SizeToContent.WidthAndHeight
                 }
             ).Show();
 
-            if (res == "Get the latest release")
+            if (res == Resources.MWVM_OutOfDate_GetLatest)
             {
                 Process.Start(new ProcessStartInfo("https://github.com/fifty-six/Scarab/releases/latest") { UseShellExecute = true });
                 
@@ -226,8 +226,8 @@ namespace Scarab.ViewModels
             await MessageBoxManager.GetMessageBoxStandardWindow
             (
                 new MessageBoxStandardParams {
-                    ContentHeader = "Warning",
-                    ContentMessage = "The saved Hollow Knight path is invalid, please re-select a valid path.",
+                    ContentHeader = Resources.MWVM_Warning,
+                    ContentMessage = Resources.MWVM_InvalidSavedPath_Message,
                     // The auto-resize for this lib is buggy, so 
                     // ensure that the message doesn't get cut off 
                     MinWidth = 550
@@ -245,8 +245,9 @@ namespace Scarab.ViewModels
                 (
                     new MessageBoxStandardParams
                     {
-                        ContentHeader = "Info",
-                        ContentMessage = "Unable to detect your Hollow Knight installation. Please select it."
+                        ContentHeader = Resources.MWVM_Info,
+                        ContentMessage = Resources.MWVM_UnableToDetect_Message,
+                        MinWidth = 550
                     }
                 );
 
@@ -261,8 +262,8 @@ namespace Scarab.ViewModels
             (
                 new MessageBoxStandardParams
                 {
-                    ContentHeader = "Detected path!",
-                    ContentMessage = $"Detected Hollow Knight install at {path.Root}. Is this correct?",
+                    ContentHeader = Resources.MWVM_DetectedPath_Title,
+                    ContentMessage = string.Format(Resources.MWVM_DetectedPath_Message, path.Root),
                     ButtonDefinitions = ButtonEnum.YesNo
                 }
             );

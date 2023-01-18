@@ -58,6 +58,9 @@
     </ItemGroup>
     
     <ItemGroup>
+      <EmbeddedResource Update="Resources.pt-BR.resx">
+        <Generator></Generator>
+      </EmbeddedResource>
       <EmbeddedResource Update="Resources.zh.resx">
         <Generator></Generator>
       </EmbeddedResource>
