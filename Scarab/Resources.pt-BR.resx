@@ -196,7 +196,7 @@
     <value>Caminho detectado!</value>
   </data>
   <data name="MWVM_DetectedPath_Message" xml:space="preserve">
-    <value>Detectada uma instalação do Hollow Knight em {path.Root}. Isto está correto?</value>
+    <value>Detectada uma instalação do Hollow Knight em {0}. Isto está correto?</value>
   </data>
   <data name="XAML_ChangPath" xml:space="preserve">
     <value>Alterar Caminho</value>

@@ -196,7 +196,7 @@
     <value>Detected path!</value>
   </data>
   <data name="MWVM_DetectedPath_Message" xml:space="preserve">
-    <value>Detected Hollow Knight install at {path.Root}. Is this correct?</value>
+    <value>Detected Hollow Knight install at {0}. Is this correct?</value>
   </data>
   <data name="XAML_ChangPath" xml:space="preserve">
     <value>更改游戏目录</value>
