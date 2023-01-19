@@ -169,34 +169,34 @@
     <value>超时</value>
   </data>
   <data name="MWVM_OutOfDate_GetLatest" xml:space="preserve">
-    <value>Get the latest release</value>
+    <value>获取最新的版本</value>
   </data>
   <data name="MWVM_OutOfDate_ContinueAnyways" xml:space="preserve">
-    <value>Continue anyways.</value>
+    <value>继续</value>
   </data>
   <data name="MWVM_OutOfDate_Title" xml:space="preserve">
-    <value>Out of date!</value>
+    <value>过时了</value>
   </data>
   <data name="MWVM_OutOfDate_Message" xml:space="preserve">
-    <value>This program is out of date! It may not function correctly.</value>
+    <value>这个程序已经过时了！它可能无法正常工作。</value>
   </data>
   <data name="MWVM_Warning" xml:space="preserve">
-    <value>Warning</value>
+    <value>警告</value>
   </data>
   <data name="MWVM_InvalidSavedPath_Message" xml:space="preserve">
-    <value>The saved Hollow Knight path is invalid, please re-select a valid path.</value>
+    <value>空洞骑士的路径无效，请重新选择有效路径。</value>
   </data>
   <data name="MWVM_Info" xml:space="preserve">
-    <value>Info</value>
+    <value>信息</value>
   </data>
   <data name="MWVM_UnableToDetect_Message" xml:space="preserve">
-    <value>Unable to detect your Hollow Knight installation. Please select it.</value>
+    <value>无法检测到空洞骑士的路径，请手动选择它。</value>
   </data>
   <data name="MWVM_DetectedPath_Title" xml:space="preserve">
-    <value>Detected path!</value>
+    <value>检测到的路径！</value>
   </data>
   <data name="MWVM_DetectedPath_Message" xml:space="preserve">
-    <value>Detected Hollow Knight install at {0}. Is this correct?</value>
+    <value>检测到空洞骑士的路径为{0}。这是对的吗？</value>
   </data>
   <data name="XAML_ChangPath" xml:space="preserve">
     <value>更改游戏目录</value>
@@ -235,30 +235,30 @@
     <value>版本：</value>
   </data>
   <data name="PU_NoSelect" xml:space="preserve">
-    <value>No path was selected!</value>
+    <value>未选择路径！</value>
   </data>
   <data name="PU_NoSelectMac" xml:space="preserve">
-    <value>No application was selected!</value>
+    <value>未选择任何应用程序！</value>
   </data>
   <data name="PU_InvalidPathHeader" xml:space="preserve">
-    <value>Invalid Hollow Knight path!</value>
+    <value>无效的空洞骑士路径</value>
   </data>
   <data name="PU_InvalidAppHeader" xml:space="preserve">
-    <value>Invalid Hollow Knight app!</value>
+    <value>无效的空洞骑士路径</value>
   </data>
   <data name="PU_InvalidPath" xml:space="preserve">
-    <value>Select the folder containing hollow_knight_Data or Hollow Knight_Data.</value>
+    <value>选择包含“hollow_knight_Data”或“Hollow Knight_Data”的文件夹。</value>
   </data>
   <data name="PU_InvalidApp" xml:space="preserve">
-    <value>Missing Managed folder or Assembly-CSharp!</value>
+    <value>缺少Managed或Assembly-CSharp.dll</value>
   </data>
   <data name="PU_SelectPath" xml:space="preserve">
-    <value>Select your Hollow Knight folder.</value>
+    <value>选择您的空洞骑士文件夹</value>
   </data>
   <data name="PU_InvalidPathTitle" xml:space="preserve">
-    <value>Path</value>
+    <value>路径</value>
   </data>
   <data name="PU_SelectApp" xml:space="preserve">
-    <value>Select your Hollow Knight app.</value>
+    <value>选择空洞骑士</value>
   </data>
 </root>
