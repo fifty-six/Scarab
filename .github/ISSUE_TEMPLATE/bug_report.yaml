@@ -49,6 +49,6 @@ body:
     id: logs
     attributes:
       label: Logs
-      description: Attach any logs, if any, here. You can find logs in `~/.config/HKModInstaller` or `%appdata%\HKModInstaller`. There may also be logs in the same folder as the `.exe` or `.app` If there are no logs, please write 'None' here.
+      description: Attach any logs, if any, here. You can find logs in `~/.config/HKModInstaller` or `%appdata%\HKModInstaller`. There may also be logs in the same folder as the `.exe` or `.app` If there are no logs, please write 'None' here. Note that in any case where the app crashed or indicated an error or exception there *will* be logs you should include located in the previously mentioned folder.
     validations:
       required: true
