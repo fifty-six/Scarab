@@ -16,7 +16,7 @@ namespace Scarab.Util
     {
         // There isn't any [return: MaybeNullWhen(param is null)] so this overload will have to do
         // Not really a huge point but it's nice to have the nullable static analysis
-        public static async Task<string?> SelectPathFailable() => await SelectPath(true);
+        public static async Task<string?> SelectPathFallible() => await SelectPath(true);
         
         public static async Task<string> SelectPath(bool fail = false)
         {

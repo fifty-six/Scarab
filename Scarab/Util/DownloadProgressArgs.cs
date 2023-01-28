@@ -7,5 +7,5 @@ public record struct DownloadProgressArgs
     
     public bool Completed { get; internal set; }
 
-    public double? PercentComplete => TotalBytes is int len ? 100 * (BytesRead / (double) TotalBytes) : null;
+    public double? PercentComplete => TotalBytes is { } len ? 100 * (BytesRead / (double) len) : null;
 }

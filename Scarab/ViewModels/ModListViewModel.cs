@@ -80,8 +80,14 @@ namespace Scarab.ViewModels
                 ? SelectedItems
                 : SelectedItems.Where(x => x.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
 
-        public string ApiButtonText   => _mods.ApiInstall is InstalledState { Enabled: var enabled } ? (enabled ? Resources.MLVM_ApiButtonText_DisableAPI : Resources.MLVM_ApiButtonText_EnableAPI) : Resources.MLVM_ApiButtonText_ToggleAPI;
-        public bool   ApiOutOfDate    => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
+        public string ApiButtonText   => _mods.ApiInstall is InstalledState { Enabled: var enabled } 
+            ? (
+                enabled ? Resources.MLVM_ApiButtonText_DisableAPI 
+                        : Resources.MLVM_ApiButtonText_EnableAPI 
+            )
+            : Resources.MLVM_ApiButtonText_ToggleAPI;
+        
+        public bool ApiOutOfDate => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
 
         public bool EnableApiButton => _mods.ApiInstall switch
         {
@@ -107,7 +113,7 @@ namespace Scarab.ViewModels
         
         private async Task ChangePathAsync()
         {
-            string? path = await PathUtil.SelectPathFailable();
+            string? path = await PathUtil.SelectPathFallible();
 
             if (path is null)
                 return;
@@ -186,7 +192,7 @@ namespace Scarab.ViewModels
                 || p.ProcessName.StartsWith("Hollow Knight")
             );
             
-            if (Process.GetProcesses().FirstOrDefault(IsHollowKnight) is Process proc)
+            if (Process.GetProcesses().FirstOrDefault(IsHollowKnight) is { } proc)
             {
                 var res = await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
                     ContentTitle = Resources.MLVM_InternalUpdateInstallAsync_Msgbox_W_Title,
@@ -209,7 +215,7 @@ namespace Scarab.ViewModels
                     {
                         ProgressBarVisible = !progress.Completed;
 
-                        if (progress.Download?.PercentComplete is not double percent)
+                        if (progress.Download?.PercentComplete is not { } percent)
                         {
                             ProgressBarIndeterminate = true;
                             return;

@@ -37,7 +37,7 @@ public static class HttpClientExt
 
         await using Stream stream = await content.ReadAsStreamAsync(cts).ConfigureAwait(false);
 
-        int dl_size = content.Headers.ContentLength is long len
+        int dl_size = content.Headers.ContentLength is { } len
             ? (int) len
             : 65536;
 

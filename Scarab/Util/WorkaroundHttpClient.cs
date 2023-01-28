@@ -95,11 +95,9 @@ public static class WorkaroundHttpClient
     // https://github.com/fifty-six/Scarab/issues/47
     private static HttpClient CreateWorkaroundClient()
     {
-        SocketsHttpHandler handler = new SocketsHttpHandler
-        {
+        return new HttpClient(new SocketsHttpHandler {
             ConnectCallback = IPv4ConnectAsync
-        };
-        return new HttpClient(handler);
+        });
 
         static async ValueTask<Stream> IPv4ConnectAsync(SocketsHttpConnectionContext context,
             CancellationToken cancellationToken)

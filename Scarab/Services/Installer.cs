@@ -325,11 +325,11 @@ namespace Scarab.Services
             }
 
             mod.State = mod.State switch {
-                InstalledState installed => installed with {
-                    Version = mod.Version,
-                    Updated = true,
-                    Enabled = enable
-                },
+                InstalledState => new InstalledState(
+                    Version: mod.Version,
+                    Updated:  true,
+                    Enabled: enable
+                ),
 
                 NotInstalledState => new InstalledState(enable, mod.Version, true),
 
@@ -360,11 +360,11 @@ namespace Scarab.Services
 
             string? filename = string.Empty;
 
-            if (response.Content.Headers.ContentDisposition is ContentDispositionHeaderValue disposition)
+            if (response.Content.Headers.ContentDisposition is { } disposition)
                 filename = disposition.FileName;
 
             if (string.IsNullOrEmpty(filename))
-                filename = uri[(uri.LastIndexOf("/") + 1)..];
+                filename = uri[(uri.LastIndexOf("/", StringComparison.Ordinal) + 1)..];
 
             return (bytes, filename);
         }

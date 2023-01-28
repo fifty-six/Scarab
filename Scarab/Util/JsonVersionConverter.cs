@@ -8,7 +8,7 @@ namespace Scarab.Util
     {
         public override Version? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (reader.GetString() is string s)
+            if (reader.GetString() is { } s)
                 return new Version(s);
 
             return null;
