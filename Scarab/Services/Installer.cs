@@ -271,8 +271,13 @@ namespace Scarab.Services
         {
             foreach (ModItem dep in mod.Dependencies.Select(x => _db.Items.First(i => i.Name == x)))
             {
-                if (dep.State is InstalledState { Updated: true })
+                if (dep.State is InstalledState { Updated: true, Enabled: var enabled })
+                {
+                    if (!enabled)
+                        Toggle(dep);
+                    
                     continue;
+                }
 
                 // Enable the dependencies' dependencies if we're enabling this mod
                 // Or if the dependency was previously not installed.
