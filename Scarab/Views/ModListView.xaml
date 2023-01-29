@@ -110,7 +110,7 @@
             Background="#a9a9a9" />
 
         <ScrollViewer>
-            <ItemsRepeater Items="{Binding FilteredItems}" ElementClearing="PrepareElement" VerticalCacheLength="20">
+            <ItemsRepeater Items="{Binding FilteredItems}" ElementPrepared="PrepareElement" VerticalCacheLength="20">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate DataType="models:ModItem">
                         <Grid Margin="8 12 12 0">

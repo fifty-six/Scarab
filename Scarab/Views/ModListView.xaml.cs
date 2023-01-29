@@ -35,7 +35,7 @@ namespace Scarab.Views
         }
         
         [UsedImplicitly]
-        private void PrepareElement(object? sender, ItemsRepeaterElementClearingEventArgs e)
+        private void PrepareElement(object? sender, ItemsRepeaterElementPreparedEventArgs e)
         {
             e.Element.VisualChildren.OfType<Expander>().First().IsExpanded = false;
         }
