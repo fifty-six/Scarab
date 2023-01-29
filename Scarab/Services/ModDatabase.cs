@@ -41,7 +41,11 @@ namespace Scarab.Services
                     repository: mod.Repository,
                     dependencies: mod.Dependencies,
                     
+                    tags: mod.Tags,
+                    integrations: mod.Integrations,
+                    
                     state: mods.FromManifest(mod)
+                    
                 );
                 
                 _items.Add(item);

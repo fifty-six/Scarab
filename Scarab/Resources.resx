@@ -261,5 +261,10 @@
   <data name="PU_SelectApp" xml:space="preserve">
     <value>Select your Hollow Knight app.</value>
   </data>
-  
+  <data name="XAML_Integrations" xml:space="preserve">
+    <value>Integrations</value>
+  </data>
+  <data name="XAML_Tags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
 </root>

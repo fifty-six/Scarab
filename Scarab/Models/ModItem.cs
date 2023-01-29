@@ -18,7 +18,9 @@ namespace Scarab.Models
             string shasum,
             string name,
             string description,
-            string repository
+            string repository,
+            string[] tags,
+            string[] integrations
         )
         {
             _state = state;
@@ -30,9 +32,14 @@ namespace Scarab.Models
             Name = name;
             Description = description;
             Repository = repository;
+            Tags = tags;
+            Integrations = integrations;
 
             DependenciesDesc = string.Join(Environment.NewLine, Dependencies);
+            TagDesc          = string.Join(Environment.NewLine, Tags);
+            IntegrationsDesc = string.Join(Environment.NewLine, Integrations);
         }
+
 
         public Version  Version          { get; }
         public string[] Dependencies     { get; }
@@ -41,7 +48,13 @@ namespace Scarab.Models
         public string   Name             { get; }
         public string   Description      { get; }
         public string   Repository       { get; }
+        
+        public string[] Tags { get; }
+        public string[] Integrations { get; }
+        
         public string   DependenciesDesc { get; }
+        public string   TagDesc          { get; }
+        public string   IntegrationsDesc { get; }
 
         [Notify]
         private ModState _state;
@@ -65,7 +78,9 @@ namespace Scarab.Models
 
         public bool Installed => State is InstalledState;
 
-        public bool HasDependencies  => Dependencies.Length > 0;
+        public bool HasDependencies => Dependencies.Length > 0;
+        public bool HasIntegrations => Integrations.Length > 0;
+        public bool HasTags => Tags.Length > 0;
 
         public bool UpdateAvailable => State is InstalledState s && s.Version < Version;
 

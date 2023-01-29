@@ -51,6 +51,14 @@ namespace Scarab.Models
 
         public string Description { get; set; } = null!;
 
+        [XmlArray(ElementName = "Tags")]
+        [XmlArrayItem(ElementName = "Tag")]
+        public string[] Tags { get; set; } = Array.Empty<string>();
+
+        [XmlArray(ElementName = "Integrations")]
+        [XmlArrayItem(ElementName = "Integration")]
+        public string[] Integrations { get; set; } = Array.Empty<string>();
+
         public override string ToString()
         {
             return "{\n"

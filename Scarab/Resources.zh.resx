@@ -261,4 +261,10 @@
   <data name="PU_SelectApp" xml:space="preserve">
     <value>选择空洞骑士</value>
   </data>
+  <data name="XAML_Integrations" xml:space="preserve">
+    <value>整合</value>
+  </data>
+  <data name="XAML_Tags" xml:space="preserve">
+    <value>标签</value>
+  </data>
 </root>

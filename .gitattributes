@@ -3,6 +3,9 @@
 ###############################################################################
 * text=auto
 
+# Hide designer files from diffs
+*.Designer.cs -diff linguist-generated
+
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
