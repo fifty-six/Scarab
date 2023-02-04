@@ -1,0 +1,270 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MI_InstallText_Installed" xml:space="preserve">
+    <value>Eltávolít</value>
+  </data>
+  <data name="MI_InstallText_NotInstalled" xml:space="preserve">
+    <value>Telepítés</value>
+  </data>
+  <data name="MLVM_ApiButtonText_DisableAPI" xml:space="preserve">
+    <value>API letiltása</value>
+  </data>
+  <data name="MLVM_ApiButtonText_EnableAPI" xml:space="preserve">
+    <value>API engedélyezése</value>
+  </data>
+  <data name="MLVM_ApiButtonText_ToggleAPI" xml:space="preserve">
+    <value>API ki/be</value>
+  </data>
+  <data name="MLVM_ChangePathAsync_Msgbox_Text" xml:space="preserve">
+    <value>Indítsd újra a telepítőt az új útvonal használatához.</value>
+  </data>
+  <data name="MLVM_ChangePathAsync_Msgbox_Title" xml:space="preserve">
+    <value>Az útvonal megváltozott!</value>
+  </data>
+  <data name="MLVM_DisplayHashMismatch_Msgbox_Text" xml:space="preserve">
+    <value>A {0} letöltési hash-e ({1}) nem egyezik a megadottal ({2}). Korruptálódhatott, vagy a bejegyzés helytelen.</value>
+  </data>
+  <data name="MLVM_DisplayHashMismatch_Msgbox_Title" xml:space="preserve">
+    <value>Eltérő hash-ek</value>
+  </data>
+  <data name="MLVM_DisplayNetworkError_Msgbox_Text" xml:space="preserve">
+    <value>Nem lehet letölteni a következőt: {0}. Az oldalnál működési hiba léphetett fel, vagy nálad lehet hálózati probléma.</value>
+  </data>
+  <data name="MLVM_DisplayNetworkError_Msgbox_Title" xml:space="preserve">
+    <value>Hálózati hiba</value>
+  </data>
+  <data name="MLVM_InternalUpdateInstallAsync_Msgbox_W_Text" xml:space="preserve">
+    <value>A Hollow Knight épp fut. Ez problémát okozhat modok telepítésekor. Ki akarsz lépni belőle?</value>
+  </data>
+  <data name="MLVM_InternalUpdateInstallAsync_Msgbox_W_Title" xml:space="preserve">
+    <value>Figyelem!</value>
+  </data>
+  <data name="MWVM_Impl_Error_Fetch_ModLinks_Error" xml:space="preserve">
+    <value>meghíúsult a következő HTTP hibakóddal: {0}</value>
+  </data>
+  <data name="MWVM_Impl_Error_Fetch_ModLinks_Msgbox_Text" xml:space="preserve">
+    <value>A modlinks lekérése sikertelen. A művelet {0}</value>
+  </data>
+  <data name="MWVM_Impl_Error_Fetch_ModLinks_Msgbox_Title" xml:space="preserve">
+    <value>Hiba!</value>
+  </data>
+  <data name="MWVM_Impl_Error_Fetch_ModLinks_Timeout" xml:space="preserve">
+    <value>túllépte a megengedett időkeretet</value>
+  </data>
+  <data name="MWVM_OutOfDate_GetLatest" xml:space="preserve">
+    <value>Legfrissebb kiadás beszerzése</value>
+  </data>
+  <data name="MWVM_OutOfDate_ContinueAnyways" xml:space="preserve">
+    <value>Folytatás mindenképpen</value>
+  </data>
+  <data name="MWVM_OutOfDate_Title" xml:space="preserve">
+    <value>Elavult verzió</value>
+  </data>
+  <data name="MWVM_OutOfDate_Message" xml:space="preserve">
+    <value>A program elavult. Bizonyos funkciók nem biztos, hogy megfelelően működnek.</value>
+  </data>
+  <data name="MWVM_Warning" xml:space="preserve">
+    <value>Figyelmeztetés</value>
+  </data>
+  <data name="MWVM_InvalidSavedPath_Message" xml:space="preserve">
+    <value>Az elmentett Hollow Knight útvonal érvénytelen. Kérlek, adj meg egy létező útvonalat!</value>
+  </data>
+  <data name="MWVM_Info" xml:space="preserve">
+    <value>Infó</value>
+  </data>
+  <data name="MWVM_UnableToDetect_Message" xml:space="preserve">
+    <value>A Hollow Knight telepítés észlelése sikertelen. Kérlek, add meg!</value>
+  </data>
+  <data name="MWVM_DetectedPath_Title" xml:space="preserve">
+    <value>Telepítés észlelve</value>
+  </data>
+  <data name="MWVM_DetectedPath_Message" xml:space="preserve">
+    <value>Hollow Knight telepítés észlelve itt: {0}. Helyes az útvonal?</value>
+  </data>
+  <data name="XAML_ChangPath" xml:space="preserve">
+    <value>HK mappa módosítása...</value>
+  </data>
+  <data name="XAML_Dependencies" xml:space="preserve">
+    <value>\nFüggőségek:\n</value>
+  </data>
+  <data name="XAML_Donate" xml:space="preserve">
+    <value>Támogatás</value>
+  </data>
+  <data name="XAML_ModsFilter_All" xml:space="preserve">
+    <value>Mind</value>
+  </data>
+  <data name="XAML_ModsFilter_Enabled" xml:space="preserve">
+    <value>Engedélyezett</value>
+  </data>
+  <data name="XAML_ModsFilter_Installed" xml:space="preserve">
+    <value>Telepített</value>
+  </data>
+  <data name="XAML_ModsFilter_OutOfDate" xml:space="preserve">
+    <value>Elavult</value>
+  </data>
+  <data name="XAML_OpenMods" xml:space="preserve">
+    <value>Mods mappa...</value>
+  </data>
+  <data name="XAML_Repository" xml:space="preserve">
+    <value>\nForráskód:\n</value>
+  </data>
+  <data name="XAML_SearchMark" xml:space="preserve">
+    <value>Keresés</value>
+  </data>
+  <data name="XAML_UpdateAPI" xml:space="preserve">
+    <value>API frissítése</value>
+  </data>
+  <data name="XAML_Version" xml:space="preserve">
+    <value>\nVerzió:\n</value>
+  </data>
+  <data name="PU_NoSelect" xml:space="preserve">
+    <value>Nincs útvonal kiválasztva!</value>
+  </data>
+  <data name="PU_NoSelectMac" xml:space="preserve">
+    <value>Nincs alkalmazás kiválasztva!</value>
+  </data>
+  <data name="PU_InvalidPathHeader" xml:space="preserve">
+    <value>Érvénytelen Hollow Knight útvonal!</value>
+  </data>
+  <data name="PU_InvalidAppHeader" xml:space="preserve">
+    <value>Érvénytelen Hollow Knight alkalmazás!</value>
+  </data>
+  <data name="PU_InvalidPath" xml:space="preserve">
+    <value>Add meg a hollow_knight_data vagy Hollow Knight_Data mappát tartalmazó könyvtárat.</value>
+  </data>
+  <data name="PU_InvalidApp" xml:space="preserve">
+    <value>Hiányzó Managed mappa, vagy Assembly-CSharp!</value>
+  </data>
+  <data name="PU_SelectPath" xml:space="preserve">
+    <value>Add meg a Hollow Knight mappát!</value>
+  </data>
+  <data name="PU_InvalidPathTitle" xml:space="preserve">
+    <value>Útvonal</value>
+  </data>
+  <data name="PU_SelectApp" xml:space="preserve">
+    <value>Add meg a Hollow Knight alkalmazást!</value>
+  </data>
+  <data name="XAML_Integrations" xml:space="preserve">
+    <value>Integrációk</value>
+  </data>
+  <data name="XAML_Tags" xml:space="preserve">
+    <value>Címkék</value>
+  </data>
+</root>
