@@ -267,4 +267,7 @@
   <data name="XAML_Tags" xml:space="preserve">
     <value>Tags</value>
   </data>
+  <data name="XAML_ModsFilter_OutOfDate_Update" xml:space="preserve">
+    <value>Update All</value>
+  </data>
 </root>
