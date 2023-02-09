@@ -44,6 +44,10 @@
             <MenuItem Header="{ext:Localize XAML_ModsFilter_Enabled}" Command="{Binding SelectEnabled}" DockPanel.Dock="Top" />
             <MenuItem Header="-" DockPanel.Dock="Top" />
             <MenuItem Header="{ext:Localize XAML_ModsFilter_OutOfDate}" Command="{Binding SelectUnupdated}" DockPanel.Dock="Top" />
+            <!-- New Addition The Update All button-->
+            <MenuItem Header="-" DockPanel.Dock="Top" />
+            <MenuItem Header="{ext:Localize XAML_ModsFilter_OutOfDate_Update}" Command="{Binding UpdateUnupdated}" DockPanel.Dock="Top" 
+					  IsEnabled="{Binding EnableUpdateAllButton}"    />
 
             <MenuItem
                 Command="{Binding ChangePath}"

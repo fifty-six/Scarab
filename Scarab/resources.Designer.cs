@@ -290,19 +290,19 @@ namespace Scarab {
                 return ResourceManager.GetString("XAML_Tags", resourceCulture);
             }
         }
-
+        
         internal static string XAML_On {
             get {
                 return ResourceManager.GetString("XAML_On", resourceCulture);
             }
         }
-
+        
         internal static string XAML_Off {
             get {
                 return ResourceManager.GetString("XAML_Off", resourceCulture);
             }
         }
-
+        
         internal static string XAML_Update {
             get {
                 return ResourceManager.GetString("XAML_Update", resourceCulture);
@@ -360,6 +360,12 @@ namespace Scarab {
         internal static string PU_SelectApp {
             get {
                 return ResourceManager.GetString("PU_SelectApp", resourceCulture);
+            }
+        }
+        
+        internal static string XAML_ModsFilter_OutOfDate_Update {
+            get {
+                return ResourceManager.GetString("XAML_ModsFilter_OutOfDate_Update", resourceCulture);
             }
         }
     }

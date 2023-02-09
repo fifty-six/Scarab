@@ -276,4 +276,7 @@
   <data name="PU_SelectApp" xml:space="preserve">
     <value>Select your Hollow Knight app.</value>
   </data>
+  <data name="XAML_ModsFilter_OutOfDate_Update" xml:space="preserve">
+    <value>Update All</value>
+  </data>
 </root>

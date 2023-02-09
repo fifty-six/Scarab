@@ -152,6 +152,19 @@ namespace Scarab.ViewModels
         public void SelectUnupdated() => SelectedItems = _items.Where(x => x.State is InstalledState { Updated: false });
 
         public void SelectEnabled() => SelectedItems = _items.Where(x => x.State is InstalledState { Enabled: true });
+        public async void UpdateUnupdated()
+        {
+            isUpdateAll = false;
+            RaisePropertyChanged(nameof(EnableUpdateAllButton));
+            IEnumerable<ModItem> UnupdatedItems = _items.Where(x => x.State is InstalledState { Updated: false });
+            while (UnupdatedItems.FirstOrDefault() != null)
+            {
+                await OnUpdateAsync(UnupdatedItems.First());
+                UnupdatedItems = _items.Where(x => x.State is InstalledState { Updated: false });
+            }
+        }
+        private bool isUpdateAll = true;
+        public bool EnableUpdateAllButton => _items.Where(x => x.State is InstalledState { Updated: false }).FirstOrDefault() != null && isUpdateAll;
 
         private async Task OnEnableAsync(ModItem item)
         {
