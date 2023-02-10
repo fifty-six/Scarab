@@ -279,6 +279,36 @@ namespace Scarab {
             }
         }
         
+        internal static string XAML_Integrations {
+            get {
+                return ResourceManager.GetString("XAML_Integrations", resourceCulture);
+            }
+        }
+        
+        internal static string XAML_Tags {
+            get {
+                return ResourceManager.GetString("XAML_Tags", resourceCulture);
+            }
+        }
+
+        internal static string XAML_On {
+            get {
+                return ResourceManager.GetString("XAML_On", resourceCulture);
+            }
+        }
+
+        internal static string XAML_Off {
+            get {
+                return ResourceManager.GetString("XAML_Off", resourceCulture);
+            }
+        }
+
+        internal static string XAML_Update {
+            get {
+                return ResourceManager.GetString("XAML_Update", resourceCulture);
+            }
+        }
+        
         internal static string PU_NoSelect {
             get {
                 return ResourceManager.GetString("PU_NoSelect", resourceCulture);
@@ -330,18 +360,6 @@ namespace Scarab {
         internal static string PU_SelectApp {
             get {
                 return ResourceManager.GetString("PU_SelectApp", resourceCulture);
-            }
-        }
-        
-        internal static string XAML_Integrations {
-            get {
-                return ResourceManager.GetString("XAML_Integrations", resourceCulture);
-            }
-        }
-        
-        internal static string XAML_Tags {
-            get {
-                return ResourceManager.GetString("XAML_Tags", resourceCulture);
             }
         }
     }
