@@ -234,6 +234,21 @@
   <data name="XAML_Version" xml:space="preserve">
     <value>\nVerzió:\n</value>
   </data>
+  <data name="XAML_Integrations" xml:space="preserve">
+    <value>Integrációk</value>
+  </data>
+  <data name="XAML_Tags" xml:space="preserve">
+    <value>Címkék</value>
+  </data>
+  <data name="XAML_On" xml:space="preserve">
+    <value>Be</value>
+  </data>
+  <data name="XAML_Off" xml:space="preserve">
+    <value>Ki</value>
+  </data>
+  <data name="XAML_Update" xml:space="preserve">
+    <value>Aktualizálni</value>
+  </data>
   <data name="PU_NoSelect" xml:space="preserve">
     <value>Nincs útvonal kiválasztva!</value>
   </data>
@@ -260,11 +275,5 @@
   </data>
   <data name="PU_SelectApp" xml:space="preserve">
     <value>Add meg a Hollow Knight alkalmazást!</value>
-  </data>
-  <data name="XAML_Integrations" xml:space="preserve">
-    <value>Integrációk</value>
-  </data>
-  <data name="XAML_Tags" xml:space="preserve">
-    <value>Címkék</value>
   </data>
 </root>
