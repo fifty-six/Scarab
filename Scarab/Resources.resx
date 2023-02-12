@@ -234,6 +234,21 @@
   <data name="XAML_Version" xml:space="preserve">
     <value>\nVersion:\n</value>
   </data>
+  <data name="XAML_Integrations" xml:space="preserve">
+    <value>Integrations</value>
+  </data>
+  <data name="XAML_Tags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="XAML_On" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="XAML_Off" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="XAML_Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
   <data name="PU_NoSelect" xml:space="preserve">
     <value>No path was selected!</value>
   </data>
@@ -271,3 +286,4 @@
     <value>Update All</value>
   </data>
 </root>
+

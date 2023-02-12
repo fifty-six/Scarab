@@ -215,6 +215,8 @@
                                 Margin = "0 -2 0 0"
                                 VerticalAlignment="Top"
                                 CommandParameter="{Binding .}"
+                                OnContent="{ext:Localize XAML_On}"
+                                OffContent="{ext:Localize XAML_Off}"
                                 Command="{Binding $parent[views:ModListView].DataContext.OnEnable}"
                                 IsChecked="{Binding EnabledIsChecked}"
                                 IsEnabled = "{Binding Installed}"
@@ -254,7 +256,7 @@
                                     />
                                 </Button>
                                 
-                                <ContentPresenter Grid.Column="1" Margin="4,4,0,0" VerticalAlignment="Center" Content="Update"/>
+                                <ContentPresenter Grid.Column="1" Margin="4,4,0,0" VerticalAlignment="Center" Content="{ext:Localize XAML_Update}"/>
                             </Grid>
                         </Grid>
                     </DataTemplate>

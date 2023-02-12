@@ -234,6 +234,21 @@
   <data name="XAML_Version" xml:space="preserve">
     <value>版本：</value>
   </data>
+  <data name="XAML_Integrations" xml:space="preserve">
+    <value>整合</value>
+  </data>
+  <data name="XAML_Tags" xml:space="preserve">
+    <value>标签</value>
+  </data>
+  <data name="XAML_On" xml:space="preserve">
+    <value>活性</value>
+  </data>
+  <data name="XAML_Off" xml:space="preserve">
+    <value>禁用</value>
+  </data>
+  <data name="XAML_Update" xml:space="preserve">
+    <value>更新</value>
+  </data>
   <data name="PU_NoSelect" xml:space="preserve">
     <value>未选择路径！</value>
   </data>
@@ -260,11 +275,5 @@
   </data>
   <data name="PU_SelectApp" xml:space="preserve">
     <value>选择空洞骑士</value>
-  </data>
-  <data name="XAML_Integrations" xml:space="preserve">
-    <value>整合</value>
-  </data>
-  <data name="XAML_Tags" xml:space="preserve">
-    <value>标签</value>
   </data>
 </root>

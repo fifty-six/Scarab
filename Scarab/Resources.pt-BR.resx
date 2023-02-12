@@ -234,6 +234,21 @@
   <data name="XAML_Version" xml:space="preserve">
     <value>\nVersão:\n</value>
   </data>
+  <data name="XAML_Integrations" xml:space="preserve">
+    <value>Integrações</value>
+  </data>
+  <data name="XAML_Tags" xml:space="preserve">
+    <value>Etiquetas</value>
+  </data>
+  <data name="XAML_On" xml:space="preserve">
+    <value>Ativado</value>
+  </data>
+  <data name="XAML_Off" xml:space="preserve">
+    <value>Desativado</value>
+  </data>
+  <data name="XAML_Update" xml:space="preserve">
+    <value>Atualizar</value>
+  </data>
   <data name="PU_NoSelect" xml:space="preserve">
     <value>Nenhum caminho foi selecionado!</value>
   </data>
