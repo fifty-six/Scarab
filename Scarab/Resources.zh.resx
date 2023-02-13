@@ -276,4 +276,7 @@
   <data name="PU_SelectApp" xml:space="preserve">
     <value>选择空洞骑士</value>
   </data>
+  <data name="XAML_ModsFilter_OutOfDate_Update" xml:space="preserve">
+    <value>全部更新</value>
+  </data>
 </root>
