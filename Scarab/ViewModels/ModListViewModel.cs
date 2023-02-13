@@ -46,6 +46,8 @@ namespace Scarab.ViewModels
         [Notify]
         private string? _search;
         
+        private bool _updating;
+        
         public ReactiveCommand<ModItem, Unit> OnUpdate { get; }
         public ReactiveCommand<ModItem, Unit> OnInstall { get; }
         public ReactiveCommand<ModItem, Unit> OnEnable { get; }
@@ -99,6 +101,8 @@ namespace Scarab.ViewModels
             // Unreachable
             _ => throw new InvalidOperationException()
         };
+        
+        public bool CanUpdateAll => _items.Any(x => x.State is InstalledState { Updated: false }) && !_updating;
 
         // Needed for source generator to find it.
         private void RaisePropertyChanged(string name) => IReactiveObjectExtensions.RaisePropertyChanged(this, name);
@@ -152,19 +156,24 @@ namespace Scarab.ViewModels
         public void SelectUnupdated() => SelectedItems = _items.Where(x => x.State is InstalledState { Updated: false });
 
         public void SelectEnabled() => SelectedItems = _items.Where(x => x.State is InstalledState { Enabled: true });
+        
         public async void UpdateUnupdated()
         {
-            isUpdateAll = false;
-            RaisePropertyChanged(nameof(EnableUpdateAllButton));
-            IEnumerable<ModItem> UnupdatedItems = _items.Where(x => x.State is InstalledState { Updated: false });
-            while (UnupdatedItems.FirstOrDefault() != null)
+            _updating = false;
+            
+            RaisePropertyChanged(nameof(CanUpdateAll));
+            
+            var outOfDate = _items.Where(x => x.State is InstalledState { Updated: false });
+
+            foreach (ModItem mod in outOfDate)
             {
-                await OnUpdateAsync(UnupdatedItems.First());
-                UnupdatedItems = _items.Where(x => x.State is InstalledState { Updated: false });
+                // Mods can get updated as dependencies of others while doing this
+                if (mod.State is not InstalledState { Updated: false })
+                    continue;
+                
+                await OnUpdateAsync(mod);
             }
         }
-        private bool isUpdateAll = true;
-        public bool EnableUpdateAllButton => _items.Where(x => x.State is InstalledState { Updated: false }).FirstOrDefault() != null && isUpdateAll;
 
         private async Task OnEnableAsync(ModItem item)
         {
