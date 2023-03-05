@@ -30,6 +30,7 @@ namespace Scarab.ViewModels
         private readonly IInstaller _installer;
         private readonly IModSource _mods;
         private readonly IModDatabase _db;
+        private readonly ReverseDependencySearch _reverseDependencySearch;
         
         [Notify("ProgressBarVisible")]
         private bool _pbVisible;
@@ -67,6 +68,8 @@ namespace Scarab.ViewModels
             _items = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
 
             SelectedItems = _selectedItems = _items;
+            
+            _reverseDependencySearch = new (_items);
 
             OnInstall = ReactiveCommand.CreateFromTask<ModItem>(OnInstallAsync);
             OnUpdate = ReactiveCommand.CreateFromTask<ModItem>(OnUpdateAsync);
@@ -179,7 +182,18 @@ namespace Scarab.ViewModels
         {
             try
             {
-                _installer.Toggle(item);
+                var dependents = _reverseDependencySearch.GetAllEnabledDependents(item).ToList();
+
+                if (!item.EnabledIsChecked ||
+                    dependents.Count == 0 ||
+                    await DisplayHasDependentsWarning(item.Name, dependents))
+                {
+                    _installer.Toggle(item);
+                }
+
+                //to reset the visuals of the toggle to the correct value
+                item.CallOnPropertyChanged(nameof(item.EnabledIsChecked));
+                
             }
             catch (Exception e)
             {
@@ -273,10 +287,21 @@ namespace Scarab.ViewModels
 
             _items.SortBy(Comparer);
         }
+        private async Task InternalInstallWithConfirmationAsync(ModItem item, Func<IInstaller, Action<ModProgressArgs>, Task> f)
+        {
+            var dependents = _reverseDependencySearch.GetAllEnabledDependents(item).ToList();
+
+            if (!item.Installed ||
+                dependents.Count == 0 ||
+                await DisplayHasDependentsWarning(item.Name, dependents))
+            {
+                await InternalUpdateInstallAsync(item, f);
+            }
+        }
 
         private async Task OnUpdateAsync(ModItem item) => await InternalUpdateInstallAsync(item, item.OnUpdate);
 
-        private async Task OnInstallAsync(ModItem item) => await InternalUpdateInstallAsync(item, item.OnInstall);
+        private async Task OnInstallAsync(ModItem item) => await InternalInstallWithConfirmationAsync(item, item.OnInstall);
 
         private static async Task DisplayHashMismatch(HashMismatchException e)
         {
@@ -310,6 +335,23 @@ namespace Scarab.ViewModels
                 text: string.Format(Resources.MLVM_DisplayNetworkError_Msgbox_Text, name),
                 icon: Icon.Error
             ).Show();
+        }
+        
+        // asks user for confirmation on whether or not they want to uninstall/disable mod.
+        // returns whether or not user presses yes on the message box
+        private static async Task<bool> DisplayHasDependentsWarning(string modName, IEnumerable<ModItem> dependants)
+        {
+            var dependentsString = string.Join(", ", dependants.Select(x => x.Name));
+            var result = await MessageBoxManager.GetMessageBoxStandardWindow
+            (
+                title: "Warning! This mod has dependents.",
+                text: $"The mods {dependentsString} are dependent on {modName} being installed and enabled. Do you still want to continue?",
+                icon: Icon.Stop,
+                @enum: ButtonEnum.YesNo
+            ).Show();
+
+            //return whether or not yes was clicked. Also don't remove mod when box is closed with the x
+            return result.HasFlag(ButtonResult.Yes) && !result.HasFlag(ButtonResult.None);
         }
 
         private static (int priority, string name) ModToOrderedTuple(ModItem m) =>

@@ -143,6 +143,11 @@ namespace Scarab.Models
             }
         }
         
+        public void CallOnPropertyChanged(string propertyName)
+        {
+            OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
+        }
+
         #region Equality
         public bool Equals(ModItem? other)
         {
