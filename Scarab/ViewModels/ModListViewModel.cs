@@ -191,7 +191,7 @@ namespace Scarab.ViewModels
                     _installer.Toggle(item);
                 }
 
-                //to reset the visuals of the toggle to the correct value
+                // to reset the visuals of the toggle to the correct value
                 item.CallOnPropertyChanged(nameof(item.EnabledIsChecked));
                 
             }
@@ -339,18 +339,18 @@ namespace Scarab.ViewModels
         
         // asks user for confirmation on whether or not they want to uninstall/disable mod.
         // returns whether or not user presses yes on the message box
-        private static async Task<bool> DisplayHasDependentsWarning(string modName, IEnumerable<ModItem> dependants)
+        private static async Task<bool> DisplayHasDependentsWarning(string modName, IEnumerable<ModItem> dependents)
         {
-            var dependentsString = string.Join(", ", dependants.Select(x => x.Name));
+            var dependentsString = string.Join(", ", dependents.Select(x => x.Name));
             var result = await MessageBoxManager.GetMessageBoxStandardWindow
             (
-                title: "Warning! This mod has dependents.",
-                text: $"The mods {dependentsString} are dependent on {modName} being installed and enabled. Do you still want to continue?",
+                title: "Warning! This mod is required for other mods to function!",
+                text: $"{modName} is required for {dependentsString} to function properly. Do you still want to continue?",
                 icon: Icon.Stop,
                 @enum: ButtonEnum.YesNo
             ).Show();
 
-            //return whether or not yes was clicked. Also don't remove mod when box is closed with the x
+            // return whether or not yes was clicked. Also don't remove mod when box is closed with the x
             return result.HasFlag(ButtonResult.Yes) && !result.HasFlag(ButtonResult.None);
         }
 
