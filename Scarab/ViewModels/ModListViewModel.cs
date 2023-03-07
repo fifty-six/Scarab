@@ -163,7 +163,7 @@ namespace Scarab.ViewModels
             
             RaisePropertyChanged(nameof(CanUpdateAll));
             
-            var outOfDate = _items.Where(x => x.State is InstalledState { Updated: false });
+            var outOfDate = _items.Where(x => x.State is InstalledState { Updated: false }).ToList();
 
             foreach (ModItem mod in outOfDate)
             {
