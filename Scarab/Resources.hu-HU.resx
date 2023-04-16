@@ -279,4 +279,10 @@
   <data name="XAML_ModsFilter_OutOfDate_Update" xml:space="preserve">
     <value>Mindent frissíteni</value>
   </data>
+  <data name="XAML_About" xml:space="preserve">
+    <value>A oldalról</value>
+  </data>
+  <data name="PU_About" xml:space="preserve">
+    <value>Szkarabeusz változat: 1\n2</value>
+  </data>
 </root>

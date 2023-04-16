@@ -279,4 +279,10 @@
   <data name="XAML_ModsFilter_OutOfDate_Update" xml:space="preserve">
     <value>Atualizar Tudo</value>
   </data>
+  <data name="XAML_About" xml:space="preserve">
+    <value>Acerca de</value>
+  </data>
+  <data name="PU_About" xml:space="preserve">
+    <value>Versión escarabajo: 1\n2</value>
+  </data>
 </root>

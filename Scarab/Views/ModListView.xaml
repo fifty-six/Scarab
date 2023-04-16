@@ -44,7 +44,12 @@
             <MenuItem Header="{ext:Localize XAML_ModsFilter_Enabled}" Command="{Binding SelectEnabled}" DockPanel.Dock="Top" />
             <MenuItem Header="-" DockPanel.Dock="Top" />
             <MenuItem Header="{ext:Localize XAML_ModsFilter_OutOfDate}" Command="{Binding SelectUnupdated}" DockPanel.Dock="Top" />
-            
+
+            <MenuItem
+                Command="{Binding About}"
+                Header="{ext:Localize XAML_About}"
+                DockPanel.Dock="Bottom"
+                VerticalAlignment="Bottom" />
             <MenuItem
                 Command="{Binding ChangePath}"
                 Header="{ext:Localize XAML_ChangPath}"

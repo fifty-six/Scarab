@@ -279,4 +279,10 @@
   <data name="XAML_ModsFilter_OutOfDate_Update" xml:space="preserve">
     <value>全部更新</value>
   </data>
+  <data name="XAML_About" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="PU_About" xml:space="preserve">
+    <value>圣甲虫版本：</value>
+  </data>
 </root>

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reactive;
+using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -57,7 +58,8 @@ namespace Scarab.ViewModels
         public ReactiveCommand<Unit, Unit> UpdateApi { get; }
         
         public ReactiveCommand<Unit, Unit> ChangePath { get; }
-        
+        public ReactiveCommand<Unit, Unit> About { get; }
+
         public ModListViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods)
         {
             _settings = settings;
@@ -76,6 +78,7 @@ namespace Scarab.ViewModels
             OnEnable = ReactiveCommand.CreateFromTask<ModItem>(OnEnableAsync);
             ToggleApi = ReactiveCommand.Create(ToggleApiCommand);
             ChangePath = ReactiveCommand.CreateFromTask(ChangePathAsync);
+            About = ReactiveCommand.CreateFromTask(AboutAsync);
             UpdateApi = ReactiveCommand.CreateFromTask(UpdateApiAsync);
         }
 
@@ -135,6 +138,15 @@ namespace Scarab.ViewModels
             
             // Shutting down is easier than re-doing the source and all the items.
             (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Shutdown();
+        }
+
+        private async Task AboutAsync()
+        {
+            string aboutText = Resources.PU_About;
+            aboutText = aboutText.Replace("1", Assembly.GetEntryAssembly().GetName().Version.ToString());
+            aboutText = aboutText.Replace("2", "https://github.com/fifty-six/Scarab");
+            aboutText = aboutText.Replace("\\n", "\n");
+            await MessageBoxManager.GetMessageBoxStandardWindow(Resources.XAML_About, aboutText).Show();
         }
 
         public void OpenModsDirectory()
