@@ -218,7 +218,7 @@
                                 CommandParameter="{Binding .}"
                                 OnContent="{ext:Localize XAML_On}"
                                 OffContent="{ext:Localize XAML_Off}"
-                                Command="{Binding $parent[views:ModListView].DataContext.OnEnable}"
+                                Command="{Binding $parent[views:ModListView].DataContext.OnEnableAsync}"
                                 IsChecked="{Binding EnabledIsChecked}"
                                 IsEnabled = "{Binding Installed}"
                                 VerticalContentAlignment="Center"
@@ -230,7 +230,7 @@
                                 CommandParameter="{Binding .}"
                                 Content="{Binding InstallText}"
                                 IsEnabled="{Binding !Installing}"
-                                Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
+                                Command="{Binding $parent[views:ModListView].DataContext.OnInstallAsync}"
                                 VerticalAlignment="Top"
                             />
 
@@ -246,7 +246,7 @@
                                     Margin="0 4 0 0"
                                     Background="Transparent"
                                     BorderBrush="{DynamicResource ThemeBorderMidBrush}"
-                                    Command="{Binding $parent[views:ModListView].DataContext.OnUpdate}"
+                                    Command="{Binding $parent[views:ModListView].DataContext.OnUpdateAsync}"
                                     CommandParameter="{Binding .}"
                                 >
                                     <Image 

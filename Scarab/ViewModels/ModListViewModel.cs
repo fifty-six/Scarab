@@ -49,10 +49,6 @@ namespace Scarab.ViewModels
         
         private bool _updating;
         
-        public ReactiveCommand<ModItem, Unit> OnUpdate { get; }
-        public ReactiveCommand<ModItem, Unit> OnInstall { get; }
-        public ReactiveCommand<ModItem, Unit> OnEnable { get; }
-        
         public ReactiveCommand<Unit, Unit> ToggleApi { get; }
         public ReactiveCommand<Unit, Unit> UpdateApi { get; }
         
@@ -71,9 +67,6 @@ namespace Scarab.ViewModels
             
             _reverseDependencySearch = new (_items);
 
-            OnInstall = ReactiveCommand.CreateFromTask<ModItem>(OnInstallAsync);
-            OnUpdate = ReactiveCommand.CreateFromTask<ModItem>(OnUpdateAsync);
-            OnEnable = ReactiveCommand.CreateFromTask<ModItem>(OnEnableAsync);
             ToggleApi = ReactiveCommand.Create(ToggleApiCommand);
             ChangePath = ReactiveCommand.CreateFromTask(ChangePathAsync);
             UpdateApi = ReactiveCommand.CreateFromTask(UpdateApiAsync);
