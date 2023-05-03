@@ -5,7 +5,6 @@ using System.IO.Abstractions;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -83,7 +82,21 @@ namespace Scarab.Services
             _fs.Directory.CreateDirectory(_config.ModsFolder);
         }
 
-        public void Toggle(ModItem mod)
+        public async Task Toggle(ModItem mod)
+        {
+            await _semaphore.WaitAsync();
+            
+            try
+            {
+                await _Toggle(mod);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        private async Task _Toggle(ModItem mod)
         {
             if (mod.State is not InstalledState state)
                 throw new InvalidOperationException("Cannot enable mod which is not installed!");
@@ -96,7 +109,7 @@ namespace Scarab.Services
                     if (dep.State is InstalledState { Enabled: true } or NotInstalledState)
                         continue;
 
-                    Toggle(dep);
+                    await Toggle(dep);
                 }
             }
 
@@ -117,7 +130,7 @@ namespace Scarab.Services
 
             mod.State = state with { Enabled = !state.Enabled };
 
-            _installed.RecordInstalledState(mod);
+            await _installed.RecordInstalledState(mod);
         }
 
         /// <remarks> This enables the API if it's installed! </remarks>
@@ -274,7 +287,7 @@ namespace Scarab.Services
                 if (dep.State is InstalledState { Updated: true, Enabled: var enabled })
                 {
                     if (!enabled)
-                        Toggle(dep);
+                        await Toggle(dep);
                     
                     continue;
                 }

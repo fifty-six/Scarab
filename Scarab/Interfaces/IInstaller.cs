@@ -6,7 +6,7 @@ namespace Scarab.Interfaces
 {
     public interface IInstaller
     {
-        public void Toggle(ModItem mod);
+        public Task Toggle(ModItem mod);
 
         public Task Install(ModItem mod, Action<ModProgressArgs> setProgress, bool enable);
 

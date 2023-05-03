@@ -181,7 +181,7 @@ namespace Scarab.ViewModels
                     dependents.Count == 0 ||
                     await DisplayHasDependentsWarning(item.Name, dependents))
                 {
-                    _installer.Toggle(item);
+                    await _installer.Toggle(item);
                 }
 
                 // to reset the visuals of the toggle to the correct value
