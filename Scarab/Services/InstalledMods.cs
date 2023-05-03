@@ -76,11 +76,24 @@ namespace Scarab.Services
             if (db.ApiInstall is not InstalledState) 
                 return db;
 
-            // Validate that mods are installed in case of manual user intervention
-            foreach (string name in db.Mods.Select(x => x.Key))
+            // Validate that mods are installed and in the right state in case of manual user intervention
+            // We use ToList as we modify the db in the for-each
+            foreach (var (name, state) in db.Mods.ToList())
             {
-                if (ModExists(name, out _))
+                if (ModExists(name, out bool enabled))
+                {
+                    // Fix it being enabled or disabled when it's in the opposite state
+                    if (state.Enabled != enabled)
+                    {
+                        Trace.TraceWarning($"Fixing incorrect enabled state of {name}, changing to {enabled}.");
+                        
+                        db.Mods[name] = state with { Enabled = enabled };
+
+                        changed = true;
+                    }
+
                     continue;
+                }
                 
                 Trace.TraceWarning($"Removing missing mod {name}!");
                 
