@@ -52,9 +52,11 @@ namespace Scarab.Services
 
             try
             {
-                db = JsonSerializer.Deserialize<InstalledMods>(File.ReadAllText(ConfigPath))
-                    ?? throw new InvalidDataException();
-            } catch (Exception e) when (e is InvalidDataException or JsonException or FileNotFoundException)
+                string text = await File.ReadAllTextAsync(ConfigPath);
+                
+                db = JsonSerializer.Deserialize<InstalledMods>(text) ?? throw new InvalidDataException();
+            } 
+            catch (Exception e) when (e is InvalidDataException or JsonException or FileNotFoundException)
             {
                 // If we have malformed JSON or it's a new install, try and recover any installed mods
                 db = new InstalledMods();
