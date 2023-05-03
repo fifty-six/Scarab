@@ -119,17 +119,22 @@ namespace Scarab.ViewModels
             }
 
             Trace.WriteLine("Fetched links successfully");
-            
+
             sc
               .AddSingleton(hc)
               .AddSingleton<ISettings>(_ => settings)
-              .AddSingleton<IFileSystem, FileSystem>()
-              .AddSingleton<IModSource>(services => InstalledMods.Load(
-                  services.GetRequiredService<IFileSystem>(),
-                  settings,
-                  content.ml
-              ))
-              .AddSingleton<IModDatabase, ModDatabase>(sp => new ModDatabase(sp.GetRequiredService<IModSource>(), content))
+              .AddSingleton<IFileSystem, FileSystem>();
+
+            var mods = await InstalledMods.Load(
+                sc.BuildServiceProvider().GetRequiredService<IFileSystem>(),
+                settings,
+                content.ml
+            );
+
+            sc.AddSingleton<IModSource>(_ => mods)
+              .AddSingleton<IModDatabase, ModDatabase>(sp =>
+                  new ModDatabase(sp.GetRequiredService<IModSource>(), content)
+              )
               .AddSingleton<IInstaller, Installer>()
               .AddSingleton<ModListViewModel>();
             

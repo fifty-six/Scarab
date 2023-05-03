@@ -34,7 +34,7 @@ namespace Scarab.Services
 
         private readonly IFileSystem _fs;
 
-        public static InstalledMods Load(IFileSystem fs, ISettings config, ModLinks ml)
+        public static async Task<InstalledMods> Load(IFileSystem fs, ISettings config, ModLinks ml)
         {
             InstalledMods db;
 
@@ -47,6 +47,8 @@ namespace Scarab.Services
 
                 return Directory.Exists(Path.Combine(config.DisabledFolder, name));
             }
+
+            bool changed = false;
 
             try
             {
@@ -65,6 +67,8 @@ namespace Scarab.Services
                     // Pretend it's out of date because we aren't sure of the version.
                     db.Mods.Add(name, new InstalledState(enabled, new Version(0, 0), false));
                 }
+
+                changed = true;
             }
 
             if (db.ApiInstall is not InstalledState) 
@@ -79,6 +83,8 @@ namespace Scarab.Services
                 Trace.TraceWarning($"Removing missing mod {name}!");
                 
                 db.Mods.Remove(name);
+
+                changed = true;
             }
             
             /*
@@ -95,6 +101,24 @@ namespace Scarab.Services
             {
                 Trace.TraceWarning("Assembly missing, marking API as uninstalled!");
                 db.ApiInstall = new NotInstalledState();
+
+                changed = true;
+            }
+
+            // If we didn't find any manual changes, we can just return
+            if (!changed) 
+                return db;
+            
+            // Otherwise, we write back our changes
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(ConfigPath)!);
+
+                await db.SaveToDiskAsync();
+            } 
+            catch 
+            {
+                // tragic.
             }
 
             return db;
