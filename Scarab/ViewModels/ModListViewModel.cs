@@ -171,6 +171,7 @@ namespace Scarab.ViewModels
             }
         }
 
+        [UsedImplicitly]
         private async Task OnEnableAsync(ModItem item)
         {
             try
@@ -292,8 +293,10 @@ namespace Scarab.ViewModels
             }
         }
 
+        [UsedImplicitly]
         private async Task OnUpdateAsync(ModItem item) => await InternalUpdateInstallAsync(item, item.OnUpdate);
 
+        [UsedImplicitly]
         private async Task OnInstallAsync(ModItem item) => await InternalInstallWithConfirmationAsync(item, item.OnInstall);
 
         private static async Task DisplayHashMismatch(HashMismatchException e)
