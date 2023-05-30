@@ -223,7 +223,7 @@
     <value>Ouvrir le dossier des mods</value>
   </data>
   <data name="XAML_Repository" xml:space="preserve">
-    <value>\nDépôts :\n</value>
+    <value>\nDépôt :\n</value>
   </data>
   <data name="XAML_SearchMark" xml:space="preserve">
     <value>Chercher des mods...</value>
