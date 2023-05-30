@@ -1,0 +1,282 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MI_InstallText_Installed" xml:space="preserve">
+    <value>Désinstaller</value>
+  </data>
+  <data name="MI_InstallText_NotInstalled" xml:space="preserve">
+    <value>Installer</value>
+  </data>
+  <data name="MLVM_ApiButtonText_DisableAPI" xml:space="preserve">
+    <value>Désactiver l'API</value>
+  </data>
+  <data name="MLVM_ApiButtonText_EnableAPI" xml:space="preserve">
+    <value>Activer l'API</value>
+  </data>
+  <data name="MLVM_ApiButtonText_ToggleAPI" xml:space="preserve">
+    <value>Activer l'API</value>
+  </data>
+  <data name="MLVM_ChangePathAsync_Msgbox_Text" xml:space="preserve">
+    <value>Relancer le programme pour utiliser le nouveau chemin.</value>
+  </data>
+  <data name="MLVM_ChangePathAsync_Msgbox_Title" xml:space="preserve">
+    <value>Chemin changé !</value>
+  </data>
+  <data name="MLVM_DisplayHashMismatch_Msgbox_Text" xml:space="preserve">
+    <value>Le hachage pour {0} ({1}) ne correspond pas à la signature ({2}). Il est corrompu ou bien la valeur est incorrecte.</value>
+  </data>
+  <data name="MLVM_DisplayHashMismatch_Msgbox_Title" xml:space="preserve">
+    <value>Les hachages diffèrent !</value>
+  </data>
+  <data name="MLVM_DisplayNetworkError_Msgbox_Text" xml:space="preserve">
+    <value>Impossible de télécharger {0} ! Le site est hors-ligne ou a des problèmes de connexion.</value>
+  </data>
+  <data name="MLVM_DisplayNetworkError_Msgbox_Title" xml:space="preserve">
+    <value>Erreur de réseau</value>
+  </data>
+  <data name="MLVM_InternalUpdateInstallAsync_Msgbox_W_Text" xml:space="preserve">
+    <value>Hollow Knight est ouvert ! Cela peut occasionner des problèmes en installant des mods. Fermer Hollow Knight ?</value>
+  </data>
+  <data name="MLVM_InternalUpdateInstallAsync_Msgbox_W_Title" xml:space="preserve">
+    <value>Alerte !</value>
+  </data>
+  <data name="MWVM_Impl_Error_Fetch_ModLinks_Error" xml:space="preserve">
+    <value>a échoué avec le code d'erreur HTTP {0}</value>
+  </data>
+  <data name="MWVM_Impl_Error_Fetch_ModLinks_Msgbox_Text" xml:space="preserve">
+    <value>Impossible de récupérer la liste des mods depuis modlinks : {0}</value>
+  </data>
+  <data name="MWVM_Impl_Error_Fetch_ModLinks_Msgbox_Title" xml:space="preserve">
+    <value>Erreur !</value>
+  </data>
+  <data name="MWVM_Impl_Error_Fetch_ModLinks_Timeout" xml:space="preserve">
+    <value>délai dépassé</value>
+  </data>
+  <data name="MWVM_OutOfDate_GetLatest" xml:space="preserve">
+    <value>Récupérer la dernière version</value>
+  </data>
+  <data name="MWVM_OutOfDate_ContinueAnyways" xml:space="preserve">
+    <value>Continuer quand même.</value>
+  </data>
+  <data name="MWVM_OutOfDate_Title" xml:space="preserve">
+    <value>Périmé!</value>
+  </data>
+  <data name="MWVM_OutOfDate_Message" xml:space="preserve">
+    <value>Ce programme est périmé ! Il peut ne pas fonctionner correctement.</value>
+  </data>
+  <data name="MWVM_Warning" xml:space="preserve">
+    <value>Alerte</value>
+  </data>
+  <data name="MWVM_InvalidSavedPath_Message" xml:space="preserve">
+    <value>Le chemin de sauvegardes de Hollow Knight est invalide, merci de choisir un chemin valide.</value>
+  </data>
+  <data name="MWVM_Info" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="MWVM_UnableToDetect_Message" xml:space="preserve">
+    <value>Impossible de trouver le dossier d'installation de Hollow Knight. Veuillez le sélectionner.</value>
+  </data>
+  <data name="MWVM_DetectedPath_Title" xml:space="preserve">
+    <value>Chemin trouvé !</value>
+  </data>
+  <data name="MWVM_DetectedPath_Message" xml:space="preserve">
+    <value>Dossier d'installation de Hollow Knight trouvé vers {0}. Est-ce correct ?</value>
+  </data>
+  <data name="XAML_ChangPath" xml:space="preserve">
+    <value>Changer le chemin</value>
+  </data>
+  <data name="XAML_Dependencies" xml:space="preserve">
+    <value>\nDépendances :\n</value>
+  </data>
+  <data name="XAML_Donate" xml:space="preserve">
+    <value>Donation</value>
+  </data>
+  <data name="XAML_ModsFilter_All" xml:space="preserve">
+    <value>Tous</value>
+  </data>
+  <data name="XAML_ModsFilter_Enabled" xml:space="preserve">
+    <value>Actifs</value>
+  </data>
+  <data name="XAML_ModsFilter_Installed" xml:space="preserve">
+    <value>Installés</value>
+  </data>
+  <data name="XAML_ModsFilter_OutOfDate" xml:space="preserve">
+    <value>Périmés</value>
+  </data>
+  <data name="XAML_OpenMods" xml:space="preserve">
+    <value>Ouvrir le dossier des mods</value>
+  </data>
+  <data name="XAML_Repository" xml:space="preserve">
+    <value>\nDépôts :\n</value>
+  </data>
+  <data name="XAML_SearchMark" xml:space="preserve">
+    <value>Chercher des mods...</value>
+  </data>
+  <data name="XAML_UpdateAPI" xml:space="preserve">
+    <value>Mettre l'API à jour</value>
+  </data>
+  <data name="XAML_Version" xml:space="preserve">
+    <value>\nVersion :\n</value>
+  </data>
+  <data name="XAML_Integrations" xml:space="preserve">
+    <value>Intégrations</value>
+  </data>
+  <data name="XAML_Tags" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="XAML_On" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="XAML_Off" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="XAML_Update" xml:space="preserve">
+    <value>Mettre à jour</value>
+  </data>
+  <data name="PU_NoSelect" xml:space="preserve">
+    <value>Aucun chemin sélectionné !</value>
+  </data>
+  <data name="PU_NoSelectMac" xml:space="preserve">
+    <value>Aucune application sélectionnée !</value>
+  </data>
+  <data name="PU_InvalidPathHeader" xml:space="preserve">
+    <value>Le chemin de Hollow Knight est invalide !</value>
+  </data>
+  <data name="PU_InvalidAppHeader" xml:space="preserve">
+    <value>L'application Hollow Knight est invalide !</value>
+  </data>
+  <data name="PU_InvalidPath" xml:space="preserve">
+    <value>Sélectionnez le dossier contenant hollow_knight_Data ou Hollow Knight_Data.</value>
+  </data>
+  <data name="PU_InvalidApp" xml:space="preserve">
+    <value>Dossier Managed ou Assembly-CSharp non trouvé !</value>
+  </data>
+  <data name="PU_SelectPath" xml:space="preserve">
+    <value>Sélectionner le dossier de Hollow Knight.</value>
+  </data>
+  <data name="PU_InvalidPathTitle" xml:space="preserve">
+    <value>Chemin</value>
+  </data>
+  <data name="PU_SelectApp" xml:space="preserve">
+    <value>Sélectionnez l'application Hollow Knight.</value>
+  </data>
+  <data name="XAML_ModsFilter_OutOfDate_Update" xml:space="preserve">
+    <value>Tout mettre à jour</value>
+  </data>
+</root>
