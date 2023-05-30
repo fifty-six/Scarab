@@ -64,6 +64,9 @@
       <EmbeddedResource Update="Resources.zh.resx">
         <Generator></Generator>
       </EmbeddedResource>
+      <EmbeddedResource Update="Resources.fr.resx">
+        <Generator></Generator>
+      </EmbeddedResource>
       <EmbeddedResource Update="Resources.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>resources.Designer.cs</LastGenOutput>
