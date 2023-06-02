@@ -10,7 +10,7 @@
             xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
             xmlns:util="clr-namespace:Scarab.Util"
             xmlns:ext="clr-namespace:Scarab.Extensions"
-            mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="550"
+            mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
             x:Class="Scarab.Views.ModListView"
             d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
             Name="UserControl">
