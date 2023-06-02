@@ -54,6 +54,10 @@ namespace Scarab.ViewModels
         
         public ReactiveCommand<Unit, Unit> ChangePath { get; }
         
+        public ReactiveCommand<ModItem, Unit> OnUpdate { get; }
+        public ReactiveCommand<ModItem, Unit> OnInstall { get; }
+        public ReactiveCommand<ModItem, Unit> OnEnable { get; }
+        
         public ModListViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods)
         {
             _settings = settings;
@@ -70,6 +74,10 @@ namespace Scarab.ViewModels
             ToggleApi = ReactiveCommand.Create(ToggleApiCommand);
             ChangePath = ReactiveCommand.CreateFromTask(ChangePathAsync);
             UpdateApi = ReactiveCommand.CreateFromTask(UpdateApiAsync);
+
+            OnUpdate = ReactiveCommand.CreateFromTask<ModItem>(OnUpdateAsync);
+            OnInstall = ReactiveCommand.CreateFromTask<ModItem>(OnInstallAsync);
+            OnEnable = ReactiveCommand.CreateFromTask<ModItem>(OnEnableAsync);
         }
 
         [UsedImplicitly]
@@ -102,6 +110,7 @@ namespace Scarab.ViewModels
 
         // Needed for source generator to find it.
         private void RaisePropertyChanged(string name) => IReactiveObjectExtensions.RaisePropertyChanged(this, name);
+        private void RaisePropertyChanging(string name) => IReactiveObjectExtensions.RaisePropertyChanging(this, name);
 
         private async void ToggleApiCommand()
         {

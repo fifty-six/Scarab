@@ -179,7 +179,7 @@ namespace Scarab.Services
         private async Task SaveToDiskAsync()
         {
             await using Stream fs = _fs.File.Exists(ConfigPath)
-                ? _fs.FileStream.Create(ConfigPath, FileMode.Truncate)
+                ? _fs.FileStream.New(ConfigPath, FileMode.Truncate)
                 : _fs.File.Create(ConfigPath);
 
             await JsonSerializer.SerializeAsync(fs, this);

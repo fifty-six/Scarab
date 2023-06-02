@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Abstractions;
@@ -326,6 +327,7 @@ namespace Scarab.Services
                 {
                     Directory.CreateDirectory(mod_folder);
 
+                    Debug.Assert(data.Array != null, "data.Array != null");
                     await _fs.File.WriteAllBytesAsync(Path.Combine(mod_folder, filename), data.Array);
 
                     break;
@@ -422,7 +424,7 @@ namespace Scarab.Services
             // Rely on FileStream's ctor for further checking dest parameter
             const FileMode fMode = FileMode.Create;
 
-            using (Stream fs = _fs.FileStream.Create(dest, fMode, FileAccess.Write, FileShare.None, 0x1000, false))
+            using (Stream fs = _fs.FileStream.New(dest, fMode, FileAccess.Write, FileShare.None, 0x1000, false))
             {
                 using (Stream es = src.Open())
                     es.CopyTo(fs);

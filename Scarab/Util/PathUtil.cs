@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
 using MessageBox.Avalonia;
 using MessageBox.Avalonia.DTO;
 
@@ -23,23 +24,23 @@ namespace Scarab.Util
             Debug.WriteLine("Selecting path...");
 
             Window parent = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow
-                ?? throw new InvalidOperationException();
+                            ?? throw new InvalidOperationException();
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 return await SelectMacApp(parent, fail);
 
-            var dialog = new OpenFolderDialog
-            {
-                Title = Resources.PU_SelectPath,
-            };
-
             while (true)
             {
-                string? result = await dialog.ShowAsync(parent);
+                IStorageFolder? result = (await parent.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+                {
+                    AllowMultiple = false,
+                    Title = Resources.PU_SelectPath
+                })).FirstOrDefault();
+            
 
                 if (result is null)
                     await MessageBoxManager.GetMessageBoxStandardWindow(Resources.PU_InvalidPathTitle, Resources.PU_NoSelect).Show();
-                else if (ValidateWithSuffix(result) is not (var managed, var suffix))
+                else if (ValidateWithSuffix(result.Path.AbsolutePath) is not var (managed, suffix))
                     await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
                         ContentTitle = Resources.PU_InvalidPathTitle,
                         ContentHeader = Resources.PU_InvalidPathHeader,
@@ -56,22 +57,19 @@ namespace Scarab.Util
 
         private static async Task<string> SelectMacApp(Window parent, bool fail)
         {
-            var dialog = new OpenFileDialog
-            {
-                Title = Resources.PU_SelectApp,
-                Directory = "/Applications",
-                AllowMultiple = false
-            };
-
-            dialog.Filters.Add(new FileDialogFilter { Extensions = { "app" } });
-
             while (true)
             {
-                string[]? result = await dialog.ShowAsync(parent);
+                IStorageFile? result = (await parent.StorageProvider.OpenFilePickerAsync(
+                    new FilePickerOpenOptions
+                    {
+                        AllowMultiple = false,
+                        FileTypeFilter = new[] { new FilePickerFileType("app") { Patterns = new[] { "*.app" } } }
+                    }
+                )).FirstOrDefault();
 
-                if (result is null or { Length: 0 })
+                if (result is null)
                     await MessageBoxManager.GetMessageBoxStandardWindow(Resources.PU_InvalidPathTitle, Resources.PU_NoSelectMac).Show();
-                else if (ValidateWithSuffix(result.First()) is not (var managed, var suffix))
+                else if (ValidateWithSuffix(result.Path.AbsolutePath) is not var (managed, suffix))
                     await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
                         ContentTitle = Resources.PU_InvalidPathTitle,
                         ContentHeader = Resources.PU_InvalidAppHeader,
@@ -116,8 +114,8 @@ namespace Scarab.Util
             // the assembly dll can still exist, but UnityEngine.dll
             // is always unmodified, so we can rely on it.
             return Directory.Exists(managed)
-                && File.Exists(Path.Combine(managed, "Assembly-CSharp.dll"))
-                && File.Exists(Path.Combine(managed, "UnityEngine.dll"));
+                   && File.Exists(Path.Combine(managed, "Assembly-CSharp.dll"))
+                   && File.Exists(Path.Combine(managed, "UnityEngine.dll"));
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Scarab.ViewModels;
@@ -7,8 +8,9 @@ namespace Scarab
 {
     public class ViewLocator : IDataTemplate
     {
-        public IControl Build(object data)
+        public Control Build(object? data)
         {
+            Debug.Assert(data != null, nameof(data) + " != null");
             string? name = data.GetType().FullName?.Replace("ViewModel", "View");
 
             if (string.IsNullOrEmpty(name))
@@ -26,7 +28,7 @@ namespace Scarab
 
         }
 
-        public bool Match(object data)
+        public bool Match(object? data)
         {
             return data is ViewModelBase;
         }

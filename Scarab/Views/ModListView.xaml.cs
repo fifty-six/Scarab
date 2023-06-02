@@ -18,9 +18,9 @@ namespace Scarab.Views
         {
             InitializeComponent();
 
-            this.FindControl<UserControl>(nameof(UserControl)).KeyDown += OnKeyDown;
+            this.FindControl<UserControl>(nameof(UserControl))!.KeyDown += OnKeyDown;
             
-            _search = this.FindControl<TextBox>("Search");
+            _search = this.FindControl<TextBox>("Search")!;
         }
 
         private void OnKeyDown(object? sender, KeyEventArgs e)
@@ -33,12 +33,6 @@ namespace Scarab.Views
         {
             AvaloniaXamlLoader.Load(this);
         }
-        
-        [UsedImplicitly]
-        private void PrepareElement(object? sender, ItemsRepeaterElementPreparedEventArgs e)
-        {
-            e.Element.VisualChildren.OfType<Expander>().First().IsExpanded = false;
-        }
 
         [UsedImplicitly]
         private void RepositoryTextClick(object? sender, PointerReleasedEventArgs _)
@@ -50,6 +44,9 @@ namespace Scarab.Views
             }
 
             Trace.WriteLine(txt.Text);
+
+            if (string.IsNullOrEmpty(txt.Text))
+                return;
 
             try
             {

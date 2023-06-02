@@ -20,30 +20,27 @@
     </ItemGroup>
     
     <ItemGroup>
-        <AvaloniaResource Remove="Views\ModListView.xaml" />
-        <AvaloniaResource Remove="Views\SelectPathView.xaml" />
-    </ItemGroup>
-    
-    <ItemGroup>
         <EmbeddedResource Include="Views\ModListView.xaml">
             <Generator>MSBuild:Compile</Generator>
         </EmbeddedResource>
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="0.10.12" />
-        <PackageReference Include="Avalonia.Desktop" Version="0.10.12" />
-        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.12" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.12" />
-        <PackageReference Include="MessageBox.Avalonia" Version="1.8.1-night" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0-preview.5.21301.5" />
+        <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-rc1.1" />
+        <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
+        <PackageReference Include="MessageBox.Avalonia" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
         <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="7.1.2" />
-        <PackageReference Include="PropertyChanged.SourceGenerator" Version="1.0.1">
+        <PackageReference Include="Moq" Version="4.18.4" />
+        <PackageReference Include="PropertyChanged.SourceGenerator" Version="1.0.8">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" Version="12.1.4" />
-        <PackageReference Include="System.IO.Abstractions" Version="16.1.15" />
+        <PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" Version="14.6.37" />
+        <PackageReference Include="System.IO.Abstractions" Version="19.2.29" />
     </ItemGroup>
     
     <ItemGroup>
