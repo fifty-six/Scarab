@@ -226,7 +226,7 @@
                             
                             <Button 
                                 Grid.Column="2"
-                                MaxWidth="60"
+                                MaxWidth="65"
                                 CommandParameter="{Binding .}"
                                 Content="{Binding InstallText}"
                                 IsEnabled="{Binding !Installing}"
