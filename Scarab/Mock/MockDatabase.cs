@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Scarab.Interfaces;
 using Scarab.Models;
 
@@ -63,7 +64,7 @@ public class MockDatabase : IModDatabase
                 Array.Empty<string>(),
                 "link",
                 "sha",
-                "t",
+                string.Join("", Enumerable.Repeat("Very", 8)) + "LongModName",
                 "An example",
                 "https://example.com/really/really/really/really/really/long/url/to/test/wrapping/impls/....",
                 new[] { "Tag1", "Tag2", "Tag3" },

@@ -8,7 +8,6 @@
             xmlns:viewModels="clr-namespace:Scarab.ViewModels"
             xmlns:views="clr-namespace:Scarab.Views"
             xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
-            xmlns:util="clr-namespace:Scarab.Util"
             xmlns:ext="clr-namespace:Scarab.Extensions"
             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
             x:Class="Scarab.Views.ModListView"
@@ -126,9 +125,9 @@
             <ItemsControl ItemsSource="{Binding FilteredItems}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:ModItem">
-                        <Expander>
+                        <Expander Margin="8 5 0 5">
                             <Expander.Header>
-                                <Grid Margin="8 12 12 0">
+                                <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" MaxWidth="260" />
                                         <ColumnDefinition Width="*" MaxWidth="260" />
@@ -136,29 +135,14 @@
                                         <ColumnDefinition Width="*" MaxWidth="100" />
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis">
-                                        <TextBlock.Resources>
-                                            <sys:Double x:Key="decrement">-20.0</sys:Double>
-                                        </TextBlock.Resources>
-
-                                        <!-- 
-                                            Set the width to that of our phantom minus a bit to
-                                            make sure it doesn't get too close to the slider 
-                                            
-                                            We need the width here as inside the expander the contents
-                                            don't follow the grid so it would overflow the column
-                                        -->
-                                        <TextBlock.Width>
-                                            <MultiBinding Converter="{x:Static util:AddConverter.Instance}">
-                                                <Binding Source="{StaticResource decrement}" />
-                                                <Binding ElementName="phantom" Path="Bounds.Width" />
-                                            </MultiBinding>
-                                        </TextBlock.Width>
-                                    </TextBlock>
+                                    <TextBlock
+                                        Text="{Binding Name}"
+                                        TextTrimming="CharacterEllipsis"
+                                        VerticalAlignment="Center"
+                                    /> 
 
                                     <ToggleSwitch
                                         Grid.Column="1"
-                                        Margin="0 -2 0 0"
                                         VerticalAlignment="Top"
                                         CommandParameter="{Binding .}"
                                         OnContent="{ext:Localize XAML_On}"
@@ -166,6 +150,7 @@
                                         Command="{Binding $parent[views:ModListView].DataContext.OnEnable}"
                                         IsChecked="{Binding EnabledIsChecked}"
                                         IsEnabled="{Binding Installed}"
+                                        HorizontalAlignment="Center"
                                         VerticalContentAlignment="Center" />
 
                                     <Button
@@ -175,17 +160,17 @@
                                         Content="{Binding InstallText}"
                                         IsEnabled="{Binding !Installing}"
                                         Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
-                                        VerticalAlignment="Top" />
+                                        VerticalAlignment="Center" />
 
                                     <Grid
                                         Grid.Column="3"
                                         ColumnDefinitions="Auto,*"
                                         IsVisible="{Binding UpdateAvailable}"
-                                        VerticalAlignment="Top">
+                                        VerticalAlignment="Stretch">
                                         <Button
                                             MaxHeight="18"
                                             MaxWidth="18"
-                                            Margin="0 4 0 0"
+                                            VerticalAlignment="Center"
                                             Background="Transparent"
                                             BorderBrush="{DynamicResource ThemeBorderMidBrush}"
                                             Command="{Binding $parent[views:ModListView].DataContext.OnUpdate}"
@@ -197,8 +182,12 @@
                                                 HorizontalAlignment="Center" />
                                         </Button>
 
-                                        <ContentPresenter Grid.Column="1" Margin="4,4,0,0" VerticalAlignment="Center"
-                                                          Content="{ext:Localize XAML_Update}" />
+                                        <TextBlock 
+                                            Grid.Column="1" 
+                                            Margin="4 0 0 0" 
+                                            VerticalAlignment="Center"
+                                            Text="{ext:Localize XAML_Update}" 
+                                         />
                                     </Grid>
                                 </Grid>
                             </Expander.Header>
