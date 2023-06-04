@@ -202,7 +202,7 @@
     <value>Changer le chemin</value>
   </data>
   <data name="XAML_Dependencies" xml:space="preserve">
-    <value>\nDépendances :\n</value>
+    <value>Dépendances :</value>
   </data>
   <data name="XAML_Donate" xml:space="preserve">
     <value>Donation</value>
@@ -223,7 +223,7 @@
     <value>Ouvrir le dossier des mods</value>
   </data>
   <data name="XAML_Repository" xml:space="preserve">
-    <value>\nDépôt :\n</value>
+    <value>Dépôt :</value>
   </data>
   <data name="XAML_SearchMark" xml:space="preserve">
     <value>Chercher des mods...</value>
@@ -232,7 +232,7 @@
     <value>Mettre l'API à jour</value>
   </data>
   <data name="XAML_Version" xml:space="preserve">
-    <value>\nVersion :\n</value>
+    <value>Version :</value>
   </data>
   <data name="XAML_Integrations" xml:space="preserve">
     <value>Intégrations</value>

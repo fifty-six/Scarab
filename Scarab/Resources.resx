@@ -202,7 +202,7 @@
     <value>Change Path</value>
   </data>
   <data name="XAML_Dependencies" xml:space="preserve">
-    <value>\nDependencies:\n</value>
+    <value>Dependencies:</value>
   </data>
   <data name="XAML_Donate" xml:space="preserve">
     <value>Donate</value>
@@ -223,7 +223,7 @@
     <value>Open Mods</value>
   </data>
   <data name="XAML_Repository" xml:space="preserve">
-    <value>\nRepository:\n</value>
+    <value>Repository:</value>
   </data>
   <data name="XAML_SearchMark" xml:space="preserve">
     <value>Mod Search</value>
@@ -232,7 +232,7 @@
     <value>Update API</value>
   </data>
   <data name="XAML_Version" xml:space="preserve">
-    <value>\nVersion:\n</value>
+    <value>Version:</value>
   </data>
   <data name="XAML_Integrations" xml:space="preserve">
     <value>Integrations</value>
