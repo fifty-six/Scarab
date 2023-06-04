@@ -63,10 +63,10 @@ public class MockDatabase : IModDatabase
                 Array.Empty<string>(),
                 "link",
                 "sha",
-                "SomethingSomethingSomethingAmongUs",
+                "t",
                 "An example",
-                "example.com",
-                new[] { "Library" },
+                "https://example.com/really/really/really/really/really/long/url/to/test/wrapping/impls/....",
+                new[] { "Tag1", "Tag2", "Tag3" },
                 new[] { "NormalEx" }
             )
         };
