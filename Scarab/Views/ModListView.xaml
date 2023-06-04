@@ -126,19 +126,6 @@
             <ItemsControl ItemsSource="{Binding FilteredItems}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:ModItem">
-                        <!-- 
-                                We register a phantom textblock to use as the width for the one inside the expander header 
-                                The margin accounts for where the arrow would be if this was in the expander              
-                                The hit test visibility allows us to click through into the expander
-                            -->
-                        <!--<TextBlock 
-                                x:Name="phantom" 
-                                Margin="20 3 0 0" 
-                                Grid.Column="0" 
-                                TextWrapping="Wrap" 
-                                IsHitTestVisible="False"
-                            />-->
-
                         <Expander>
                             <Expander.Header>
                                 <Grid Margin="8 12 12 0">
