@@ -241,7 +241,7 @@
     <value>标签</value>
   </data>
   <data name="XAML_On" xml:space="preserve">
-    <value>活性</value>
+    <value>启用</value>
   </data>
   <data name="XAML_Off" xml:space="preserve">
     <value>禁用</value>
