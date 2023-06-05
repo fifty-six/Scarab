@@ -24,62 +24,55 @@
             </Menu.ItemsPanel>
 
             <Menu.Styles>
-                <Style Selector="MenuItem:separator">
-                    <Setter Property="Template">
-                        <ControlTemplate>
-                            <Separator Background="#a9a9a9" Margin="0,1,0,1" Height="1" />
-                        </ControlTemplate>
-                    </Setter>
-                </Style>
-
                 <Style Selector="MenuItem">
                     <Setter Property="Padding" Value="6 8" />
+                    
+                    <Style Selector="^:separator">
+                        <Setter Property="Template">
+                            <ControlTemplate>
+                                <Separator Background="#a9a9a9" Margin="0,1,0,1" Height="1" />
+                            </ControlTemplate>
+                        </Setter>
+                    </Style>
+
+                    <!-- First 7 elements (the top section) -->
+                    <Style Selector="^:nth-child(-n + 7)">
+                        <Setter Property="DockPanel.Dock" Value="Top" />
+                    </Style>
+
+                    <!-- And the bottom section -->
+                    <Style Selector="^:nth-child(n + 8)">
+                        <Setter Property="DockPanel.Dock" Value="Bottom" />
+                        <Setter Property="VerticalAlignment" Value="Bottom" />
+                    </Style>
                 </Style>
             </Menu.Styles>
 
-            <MenuItem Header="{ext:Localize XAML_ModsFilter_All}" Command="{Binding SelectAll}" DockPanel.Dock="Top" />
-            <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="{ext:Localize XAML_ModsFilter_Installed}" Command="{Binding SelectInstalled}"
-                      DockPanel.Dock="Top" />
-            <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="{ext:Localize XAML_ModsFilter_Enabled}" Command="{Binding SelectEnabled}"
-                      DockPanel.Dock="Top" />
-            <MenuItem Header="-" DockPanel.Dock="Top" />
-            <MenuItem Header="{ext:Localize XAML_ModsFilter_OutOfDate}" Command="{Binding SelectUnupdated}"
-                      DockPanel.Dock="Top" />
+            <!-- Top section -->
+            <MenuItem Header="{ext:Localize XAML_ModsFilter_All}" Command="{Binding SelectAll}" />
+            <MenuItem Header="-" />
+            <MenuItem Header="{ext:Localize XAML_ModsFilter_Installed}" Command="{Binding SelectInstalled}" />
+            <MenuItem Header="-" />
+            <MenuItem Header="{ext:Localize XAML_ModsFilter_Enabled}" Command="{Binding SelectEnabled}" />
+            <MenuItem Header="-" />
+            <MenuItem Header="{ext:Localize XAML_ModsFilter_OutOfDate}" Command="{Binding SelectUnupdated}" />
 
-            <MenuItem
-                Command="{Binding ChangePath}"
-                Header="{ext:Localize XAML_ChangPath}"
-                DockPanel.Dock="Bottom"
-                VerticalAlignment="Bottom" />
-            <MenuItem
-                Command="{Binding OpenModsDirectory}"
-                Header="{ext:Localize XAML_OpenMods}"
-                DockPanel.Dock="Bottom"
-                VerticalAlignment="Bottom" />
+            <!-- Bottom section -->
+            <MenuItem Command="{Binding ChangePath}" Header="{ext:Localize XAML_ChangPath}" />
+            <MenuItem Command="{Binding OpenModsDirectory}" Header="{ext:Localize XAML_OpenMods}" />
             <MenuItem
                 Command="{Binding ToggleApi}"
                 Header="{Binding ApiButtonText}"
-                IsEnabled="{Binding EnableApiButton}"
-                DockPanel.Dock="Bottom"
-                VerticalAlignment="Bottom" />
+                IsEnabled="{Binding EnableApiButton}" />
             <MenuItem
                 Command="{Binding UpdateApi}"
                 Header="{ext:Localize XAML_UpdateAPI}"
-                IsEnabled="{Binding ApiOutOfDate}"
-                DockPanel.Dock="Bottom"
-                VerticalAlignment="Bottom" />
+                IsEnabled="{Binding ApiOutOfDate}" />
             <MenuItem
                 Command="{Binding UpdateUnupdated}"
                 Header="{ext:Localize XAML_ModsFilter_OutOfDate_Update}"
-                DockPanel.Dock="Bottom"
                 IsEnabled="{Binding CanUpdateAll}" />
-            <MenuItem
-                Command="{Binding Donate}"
-                Header="{ext:Localize XAML_Donate}"
-                DockPanel.Dock="Bottom"
-                VerticalAlignment="Bottom" />
+            <MenuItem Command="{Binding Donate}" Header="{ext:Localize XAML_Donate}" />
         </Menu>
 
         <Separator
@@ -129,7 +122,7 @@
                         <Setter Property="Background" Value="Transparent" />
                         <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
                     </Style>
-                    
+
                     <!-- 
                          Remove the pointerover effect and replace it with our own, 
                          which just makes the text brighter 
@@ -139,7 +132,7 @@
                         <Setter Property="Foreground" Value="White" />
                     </Style>
                 </ListBox.Styles>
-                
+
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:ModItem">
                         <Expander Margin="8 5 0 5" Name="ModExpander">
@@ -225,10 +218,9 @@
                                             </TextBlock>
                                         </StackPanel>
 
-                                        <StackPanel Margin="0 10 0 0" DockPanel.Dock="Bottom"
-                                                    VerticalAlignment="Bottom">
+                                        <StackPanel Margin="0 10 0 0" DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
                                             <TextBlock Text="{ext:Localize XAML_Version}" FontWeight="Bold" />
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                                            <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="{Binding VersionText}" />
                                                 <TextBlock
                                                     Text="{Binding UpdateText}"
@@ -244,13 +236,10 @@
                                         </StackPanel>
                                     </DockPanel>
 
-                                    <StackPanel ClipToBounds="True" Grid.Column="1" Margin="5 0 0 0"
-                                                Orientation="Vertical">
-                                        <StackPanel IsVisible="{Binding HasDependencies}" VerticalAlignment="Top"
-                                                    Orientation="Vertical">
-                                            <TextBlock Text="{ext:Localize XAML_Dependencies}" FontWeight="Bold"
-                                                       VerticalAlignment="Top" />
-                                            <TextBlock Text="{Binding DependenciesDesc}" VerticalAlignment="Top" />
+                                    <StackPanel ClipToBounds="True" Grid.Column="1" Margin="5 0 0 0">
+                                        <StackPanel IsVisible="{Binding HasDependencies}">
+                                            <TextBlock Text="{ext:Localize XAML_Dependencies}" FontWeight="Bold" />
+                                            <TextBlock Text="{Binding DependenciesDesc}" />
                                         </StackPanel>
                                         <StackPanel IsVisible="{Binding HasTags}" Margin="0 10 0 0">
                                             <TextBlock Text="{ext:Localize XAML_Tags}" FontWeight="Bold" />
