@@ -20,16 +20,21 @@
     </ItemGroup>
     
     <ItemGroup>
+        <AdditionalFiles Include="**\*.xaml" />
+    </ItemGroup>
+    
+    <ItemGroup>
         <EmbeddedResource Include="Views\ModListView.xaml">
             <Generator>MSBuild:Compile</Generator>
         </EmbeddedResource>
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia" Version="11.0.999-cibuild0036218-beta" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.999-cibuild0036218-beta" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.0.999-cibuild0036218-beta" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.999-cibuild0036218-beta" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.999-cibuild0036218-beta" />
         <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
         <PackageReference Include="MessageBox.Avalonia" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />

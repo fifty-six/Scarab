@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 
@@ -90,6 +91,10 @@ namespace Scarab
         private static AppBuilder BuildAvaloniaApp() =>
             AppBuilder.Configure<App>()
                       .UsePlatformDetect()
+                      .WithInterFont()
+                      .With(new FontManagerOptions {
+                          DefaultFamilyName = "avares://Avalonia.Fonts.Inter/Assets#Inter"
+                      })
                       .LogToTrace()
                       .UseReactiveUI();
     }
