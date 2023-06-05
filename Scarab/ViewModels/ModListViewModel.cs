@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
 using JetBrains.Annotations;
@@ -229,7 +230,7 @@ namespace Scarab.ViewModels
         {
             try
             {
-                await _installer.InstallApi();
+                await Task.Run(_installer.InstallApi);
             }
             catch (HashMismatchException e)
             {
@@ -268,23 +269,26 @@ namespace Scarab.ViewModels
             
             try
             {
-                await f
+                await Task.Run(async () => await f
                 (
                     _installer,
                     progress =>
                     {
-                        ProgressBarVisible = !progress.Completed;
-
-                        if (progress.Download?.PercentComplete is not { } percent)
+                        Dispatcher.UIThread.Invoke(() =>
                         {
-                            ProgressBarIndeterminate = true;
-                            return;
-                        }
+                            ProgressBarVisible = !progress.Completed;
 
-                        ProgressBarIndeterminate = false;
-                        Progress = percent;
+                            if (progress.Download?.PercentComplete is not { } percent)
+                            {
+                                ProgressBarIndeterminate = true;
+                                return;
+                            }
+
+                            ProgressBarIndeterminate = false;
+                            Progress = percent;
+                        });
                     }
-                );
+                ));
             }
             catch (HashMismatchException e)
             {
