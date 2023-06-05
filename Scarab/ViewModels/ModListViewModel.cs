@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,8 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using DynamicData;
+using DynamicData.Binding;
 using JetBrains.Annotations;
 using MessageBox.Avalonia;
 using MessageBox.Avalonia.DTO;
@@ -42,9 +45,6 @@ namespace Scarab.ViewModels
         private double _pbProgress;
 
         [Notify]
-        private IEnumerable<ModItem> _selectedItems;
-
-        [Notify]
         private string? _search;
         
         private bool _updating;
@@ -57,7 +57,13 @@ namespace Scarab.ViewModels
         public ReactiveCommand<ModItem, Unit> OnUpdate { get; }
         public ReactiveCommand<ModItem, Unit> OnInstall { get; }
         public ReactiveCommand<ModItem, Unit> OnEnable { get; }
-        
+
+        [Notify]
+        private Func<ModItem, bool> _selectionFilter = _ => true;
+
+        [Notify]
+        private Func<ModItem, bool> _searchFilter = _ => true; 
+
         public ModListViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods)
         {
             _settings = settings;
@@ -66,25 +72,40 @@ namespace Scarab.ViewModels
             _db = db;
 
             _items = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
+            
+            // Create a source cache for dynamic filtering via IObservable
+            var cache = new SourceCache<ModItem, string>(x => x.Name);
+            cache.AddOrUpdate(_items);
 
-            SelectedItems = _selectedItems = _items;
+            _filteredItems = new ReadOnlyObservableCollection<ModItem>(_items);
+            
+            cache.Connect()
+                .Sort(SortExpressionComparer<ModItem>.Ascending(x => ModToOrderedTuple(x)))
+                .Filter(this.WhenAnyValue(x => x.SelectionFilter))
+                .Filter(this.WhenAnyValue(x => x.SearchFilter))
+                .Bind(out _filteredItems)
+                .Subscribe();
             
             _reverseDependencySearch = new (_items);
 
             ToggleApi = ReactiveCommand.Create(ToggleApiCommand);
             ChangePath = ReactiveCommand.CreateFromTask(ChangePathAsync);
             UpdateApi = ReactiveCommand.CreateFromTask(UpdateApiAsync);
-
+            
             OnUpdate = ReactiveCommand.CreateFromTask<ModItem>(OnUpdateAsync);
             OnInstall = ReactiveCommand.CreateFromTask<ModItem>(OnInstallAsync);
             OnEnable = ReactiveCommand.CreateFromTask<ModItem>(OnEnableAsync);
+
+            this.WhenAnyValue(x => x.Search)
+                .Subscribe(
+                    s => SearchFilter = m => string.IsNullOrEmpty(s) || m.Name.Contains(s, StringComparison.OrdinalIgnoreCase)
+                );
         }
 
-        [UsedImplicitly]
-        private IEnumerable<ModItem> FilteredItems =>
-            string.IsNullOrEmpty(Search)
-                ? SelectedItems
-                : SelectedItems.Where(x => x.Name.Contains(Search, StringComparison.OrdinalIgnoreCase));
+        private readonly ReadOnlyObservableCollection<ModItem> _filteredItems;
+
+        [UsedImplicitly] 
+        public ReadOnlyObservableCollection<ModItem> FilteredItems => _filteredItems;
 
         public string ApiButtonText   => _mods.ApiInstall is InstalledState { Enabled: var enabled } 
             ? (
@@ -153,14 +174,14 @@ namespace Scarab.ViewModels
         }
 
         public static void Donate() => Process.Start(new ProcessStartInfo("https://paypal.me/ybham") { UseShellExecute = true });
-        
-        public void SelectAll() => SelectedItems = _items;
 
-        public void SelectInstalled() => SelectedItems = _items.Where(x => x.Installed);
+        public void SelectAll() => SelectionFilter = _ => true;
 
-        public void SelectUnupdated() => SelectedItems = _items.Where(x => x.State is InstalledState { Updated: false });
+        public void SelectInstalled() => SelectionFilter = x => x.Installed;
 
-        public void SelectEnabled() => SelectedItems = _items.Where(x => x.State is InstalledState { Enabled: true });
+        public void SelectUnupdated() => SelectionFilter = x => x.State is InstalledState { Updated: false };
+
+        public void SelectEnabled() => SelectionFilter = x => x.State is InstalledState { Enabled: true };
         
         public async void UpdateUnupdated()
         {

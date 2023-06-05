@@ -122,7 +122,24 @@
             Background="#a9a9a9" />
 
         <ScrollViewer>
-            <ItemsControl ItemsSource="{Binding FilteredItems}">
+            <ListBox ItemsSource="{Binding FilteredItems}" BorderThickness="0">
+                <ListBox.Styles>
+                    <!-- Remove the selected effect entirely -->
+                    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
+                    </Style>
+                    
+                    <!-- 
+                         Remove the pointerover effect and replace it with our own, 
+                         which just makes the text brighter 
+                    -->
+                    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Foreground" Value="White" />
+                    </Style>
+                </ListBox.Styles>
+                
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:ModItem">
                         <Expander Margin="8 5 0 5" Name="ModExpander">
@@ -138,8 +155,7 @@
                                     <TextBlock
                                         Text="{Binding Name}"
                                         TextTrimming="CharacterEllipsis"
-                                        VerticalAlignment="Center"
-                                    /> 
+                                        VerticalAlignment="Center" />
 
                                     <ToggleSwitch
                                         Grid.Column="1"
@@ -182,12 +198,11 @@
                                                 HorizontalAlignment="Center" />
                                         </Button>
 
-                                        <TextBlock 
-                                            Grid.Column="1" 
-                                            Margin="4 0 0 0" 
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            Margin="4 0 0 0"
                                             VerticalAlignment="Center"
-                                            Text="{ext:Localize XAML_Update}" 
-                                         />
+                                            Text="{ext:Localize XAML_Update}" />
                                     </Grid>
                                 </Grid>
                             </Expander.Header>
@@ -209,8 +224,9 @@
                                                 </TextBlock.Resources>
                                             </TextBlock>
                                         </StackPanel>
-                                        
-                                        <StackPanel Margin="0 10 0 0" DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
+
+                                        <StackPanel Margin="0 10 0 0" DockPanel.Dock="Bottom"
+                                                    VerticalAlignment="Bottom">
                                             <TextBlock Text="{ext:Localize XAML_Version}" FontWeight="Bold" />
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
                                                 <TextBlock Text="{Binding VersionText}" />
@@ -228,10 +244,13 @@
                                         </StackPanel>
                                     </DockPanel>
 
-                                    <StackPanel ClipToBounds="True" Grid.Column="1" Margin="5 0 0 0" Orientation="Vertical">
-                                        <StackPanel IsVisible="{Binding HasDependencies}" VerticalAlignment="Top" Orientation="Vertical">
-                                            <TextBlock Text="{ext:Localize XAML_Dependencies}" FontWeight="Bold" VerticalAlignment="Top"/>
-                                            <TextBlock Text="{Binding DependenciesDesc}" VerticalAlignment="Top"/>
+                                    <StackPanel ClipToBounds="True" Grid.Column="1" Margin="5 0 0 0"
+                                                Orientation="Vertical">
+                                        <StackPanel IsVisible="{Binding HasDependencies}" VerticalAlignment="Top"
+                                                    Orientation="Vertical">
+                                            <TextBlock Text="{ext:Localize XAML_Dependencies}" FontWeight="Bold"
+                                                       VerticalAlignment="Top" />
+                                            <TextBlock Text="{Binding DependenciesDesc}" VerticalAlignment="Top" />
                                         </StackPanel>
                                         <StackPanel IsVisible="{Binding HasTags}" Margin="0 10 0 0">
                                             <TextBlock Text="{ext:Localize XAML_Tags}" FontWeight="Bold" />
@@ -247,7 +266,7 @@
                         </Expander>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            </ListBox>
         </ScrollViewer>
     </DockPanel>
 </views:View>
