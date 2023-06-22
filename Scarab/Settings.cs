@@ -37,8 +37,9 @@ namespace Scarab
 
         private static readonly ImmutableList<string> USER_SUFFIX_PATHS = new List<string>
         {
-            // Default location on linux
+            // Default locations on linux
             ".local/share/Steam/steamapps/common/Hollow Knight",
+            ".steam/steam/steamapps/common/Hollow Knight",
             // Flatpak
             ".var/app/ocm.valvesoftware.Steam/data/Steam/steamapps/common",
             // Symlinks to the Steam root on linux
