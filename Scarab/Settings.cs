@@ -31,7 +31,8 @@ namespace Scarab
             "Program Files/GOG Galaxy/Games/Hollow Knight",
             "Program Files (x86)/GOG Galaxy/Games/Hollow Knight",
             "Steam/steamapps/common/Hollow Knight",
-            "GOG Galaxy/Games/Hollow Knight"
+            "GOG Galaxy/Games/Hollow Knight",
+            "XboxGames/Hollow Knight/Content"
         }
         .SelectMany(path => DriveInfo.GetDrives().Select(d => Path.Combine(d.Name, path))).ToImmutableList();
 
