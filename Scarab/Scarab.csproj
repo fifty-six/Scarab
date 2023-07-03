@@ -44,6 +44,8 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Semi.Avalonia" Version="11.0.0-rc1" />
+        <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.0.0-rc1" />
         <PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" Version="14.6.37" />
         <PackageReference Include="System.IO.Abstractions" Version="19.2.29" />
     </ItemGroup>

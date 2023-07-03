@@ -48,15 +48,8 @@
                 </Style>
             </Menu.Styles>
 
-            <!-- Top section -->
-            <MenuItem Header="{ext:Localize XAML_ModsFilter_All}" Command="{Binding SelectAll}" />
-            <MenuItem Header="-" />
-            <MenuItem Header="{ext:Localize XAML_ModsFilter_Installed}" Command="{Binding SelectInstalled}" />
-            <MenuItem Header="-" />
-            <MenuItem Header="{ext:Localize XAML_ModsFilter_Enabled}" Command="{Binding SelectEnabled}" />
-            <MenuItem Header="-" />
-            <MenuItem Header="{ext:Localize XAML_ModsFilter_OutOfDate}" Command="{Binding SelectUnupdated}" />
-
+            
+        
             <!-- Bottom section -->
             <MenuItem Command="{Binding ChangePath}" Header="{ext:Localize XAML_ChangPath}" />
             <MenuItem Command="{Binding OpenModsDirectory}" Header="{ext:Localize XAML_OpenMods}" />
@@ -105,16 +98,33 @@
             Watermark="{ext:Localize XAML_SearchMark}"
             DockPanel.Dock="Top"
             BorderThickness="0"
-            Margin="6 6"
+            Margin="8 6"
             Text="{Binding Search}" />
 
+            
+        <!-- Top section -->
+        <Border
+            Margin="8,6"
+            HorizontalAlignment="Left"
+            Theme="{StaticResource RadioButtonGroupBorder}"
+            DockPanel.Dock="Top">
+            <StackPanel Orientation="Horizontal">
+                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}" Content="{ext:Localize XAML_ModsFilter_All}" Command="{Binding SelectAll}" />
+                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}" Content="{ext:Localize XAML_ModsFilter_Installed}" Command="{Binding SelectInstalled}" />
+                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}" Content="{ext:Localize XAML_ModsFilter_Enabled}" Command="{Binding SelectEnabled}" />
+                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}" Content="{ext:Localize XAML_ModsFilter_OutOfDate}" Command="{Binding SelectUnupdated}" />
+            </StackPanel>
+        </Border>
+        
         <Separator
             DockPanel.Dock="Top"
             Height="1"
             Margin="0 0 0 3"
             Background="#a9a9a9" />
-
-        <ScrollViewer>
+        
+        
+        
+        <ScrollViewer HorizontalScrollBarVisibility="Auto">
             <ListBox ItemsSource="{Binding FilteredItems}" BorderThickness="0">
                 <ListBox.Styles>
                     <!-- Remove the selected effect entirely -->
@@ -135,6 +145,7 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:ModItem">
+                        <Border Theme="{StaticResource CardBorder}">
                         <Expander Margin="8 5 0 5" Name="ModExpander">
                             <Expander.Header>
                                 <Grid>
@@ -253,6 +264,7 @@
                                 </Grid>
                             </StackPanel>
                         </Expander>
+                        </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ListBox>
