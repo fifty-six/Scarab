@@ -26,7 +26,7 @@
             <Menu.Styles>
                 <Style Selector="MenuItem">
                     <Setter Property="Padding" Value="6 8" />
-                    
+
                     <Style Selector="^:separator">
                         <Setter Property="Template">
                             <ControlTemplate>
@@ -48,8 +48,7 @@
                 </Style>
             </Menu.Styles>
 
-            
-        
+
             <!-- Bottom section -->
             <MenuItem Command="{Binding ChangePath}" Header="{ext:Localize XAML_ChangPath}" />
             <MenuItem Command="{Binding OpenModsDirectory}" Header="{ext:Localize XAML_OpenMods}" />
@@ -101,7 +100,7 @@
             Margin="8 6"
             Text="{Binding Search}" />
 
-            
+
         <!-- Top section -->
         <Border
             Margin="8,6"
@@ -109,23 +108,26 @@
             Theme="{StaticResource RadioButtonGroupBorder}"
             DockPanel.Dock="Top">
             <StackPanel Orientation="Horizontal">
-                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}" Content="{ext:Localize XAML_ModsFilter_All}" Command="{Binding SelectAll}" />
-                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}" Content="{ext:Localize XAML_ModsFilter_Installed}" Command="{Binding SelectInstalled}" />
-                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}" Content="{ext:Localize XAML_ModsFilter_Enabled}" Command="{Binding SelectEnabled}" />
-                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}" Content="{ext:Localize XAML_ModsFilter_OutOfDate}" Command="{Binding SelectUnupdated}" />
+                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
+                             Content="{ext:Localize XAML_ModsFilter_All}" Command="{Binding SelectAll}" />
+                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
+                             Content="{ext:Localize XAML_ModsFilter_Installed}" Command="{Binding SelectInstalled}" />
+                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
+                             Content="{ext:Localize XAML_ModsFilter_Enabled}" Command="{Binding SelectEnabled}" />
+                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
+                             Content="{ext:Localize XAML_ModsFilter_OutOfDate}" Command="{Binding SelectUnupdated}" />
             </StackPanel>
         </Border>
-        
+
         <Separator
             DockPanel.Dock="Top"
             Height="1"
             Margin="0 0 0 3"
             Background="#a9a9a9" />
-        
-        
-        
+
+
         <ScrollViewer HorizontalScrollBarVisibility="Auto">
-            <ListBox ItemsSource="{Binding FilteredItems}" BorderThickness="0">
+            <ListBox ItemsSource="{Binding FilteredItems}">
                 <ListBox.Styles>
                     <!-- Remove the selected effect entirely -->
                     <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
@@ -137,133 +139,154 @@
                          Remove the pointerover effect and replace it with our own, 
                          which just makes the text brighter 
                     -->
+                    
+                    
+                    
                     <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
                         <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="Foreground" Value="Transparent" />
                     </Style>
+                    
+                    <Style Selector="Expander /template/ ToggleButton#ExpanderHeader:pointerover">
+                        <Setter Property="Background" Value="Transparent" />
+                    </Style>
+                    
+                    
+                    <Style
+                        Selector="Expander:down /template/ Border">
+                        <Setter Property="BorderThickness" Value="0"></Setter>
+                    </Style>
+                    
+                    <Style
+                        Selector="Expander:down /template/ LayoutTransformControl">
+                        <Setter Property="Margin" Value="0"></Setter>
+                    
+                    </Style>
+                    
                 </ListBox.Styles>
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:ModItem">
-                        <Border Theme="{StaticResource CardBorder}">
-                        <Expander Margin="8 5 0 5" Name="ModExpander">
-                            <Expander.Header>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" MaxWidth="260" />
-                                        <ColumnDefinition Width="*" MaxWidth="260" />
-                                        <ColumnDefinition Width="*" MaxWidth="260" />
-                                        <ColumnDefinition Width="*" MaxWidth="100" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <TextBlock
-                                        Text="{Binding Name}"
-                                        TextTrimming="CharacterEllipsis"
-                                        VerticalAlignment="Center" />
-
-                                    <ToggleSwitch
-                                        Grid.Column="1"
-                                        VerticalAlignment="Top"
-                                        CommandParameter="{Binding .}"
-                                        OnContent="{ext:Localize XAML_On}"
-                                        OffContent="{ext:Localize XAML_Off}"
-                                        Command="{Binding $parent[views:ModListView].DataContext.OnEnable}"
-                                        IsChecked="{Binding EnabledIsChecked}"
-                                        IsEnabled="{Binding Installed}"
-                                        HorizontalAlignment="Center"
-                                        VerticalContentAlignment="Center" />
-
-                                    <Button
-                                        Grid.Column="2"
-                                        MaxWidth="65"
-                                        CommandParameter="{Binding .}"
-                                        Content="{Binding InstallText}"
-                                        IsEnabled="{Binding !Installing}"
-                                        Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
-                                        VerticalAlignment="Center" />
-
-                                    <Grid
-                                        Grid.Column="3"
-                                        ColumnDefinitions="Auto,*"
-                                        IsVisible="{Binding UpdateAvailable}"
-                                        VerticalAlignment="Stretch">
-                                        <Button
-                                            MaxHeight="18"
-                                            MaxWidth="18"
-                                            VerticalAlignment="Center"
-                                            Background="Transparent"
-                                            BorderBrush="{DynamicResource ThemeBorderMidBrush}"
-                                            Command="{Binding $parent[views:ModListView].DataContext.OnUpdate}"
-                                            CommandParameter="{Binding .}">
-                                            <Image
-                                                Source="avares://Scarab/Assets/update.png"
-                                                Height="12" Width="12"
-                                                VerticalAlignment="Center"
-                                                HorizontalAlignment="Center" />
-                                        </Button>
+                        <Border Classes="Hover" Padding="0" Margin="0" Theme="{StaticResource CardBorder}">
+                        <Expander Padding="0" Margin="0" Name="ModExpander">
+                                <Expander.Header>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" MaxWidth="260" />
+                                            <ColumnDefinition Width="*" MaxWidth="260" />
+                                            <ColumnDefinition Width="*" MaxWidth="260" />
+                                            <ColumnDefinition Width="*" MaxWidth="100" />
+                                        </Grid.ColumnDefinitions>
 
                                         <TextBlock
+                                            Text="{Binding Name}"
+                                            TextTrimming="CharacterEllipsis"
+                                            VerticalAlignment="Center" />
+
+                                        <ToggleSwitch
                                             Grid.Column="1"
-                                            Margin="4 0 0 0"
-                                            VerticalAlignment="Center"
-                                            Text="{ext:Localize XAML_Update}" />
-                                    </Grid>
-                                </Grid>
-                            </Expander.Header>
+                                            VerticalAlignment="Top"
+                                            CommandParameter="{Binding .}"
+                                            OnContent="{ext:Localize XAML_On}"
+                                            OffContent="{ext:Localize XAML_Off}"
+                                            Command="{Binding $parent[views:ModListView].DataContext.OnEnable}"
+                                            IsChecked="{Binding EnabledIsChecked}"
+                                            IsEnabled="{Binding Installed}"
+                                            HorizontalAlignment="Center"
+                                            VerticalContentAlignment="Center" />
 
-                            <StackPanel Margin="12 0 0 0">
-                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Margin="0 0 15 15" />
-                                <Grid ColumnDefinitions="*,*">
-                                    <DockPanel ClipToBounds="True" VerticalAlignment="Stretch" Height="NaN">
-                                        <StackPanel DockPanel.Dock="Top">
-                                            <TextBlock Text="{ext:Localize XAML_Repository}" FontWeight="Bold" />
+                                        <Button
+                                            Grid.Column="2"
+                                            MaxWidth="65"
+                                            CommandParameter="{Binding .}"
+                                            Content="{Binding InstallText}"
+                                            IsEnabled="{Binding !Installing}"
+                                            Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
+                                            VerticalAlignment="Center" />
+
+                                        <Grid
+                                            Grid.Column="3"
+                                            ColumnDefinitions="Auto,*"
+                                            IsVisible="{Binding UpdateAvailable}"
+                                            VerticalAlignment="Stretch">
+                                            <Button
+                                                MaxHeight="18"
+                                                MaxWidth="18"
+                                                VerticalAlignment="Center"
+                                                Background="Transparent"
+                                                BorderBrush="{DynamicResource ThemeBorderMidBrush}"
+                                                Command="{Binding $parent[views:ModListView].DataContext.OnUpdate}"
+                                                CommandParameter="{Binding .}">
+                                                <Image
+                                                    Source="avares://Scarab/Assets/update.png"
+                                                    Height="12" Width="12"
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Center" />
+                                            </Button>
+
                                             <TextBlock
-                                                Text="{Binding Repository}"
-                                                MaxWidth="{Binding $parent.Bounds.Width}"
-                                                TextTrimming="CharacterEllipsis"
-                                                PointerReleased="RepositoryTextClick"
-                                                Foreground="{DynamicResource Highlight}">
-                                                <TextBlock.Resources>
-                                                    <SolidColorBrush x:Key="Highlight" Color="#1ebbff" />
-                                                </TextBlock.Resources>
-                                            </TextBlock>
-                                        </StackPanel>
+                                                Grid.Column="1"
+                                                Margin="4 0 0 0"
+                                                VerticalAlignment="Center"
+                                                Text="{ext:Localize XAML_Update}" />
+                                        </Grid>
+                                    </Grid>
+                                </Expander.Header>
 
-                                        <StackPanel Margin="0 10 0 0" DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
-                                            <TextBlock Text="{ext:Localize XAML_Version}" FontWeight="Bold" />
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="{Binding VersionText}" />
+                                <StackPanel Margin="12 0 0 0">
+                                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Margin="0 0 15 15" />
+                                    <Grid ColumnDefinitions="*,*">
+                                        <DockPanel ClipToBounds="True" VerticalAlignment="Stretch" Height="NaN">
+                                            <StackPanel DockPanel.Dock="Top">
+                                                <TextBlock Text="{ext:Localize XAML_Repository}" FontWeight="Bold" />
                                                 <TextBlock
-                                                    Text="{Binding UpdateText}"
-                                                    IsVisible="{Binding UpdateAvailable}"
-                                                    Foreground="{DynamicResource Highlight}"
-                                                    Margin="4 0 0 0"
-                                                    FontWeight="Bold">
+                                                    Text="{Binding Repository}"
+                                                    MaxWidth="{Binding $parent.Bounds.Width}"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    PointerReleased="RepositoryTextClick"
+                                                    Foreground="{DynamicResource Highlight}">
                                                     <TextBlock.Resources>
-                                                        <SolidColorBrush x:Key="Highlight" Color="#f49107" />
+                                                        <SolidColorBrush x:Key="Highlight" Color="#1ebbff" />
                                                     </TextBlock.Resources>
                                                 </TextBlock>
                                             </StackPanel>
-                                        </StackPanel>
-                                    </DockPanel>
 
-                                    <StackPanel ClipToBounds="True" Grid.Column="1" Margin="5 0 0 0">
-                                        <StackPanel IsVisible="{Binding HasDependencies}">
-                                            <TextBlock Text="{ext:Localize XAML_Dependencies}" FontWeight="Bold" />
-                                            <TextBlock Text="{Binding DependenciesDesc}" />
+                                            <StackPanel Margin="0 10 0 0" DockPanel.Dock="Bottom"
+                                                        VerticalAlignment="Bottom">
+                                                <TextBlock Text="{ext:Localize XAML_Version}" FontWeight="Bold" />
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding VersionText}" />
+                                                    <TextBlock
+                                                        Text="{Binding UpdateText}"
+                                                        IsVisible="{Binding UpdateAvailable}"
+                                                        Foreground="{DynamicResource Highlight}"
+                                                        Margin="4 0 0 0"
+                                                        FontWeight="Bold">
+                                                        <TextBlock.Resources>
+                                                            <SolidColorBrush x:Key="Highlight" Color="#f49107" />
+                                                        </TextBlock.Resources>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </DockPanel>
+
+                                        <StackPanel ClipToBounds="True" Grid.Column="1" Margin="5 0 0 0">
+                                            <StackPanel IsVisible="{Binding HasDependencies}">
+                                                <TextBlock Text="{ext:Localize XAML_Dependencies}" FontWeight="Bold" />
+                                                <TextBlock Text="{Binding DependenciesDesc}" />
+                                            </StackPanel>
+                                            <StackPanel IsVisible="{Binding HasTags}" Margin="0 10 0 0">
+                                                <TextBlock Text="{ext:Localize XAML_Tags}" FontWeight="Bold" />
+                                                <TextBlock Text="{Binding TagDesc}" />
+                                            </StackPanel>
+                                            <StackPanel IsVisible="{Binding HasIntegrations}" Margin="0 10 0 0">
+                                                <TextBlock Text="{ext:Localize XAML_Integrations}" FontWeight="Bold" />
+                                                <TextBlock Text="{Binding IntegrationsDesc}" />
+                                            </StackPanel>
                                         </StackPanel>
-                                        <StackPanel IsVisible="{Binding HasTags}" Margin="0 10 0 0">
-                                            <TextBlock Text="{ext:Localize XAML_Tags}" FontWeight="Bold" />
-                                            <TextBlock Text="{Binding TagDesc}" />
-                                        </StackPanel>
-                                        <StackPanel IsVisible="{Binding HasIntegrations}" Margin="0 10 0 0">
-                                            <TextBlock Text="{ext:Localize XAML_Integrations}" FontWeight="Bold" />
-                                            <TextBlock Text="{Binding IntegrationsDesc}" />
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Grid>
-                            </StackPanel>
-                        </Expander>
+                                    </Grid>
+                                </StackPanel>
+                            </Expander>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
