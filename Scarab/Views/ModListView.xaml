@@ -168,7 +168,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:ModItem">
                         <Border Classes="Hover" Padding="0" Margin="0" Theme="{StaticResource CardBorder}">
-                        <Expander Padding="0" Margin="0" Name="ModExpander">
+                        <Expander Name="ModExpander" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
                                 <Expander.Header>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -197,7 +197,7 @@
 
                                         <Button
                                             Grid.Column="2"
-                                            MaxWidth="65"
+                                            MaxWidth="85"
                                             CommandParameter="{Binding .}"
                                             Content="{Binding InstallText}"
                                             IsEnabled="{Binding !Installing}"
