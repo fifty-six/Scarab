@@ -163,6 +163,11 @@
                     
                     </Style>
                     
+                    <Style
+                        Selector="Border.Hover:pointerover">
+                        <Setter Property="Background" Value="{DynamicResource ExpanderHeaderHoverBackground}"></Setter>
+                    </Style>
+                    
                 </ListBox.Styles>
 
                 <ItemsControl.ItemTemplate>
