@@ -9,6 +9,7 @@
             xmlns:views="clr-namespace:Scarab.Views"
             xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
             xmlns:ext="clr-namespace:Scarab.Extensions"
+            xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
             x:Class="Scarab.Views.ModListView"
             x:DataType="viewModels:ModListViewModel"
@@ -90,34 +91,58 @@
             Minimum="0"
             Maximum="100"
             Value="{Binding Progress}" />
-
-        <TextBox
-            x:Name="Search"
-            Name="Search"
-            Watermark="{ext:Localize XAML_SearchMark}"
-            DockPanel.Dock="Top"
-            BorderThickness="0"
-            Margin="8 6"
-            Text="{Binding Search}" />
+        <!-- fa-solid fa-magnifying-glass -->
+        <Border Theme="{StaticResource CardBorder}"
+                Margin="8 8 8 4"
+                Padding="0"
+                Background="{DynamicResource TextBoxDefaultBackground}"
+                DockPanel.Dock="Top">
+            <DockPanel>
+                <i:Icon Margin=" 5 0 5 0" Value="fa-solid fa-magnifying-glass" />
+                <TextBox
+                    x:Name="Search"
+                    Name="Search"
+                    Watermark="{ext:Localize XAML_SearchMark}"
+                    BorderThickness="0"
+                    Background="Transparent"
+                    Text="{Binding Search}" />
+            </DockPanel>
+        </Border>
 
 
         <!-- Top section -->
-        <Border
-            Margin="8,6"
-            HorizontalAlignment="Left"
-            Theme="{StaticResource RadioButtonGroupBorder}"
-            DockPanel.Dock="Top">
-            <StackPanel Orientation="Horizontal">
-                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
-                             Content="{ext:Localize XAML_ModsFilter_All}" Command="{Binding SelectAll}" />
-                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
-                             Content="{ext:Localize XAML_ModsFilter_Installed}" Command="{Binding SelectInstalled}" />
-                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
-                             Content="{ext:Localize XAML_ModsFilter_Enabled}" Command="{Binding SelectEnabled}" />
-                <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
-                             Content="{ext:Localize XAML_ModsFilter_OutOfDate}" Command="{Binding SelectUnupdated}" />
-            </StackPanel>
-        </Border>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+            <Border
+                Margin="8,6"
+                HorizontalAlignment="Left"
+                Theme="{StaticResource RadioButtonGroupBorder}">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Classes="Small" IsChecked="True" Theme="{DynamicResource ButtonRadioButton}"
+                                 Content="{ext:Localize XAML_ModsFilter_All}" Command="{Binding SelectAll}" />
+                    <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
+                                 Content="{ext:Localize XAML_ModsFilter_Installed}" Command="{Binding SelectInstalled}" />
+                    <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
+                                 Content="{ext:Localize XAML_ModsFilter_Enabled}" Command="{Binding SelectEnabled}" />
+                    <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
+                                 Content="{ext:Localize XAML_ModsFilter_OutOfDate}" Command="{Binding SelectUnupdated}" />
+                </StackPanel>
+            </Border>
+            <!--TODO: localize-->
+            <ComboBox
+                Margin="8, 6"
+                Width="150"
+                PlaceholderText="Filter Tags" 
+                Classes="Small">
+                <ComboBoxItem>All</ComboBoxItem>
+                <ComboBoxItem>Boss</ComboBoxItem>
+                <ComboBoxItem>Cosmetic</ComboBoxItem>
+                <ComboBoxItem>Expansion</ComboBoxItem>
+                <ComboBoxItem>Gameplay</ComboBoxItem>
+                <ComboBoxItem>Library</ComboBoxItem>
+                <ComboBoxItem>Utility</ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
+
 
         <ScrollViewer HorizontalScrollBarVisibility="Auto">
             <ListBox ItemsSource="{Binding FilteredItems}">
@@ -215,7 +240,7 @@
                                             IsVisible="{Binding UpdateAvailable}"
                                             VerticalAlignment="Stretch">
                                             <Button
-                                           
+
                                                 BorderBrush="{DynamicResource ThemeBorderMidBrush}"
                                                 Command="{Binding $parent[views:ModListView].DataContext.OnUpdate}"
                                                 CommandParameter="{Binding .}">

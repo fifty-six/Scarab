@@ -7,6 +7,8 @@ using Avalonia;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
+using Projektanker.Icons.Avalonia;
+using Projektanker.Icons.Avalonia.FontAwesome;
 
 namespace Scarab
 {
@@ -88,14 +90,19 @@ namespace Scarab
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.
-        private static AppBuilder BuildAvaloniaApp() =>
-            AppBuilder.Configure<App>()
-                      .UsePlatformDetect()
-                      .WithInterFont()
-                      .With(new FontManagerOptions {
-                          DefaultFamilyName = "avares://Avalonia.Fonts.Inter/Assets#Inter"
-                      })
-                      .LogToTrace()
-                      .UseReactiveUI();
+        private static AppBuilder BuildAvaloniaApp()
+        {
+            IconProvider.Current
+                .Register<FontAwesomeIconProvider>();
+            return AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .WithInterFont()
+                .With(new FontManagerOptions
+                {
+                    DefaultFamilyName = "avares://Avalonia.Fonts.Inter/Assets#Inter"
+                })
+                .LogToTrace()
+                .UseReactiveUI();
+        }
     }
 }
