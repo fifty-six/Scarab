@@ -232,16 +232,16 @@
                                                     Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
                                                     VerticalAlignment="Center">
                                                     <StackPanel Orientation="Horizontal" Spacing="5">
-                                                        <i:Icon Value="fa-solid fa-download" />
-                                                        <TextBlock Text="{Binding InstallText}" />
+                                                        <i:Icon Value="fa-solid fa-download" Foreground="{Binding InstallFg}" />
+                                                        <TextBlock Text="{Binding InstallText}" Foreground="{Binding InstallFg}"/>
                                                     </StackPanel>
 
                                                 </Button>
                                                 <DropDownButton
                                                     Margin=" 1 0 0 0"
                                                     Width="30"
+                                                    IsVisible="{Binding Installed}"
                                                     CornerRadius="0 3 3 0">
-
                                                     <DropDownButton.Flyout>
                                                         <MenuFlyout Placement="BottomEdgeAlignedRight">
                                                             <MenuItem Header="Uninstall" 

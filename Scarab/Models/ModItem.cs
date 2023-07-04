@@ -1,7 +1,9 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Resources;
 using System.Threading.Tasks;
+using Avalonia.Media;
 using PropertyChanged.SourceGenerator;
 using Scarab.Interfaces;
 
@@ -71,6 +73,7 @@ namespace Scarab.Models
 
         public string InstallText => State switch
         {
+            InstalledState { Updated: false } => Resources.XAML_Update,
             InstalledState => Resources.MI_InstallText_Installed,
             NotInstalledState => Resources.MI_InstallText_NotInstalled,
             _ => throw new InvalidOperationException("Unreachable")
@@ -91,6 +94,13 @@ namespace Scarab.Models
             InstalledState st => st.Version.ToString(),
             NotInstalledState => Version.ToString(),
             _ => throw new ArgumentOutOfRangeException(nameof(_state))
+        };
+
+        public IBrush InstallFg => State switch
+        {
+            InstalledState { Updated: false } => Brushes.LawnGreen,
+            InstalledState => new SolidColorBrush(new Color(255, 0xf2, 0x3f, 0x43)),
+            _ => Brushes.DodgerBlue
         };
 
         public async Task OnUpdate(IInstaller inst, Action<ModProgressArgs> setProgress)
