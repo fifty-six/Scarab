@@ -119,13 +119,6 @@
             </StackPanel>
         </Border>
 
-        <Separator
-            DockPanel.Dock="Top"
-            Height="1"
-            Margin="0 0 0 3"
-            Background="#a9a9a9" />
-
-
         <ScrollViewer HorizontalScrollBarVisibility="Auto">
             <ListBox ItemsSource="{Binding FilteredItems}">
                 <ListBox.Styles>
@@ -139,41 +132,41 @@
                          Remove the pointerover effect and replace it with our own, 
                          which just makes the text brighter 
                     -->
-                    
-                    
-                    
+
+
                     <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
                         <Setter Property="Background" Value="Transparent" />
                         <Setter Property="Foreground" Value="Transparent" />
                     </Style>
-                    
+
                     <Style Selector="Expander /template/ ToggleButton#ExpanderHeader:pointerover">
                         <Setter Property="Background" Value="Transparent" />
                     </Style>
-                    
-                    
+
+
                     <Style
                         Selector="Expander:down /template/ Border">
                         <Setter Property="BorderThickness" Value="0"></Setter>
                     </Style>
-                    
+
                     <Style
                         Selector="Expander:down /template/ LayoutTransformControl">
                         <Setter Property="Margin" Value="0"></Setter>
-                    
+
                     </Style>
-                    
+
                     <Style
                         Selector="Border.Hover:pointerover">
                         <Setter Property="Background" Value="{DynamicResource ExpanderHeaderHoverBackground}"></Setter>
                     </Style>
-                    
+
                 </ListBox.Styles>
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:ModItem">
                         <Border Classes="Hover" Padding="0" Margin="0" Theme="{StaticResource CardBorder}">
-                        <Expander Name="ModExpander" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <Expander Name="ModExpander" HorizontalContentAlignment="Stretch"
+                                      HorizontalAlignment="Stretch">
                                 <Expander.Header>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
