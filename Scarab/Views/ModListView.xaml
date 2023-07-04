@@ -193,14 +193,21 @@
                                             HorizontalAlignment="Center"
                                             VerticalContentAlignment="Center" />
 
-                                        <Button
+
+                                        <SplitButton
                                             Grid.Column="2"
-                                            MaxWidth="85"
+                                            MaxWidth="120"
                                             CommandParameter="{Binding .}"
                                             Content="{Binding InstallText}"
                                             IsEnabled="{Binding !Installing}"
                                             Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
-                                            VerticalAlignment="Center" />
+                                            VerticalAlignment="Center">
+                                            <SplitButton.Flyout>
+                                                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                                    <MenuItem Header="Uninstall" />
+                                                </MenuFlyout>
+                                            </SplitButton.Flyout>
+                                        </SplitButton>
 
                                         <Grid
                                             Grid.Column="3"
@@ -208,25 +215,11 @@
                                             IsVisible="{Binding UpdateAvailable}"
                                             VerticalAlignment="Stretch">
                                             <Button
-                                                MaxHeight="18"
-                                                MaxWidth="18"
-                                                VerticalAlignment="Center"
-                                                Background="Transparent"
+                                           
                                                 BorderBrush="{DynamicResource ThemeBorderMidBrush}"
                                                 Command="{Binding $parent[views:ModListView].DataContext.OnUpdate}"
                                                 CommandParameter="{Binding .}">
-                                                <Image
-                                                    Source="avares://Scarab/Assets/update.png"
-                                                    Height="12" Width="12"
-                                                    VerticalAlignment="Center"
-                                                    HorizontalAlignment="Center" />
                                             </Button>
-
-                                            <TextBlock
-                                                Grid.Column="1"
-                                                Margin="4 0 0 0"
-                                                VerticalAlignment="Center"
-                                                Text="{ext:Localize XAML_Update}" />
                                         </Grid>
                                     </Grid>
                                 </Expander.Header>
