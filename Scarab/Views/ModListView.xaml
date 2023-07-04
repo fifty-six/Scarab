@@ -234,11 +234,11 @@
                                                 <i:Icon Value="fa-solid fa-download" />
                                                 <TextBlock Text="{Binding InstallText}" />
                                             </StackPanel>
-                                            <!--<SplitButton.Flyout>
+                                            <SplitButton.Flyout>
                                                 <MenuFlyout Placement="BottomEdgeAlignedRight">
                                                     <MenuItem Header="Uninstall" />
                                                 </MenuFlyout>
-                                            </SplitButton.Flyout>-->
+                                            </SplitButton.Flyout>
                                         </SplitButton>
 
                                         <!--<Grid
