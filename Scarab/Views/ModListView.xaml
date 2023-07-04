@@ -131,7 +131,7 @@
             <ComboBox
                 Margin="8, 6"
                 Width="150"
-                PlaceholderText="Filter Tags" 
+                PlaceholderText="Filter Tags"
                 Classes="Small">
                 <ComboBoxItem>All</ComboBoxItem>
                 <ComboBoxItem>Boss</ComboBoxItem>
@@ -184,6 +184,10 @@
                         Selector="Border.Hover:pointerover">
                         <Setter Property="Background" Value="{DynamicResource ExpanderHeaderHoverBackground}"></Setter>
                     </Style>
+                    <Style
+                        Selector="SplitButton /template/ Button#PART_PrimaryButton">
+                        <Setter Property="Background" Value="Red"></Setter>
+                    </Style>
 
                 </ListBox.Styles>
 
@@ -198,10 +202,10 @@
                                             <ColumnDefinition Width="*" MaxWidth="260" />
                                             <ColumnDefinition Width="*" MaxWidth="260" />
                                             <ColumnDefinition Width="*" MaxWidth="260" />
-                                            <ColumnDefinition Width="*" MaxWidth="100" />
                                         </Grid.ColumnDefinitions>
 
                                         <TextBlock
+                                            Grid.Column="0"
                                             Text="{Binding Name}"
                                             TextTrimming="CharacterEllipsis"
                                             VerticalAlignment="Center" />
@@ -223,18 +227,21 @@
                                             Grid.Column="2"
                                             MaxWidth="120"
                                             CommandParameter="{Binding .}"
-                                            Content="{Binding InstallText}"
                                             IsEnabled="{Binding !Installing}"
                                             Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
                                             VerticalAlignment="Center">
-                                            <SplitButton.Flyout>
+                                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                                <i:Icon Value="fa-solid fa-download" />
+                                                <TextBlock Text="{Binding InstallText}" />
+                                            </StackPanel>
+                                            <!--<SplitButton.Flyout>
                                                 <MenuFlyout Placement="BottomEdgeAlignedRight">
                                                     <MenuItem Header="Uninstall" />
                                                 </MenuFlyout>
-                                            </SplitButton.Flyout>
+                                            </SplitButton.Flyout>-->
                                         </SplitButton>
 
-                                        <Grid
+                                        <!--<Grid
                                             Grid.Column="3"
                                             ColumnDefinitions="Auto,*"
                                             IsVisible="{Binding UpdateAvailable}"
@@ -245,7 +252,7 @@
                                                 Command="{Binding $parent[views:ModListView].DataContext.OnUpdate}"
                                                 CommandParameter="{Binding .}">
                                             </Button>
-                                        </Grid>
+                                        </Grid>-->
                                     </Grid>
                                 </Expander.Header>
 
