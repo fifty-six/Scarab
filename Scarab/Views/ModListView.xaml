@@ -184,10 +184,7 @@
                         Selector="Border.Hover:pointerover">
                         <Setter Property="Background" Value="{DynamicResource ExpanderHeaderHoverBackground}"></Setter>
                     </Style>
-                    <Style
-                        Selector="SplitButton /template/ Button#PART_PrimaryButton">
-                        <Setter Property="Background" Value="Red"></Setter>
-                    </Style>
+
 
                 </ListBox.Styles>
 
@@ -199,6 +196,7 @@
                                 <Expander.Header>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" MaxWidth="260" />
                                             <ColumnDefinition Width="*" MaxWidth="260" />
                                             <ColumnDefinition Width="*" MaxWidth="260" />
                                             <ColumnDefinition Width="*" MaxWidth="260" />
@@ -222,24 +220,44 @@
                                             HorizontalAlignment="Center"
                                             VerticalContentAlignment="Center" />
 
-
-                                        <SplitButton
+                                        <Border
                                             Grid.Column="2"
-                                            MaxWidth="120"
-                                            CommandParameter="{Binding .}"
-                                            IsEnabled="{Binding !Installing}"
-                                            Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
-                                            VerticalAlignment="Center">
-                                            <StackPanel Orientation="Horizontal" Spacing="5">
-                                                <i:Icon Value="fa-solid fa-download" />
-                                                <TextBlock Text="{Binding InstallText}" />
+                                            Background="">
+                                            <StackPanel Orientation="Horizontal" Spacing="0">
+                                                <Button
+
+                                                    MaxWidth="120"
+                                                    CommandParameter="{Binding .}"
+                                                    IsEnabled="{Binding !Installing}"
+                                                    CornerRadius="3 0 0 3"
+                                                    Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
+                                                    VerticalAlignment="Center">
+                                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                                        <i:Icon Value="fa-solid fa-download" />
+                                                        <TextBlock Text="{Binding InstallText}" />
+                                                    </StackPanel>
+
+                                                </Button>
+                                                <DropDownButton
+                                                    Margin=" 1 0 0 0"
+                                                    Padding="0 0 0 0"
+                                                    Width="25"
+                                                    CornerRadius="0 3 3 0">
+                                                    <DropDownButton.Styles>
+                                                        <Style
+                                                            Selector="DropDownButton /template/ PathIcon">
+                                                            <Setter Property="Background" Value="Red"></Setter>
+                                                        </Style>
+                                                    </DropDownButton.Styles>
+                                                    <DropDownButton.Flyout>
+                                                        <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                                            <MenuItem Header="Uninstall" />
+                                                        </MenuFlyout>
+                                                    </DropDownButton.Flyout>
+                                                </DropDownButton>
                                             </StackPanel>
-                                            <SplitButton.Flyout>
-                                                <MenuFlyout Placement="BottomEdgeAlignedRight">
-                                                    <MenuItem Header="Uninstall" />
-                                                </MenuFlyout>
-                                            </SplitButton.Flyout>
-                                        </SplitButton>
+                                        </Border>
+
 
                                         <!--<Grid
                                             Grid.Column="3"
