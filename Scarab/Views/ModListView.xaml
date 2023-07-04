@@ -240,15 +240,9 @@
                                                 </Button>
                                                 <DropDownButton
                                                     Margin=" 1 0 0 0"
-                                                    Padding="0 0 0 0"
-                                                    Width="25"
+                                                    Width="30"
                                                     CornerRadius="0 3 3 0">
-                                                    <DropDownButton.Styles>
-                                                        <Style
-                                                            Selector="DropDownButton /template/ PathIcon">
-                                                            <Setter Property="Background" Value="Red"></Setter>
-                                                        </Style>
-                                                    </DropDownButton.Styles>
+
                                                     <DropDownButton.Flyout>
                                                         <MenuFlyout Placement="BottomEdgeAlignedRight">
                                                             <MenuItem Header="Uninstall" />
