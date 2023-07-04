@@ -225,7 +225,6 @@
                                             Background="">
                                             <StackPanel Orientation="Horizontal" Spacing="0">
                                                 <Button
-
                                                     MaxWidth="120"
                                                     CommandParameter="{Binding .}"
                                                     IsEnabled="{Binding !Installing}"
@@ -245,7 +244,8 @@
 
                                                     <DropDownButton.Flyout>
                                                         <MenuFlyout Placement="BottomEdgeAlignedRight">
-                                                            <MenuItem Header="Uninstall" />
+                                                            <MenuItem Header="Uninstall" 
+                                                                      i:MenuItem.Icon="fa-solid fa-trash-can"/>
                                                         </MenuFlyout>
                                                     </DropDownButton.Flyout>
                                                 </DropDownButton>
