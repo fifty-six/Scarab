@@ -78,6 +78,15 @@ namespace Scarab.Models
             NotInstalledState => Resources.MI_InstallText_NotInstalled,
             _ => throw new InvalidOperationException("Unreachable")
         };
+        
+        public string InstallIcon => State switch
+        {
+            InstalledState { Updated: false } => "fa-solid fa-rotate",
+            InstalledState => "fa-solid fa-trash-can",
+            NotInstalledState => "fa-solid fa-download",
+            _ => throw new InvalidOperationException("Unreachable")
+        };
+
 
         public bool Installed => State is InstalledState;
 
@@ -96,11 +105,11 @@ namespace Scarab.Models
             _ => throw new ArgumentOutOfRangeException(nameof(_state))
         };
 
-        public IBrush InstallFg => State switch
+        public String InstallFg => State switch
         {
-            InstalledState { Updated: false } => Brushes.LawnGreen,
-            InstalledState => new SolidColorBrush(new Color(255, 0xf2, 0x3f, 0x43)),
-            _ => Brushes.DodgerBlue
+            InstalledState { Updated: false } => "Warning",
+            InstalledState => "Danger",
+            _ => "Primary"
         };
 
         public async Task OnUpdate(IInstaller inst, Action<ModProgressArgs> setProgress)

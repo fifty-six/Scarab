@@ -196,10 +196,10 @@
                                 <Expander.Header>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" MaxWidth="260" />
-                                            <ColumnDefinition Width="*" MaxWidth="260" />
-                                            <ColumnDefinition Width="*" MaxWidth="260" />
-                                            <ColumnDefinition Width="*" MaxWidth="260" />
+                                            <ColumnDefinition Width="260" MaxWidth="260" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="150" />
+                                          
                                         </Grid.ColumnDefinitions>
 
                                         <TextBlock
@@ -222,25 +222,26 @@
 
                                         <Border
                                             Grid.Column="2"
-                                            Background="">
+                                            >
                                             <StackPanel Orientation="Horizontal" Spacing="0">
                                                 <Button
-                                                    MaxWidth="120"
+                                                 
+                                                    Width="100"
                                                     CommandParameter="{Binding .}"
                                                     IsEnabled="{Binding !Installing}"
                                                     CornerRadius="3 0 0 3"
                                                     Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
                                                     VerticalAlignment="Center">
                                                     <StackPanel Orientation="Horizontal" Spacing="5">
-                                                        <i:Icon Value="fa-solid fa-download" Foreground="{Binding InstallFg}" />
-                                                        <TextBlock Text="{Binding InstallText}" Foreground="{Binding InstallFg}"/>
+                                                        <i:Icon Value="{Binding InstallIcon}" />
+                                                        <TextBlock Text="{Binding InstallText}"/>
                                                     </StackPanel>
 
                                                 </Button>
                                                 <DropDownButton
-                                                    Margin=" 1 0 0 0"
+                                                    Margin=" 2 0 0 0"
                                                     Width="30"
-                                                    IsVisible="{Binding Installed}"
+                                                    IsEnabled="{Binding Installed}"
                                                     CornerRadius="0 3 3 0">
                                                     <DropDownButton.Flyout>
                                                         <MenuFlyout Placement="BottomEdgeAlignedRight">
