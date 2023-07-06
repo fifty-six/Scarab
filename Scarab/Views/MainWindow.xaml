@@ -7,9 +7,8 @@
         x:DataType="s:MainWindowViewModel"
         Icon="/Assets/omegamaggotprime.ico"
         Title="Scarab">
-        <TabControl TabStripPlacement="Top" HorizontalAlignment="Center">
-                <TabItem Header="Mods">
-                </TabItem>
+        <TabControl TabStripPlacement="Top" HorizontalAlignment="Stretch">
+                <TabItem x:Name="ModListTab" Header="Mods" Content="{Binding Content}" HorizontalContentAlignment="Stretch"/> 
                 <TabItem Content="Settings" Header="Settings" />
                 <TabItem Content="Info" Header="Info" />
         </TabControl>

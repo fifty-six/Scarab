@@ -26,7 +26,7 @@ using Scarab.Util;
 
 namespace Scarab.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    public partial class MainWindowViewModel : ViewModelBase
     {
         private static bool _Debug
         {
