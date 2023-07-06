@@ -95,6 +95,7 @@
                     HorizontalAlignment="Left"
                     Theme="{StaticResource RadioButtonGroupBorder}">
                     <StackPanel Orientation="Horizontal">
+                        <!-- ReSharper disable Xaml.StyleClassNotFound -->
                         <RadioButton Classes="Small" IsChecked="True" Theme="{DynamicResource ButtonRadioButton}"
                                      Content="{ext:Localize XAML_ModsFilter_All}" Command="{Binding SelectAll}" />
                         <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
@@ -105,26 +106,20 @@
                         <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
                                      Content="{ext:Localize XAML_ModsFilter_OutOfDate}"
                                      Command="{Binding SelectUnupdated}" />
+                        <!-- ReSharper restore Xaml.StyleClassNotFound -->
                     </StackPanel>
                 </Border>
                 <!--TODO: localize-->
                 <ComboBox
                     Grid.Row="2"
                     Grid.Column="1"
+                    x:Name = "TagBox"
                     Margin="8, 8"
                     PlaceholderText="Filter Tags"
-                    Classes="Small">
-                    <ComboBoxItem>All</ComboBoxItem>
-                    <ComboBoxItem>Boss</ComboBoxItem>
-                    <ComboBoxItem>Cosmetic</ComboBoxItem>
-                    <ComboBoxItem>Expansion</ComboBoxItem>
-                    <ComboBoxItem>Gameplay</ComboBoxItem>
-                    <ComboBoxItem>Library</ComboBoxItem>
-                    <ComboBoxItem>Utility</ComboBoxItem>
-                </ComboBox>
+                ItemsSource="{Binding Tags, Mode=OneWay}"
+                    Classes="Small" />
             </StackPanel>
         </Grid>
-
 
         <ScrollViewer HorizontalScrollBarVisibility="Disabled">
             <ListBox ItemsSource="{Binding FilteredItems}" Margin="8 0 ">
@@ -206,7 +201,6 @@
                                             Grid.Column="3">
                                             <StackPanel Orientation="Horizontal" Spacing="0">
                                                 <Button
-
                                                     Width="100"
                                                     CommandParameter="{Binding .}"
                                                     IsEnabled="{Binding !Installing}"

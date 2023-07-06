@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using Scarab.Interfaces;
@@ -114,7 +115,7 @@ namespace Scarab.Tests
                     "QoL",
                     "A collection of various quality of life improvements.",
                     "https://github.com/fifty-six/HollowKnight.QoL",
-                    Array.Empty<string>(),
+                    ImmutableArray<Tag>.Empty, 
                     Array.Empty<string>()
                 ),
                 db.Items.First(x => x.Name == "QoL")

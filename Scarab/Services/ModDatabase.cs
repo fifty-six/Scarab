@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
@@ -31,6 +33,10 @@ namespace Scarab.Services
         {
             foreach (var mod in ml.Manifests)
             {
+                var tags = mod.Tags.Select(x => Enum.TryParse(x, out Tag tag) ? (Tag?) tag : null)
+                              .OfType<Tag>()
+                              .ToImmutableArray();
+                
                 var item = new ModItem
                 (
                     link: mod.Links.OSUrl,
@@ -41,7 +47,7 @@ namespace Scarab.Services
                     repository: mod.Repository,
                     dependencies: mod.Dependencies,
                     
-                    tags: mod.Tags,
+                    tags: tags,
                     integrations: mod.Integrations,
                     
                     state: mods.FromManifest(mod)

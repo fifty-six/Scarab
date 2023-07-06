@@ -3,6 +3,8 @@ using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Input;
 using JetBrains.Annotations;
+using ReactiveUI;
+using Scarab.Models;
 using Scarab.ViewModels;
 
 namespace Scarab.Views
@@ -13,6 +15,19 @@ namespace Scarab.Views
         {
             InitializeComponent();
 
+            this.WhenAnyValue(x => ((Control) x).DataContext)
+                .BindTo(this, x => x.DataContext);
+
+            this.WhenAnyValue(x => x.TagBox.SelectionBoxItem)
+                .Subscribe(x =>
+                {
+                    // It's non-nullable by NRTs, but we initialize it after the constructor, and we can't
+                    // pass it in earlier as the XAML requires a (public) parameterless constructor
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+                    if (DataContext is not null)
+                        DataContext.SelectedTag = (Tag) (x ?? Models.Tag.All);
+                });
+            
             UserControl.KeyDown += OnKeyDown;
         }
 

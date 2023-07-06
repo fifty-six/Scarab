@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
 using System.Resources;
@@ -21,7 +22,7 @@ namespace Scarab.Models
             string name,
             string description,
             string repository,
-            string[] tags,
+            ImmutableArray<Tag> tags,
             string[] integrations
         )
         {
@@ -34,11 +35,12 @@ namespace Scarab.Models
             Name = name;
             Description = description;
             Repository = repository;
-            Tags = tags;
+            Tags = tags.Aggregate((Tag) 0, (acc, x) => acc | x);
             Integrations = integrations;
 
             DependenciesDesc = string.Join(Environment.NewLine, Dependencies);
-            TagDesc          = string.Join(Environment.NewLine, Tags);
+            // TODO: i18n
+            TagDesc          = string.Join(Environment.NewLine, tags.Select(x => x.ToString()));
             IntegrationsDesc = string.Join(Environment.NewLine, Integrations);
         }
 
@@ -50,8 +52,8 @@ namespace Scarab.Models
         public string   Name             { get; }
         public string   Description      { get; }
         public string   Repository       { get; }
-        
-        public string[] Tags { get; }
+
+        public Tag Tags { get; }
         public string[] Integrations { get; }
         
         public string   DependenciesDesc { get; }
@@ -92,7 +94,7 @@ namespace Scarab.Models
 
         public bool HasDependencies => Dependencies.Length > 0;
         public bool HasIntegrations => Integrations.Length > 0;
-        public bool HasTags => Tags.Length > 0;
+        public bool HasTags => Tags != 0;
 
         public bool UpdateAvailable => State is InstalledState s && s.Version < Version;
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -47,6 +48,9 @@ namespace Scarab.ViewModels
 
         [Notify]
         private string? _search;
+
+        [Notify] 
+        private Tag _selectedTag = Tag.All;
         
         private bool _updating;
         
@@ -63,7 +67,10 @@ namespace Scarab.ViewModels
         private Func<ModItem, bool> _selectionFilter = _ => true;
 
         [Notify]
-        private Func<ModItem, bool> _searchFilter = _ => true; 
+        private Func<ModItem, bool> _searchFilter = _ => true;
+
+        [Notify]
+        private Func<ModItem, bool> _tagFilter = _ => true;
 
         public ModListViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods)
         {
@@ -81,9 +88,10 @@ namespace Scarab.ViewModels
             _filteredItems = new ReadOnlyObservableCollection<ModItem>(_items);
             
             cache.Connect()
-                .Sort(SortExpressionComparer<ModItem>.Ascending(x => ModToOrderedTuple(x)))
                 .Filter(this.WhenAnyValue(x => x.SelectionFilter))
+                .Filter(this.WhenAnyValue(x => x.TagFilter))
                 .Filter(this.WhenAnyValue(x => x.SearchFilter))
+                .Sort(SortExpressionComparer<ModItem>.Ascending(x => ModToOrderedTuple(x)))
                 .Bind(out _filteredItems)
                 .Subscribe();
             
@@ -101,6 +109,11 @@ namespace Scarab.ViewModels
                 .Subscribe(
                     s => SearchFilter = m => string.IsNullOrEmpty(s) || m.Name.Contains(s, StringComparison.OrdinalIgnoreCase)
                 );
+            
+            this.WhenAnyValue(x => x.SelectedTag).Subscribe(t =>
+            {
+                TagFilter = m => m.Tags.HasFlag(t);
+            });
         }
 
         private readonly ReadOnlyObservableCollection<ModItem> _filteredItems;
@@ -129,6 +142,8 @@ namespace Scarab.ViewModels
         };
         
         public bool CanUpdateAll => _items.Any(x => x.State is InstalledState { Updated: false }) && !_updating;
+
+        public ImmutableArray<Tag> Tags { get; } = Enum.GetValues<Tag>().ToImmutableArray();
 
         // Needed for source generator to find it.
         private void RaisePropertyChanged(string name) => IReactiveObjectExtensions.RaisePropertyChanged(this, name);

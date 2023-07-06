@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.IO;
 using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace Scarab.Tests
                 "test",
                 "test",
                 "repo",
-                Array.Empty<string>(),
+                ImmutableArray<Tag>.Empty,
                 Array.Empty<string>()
             );
             

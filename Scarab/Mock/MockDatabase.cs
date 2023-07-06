@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Scarab.Interfaces;
 using Scarab.Models;
@@ -25,7 +26,7 @@ public class MockDatabase : IModDatabase
                 "NormalEx",
                 "An example", 
                 "github.com/fifty-six/no",
-                Array.Empty<string>(),
+                new () { Tag.Boss, Tag.Utility },
                 Array.Empty<string>()
             ),
             // Installed but out of date
@@ -39,7 +40,7 @@ public class MockDatabase : IModDatabase
                 "OutOfDateEx",
                 "An example",
                 "https://github.com/fifty-six/yup",
-                Array.Empty<string>(),
+                new () { Tag.Library },
                 Array.Empty<string>()
             ),
             // Not installed
@@ -53,7 +54,7 @@ public class MockDatabase : IModDatabase
                 "NotInstalledEx",
                 "An example",
                 "example.com",
-                Array.Empty<string>(),
+                ImmutableArray<Tag>.Empty,
                 Array.Empty<string>()
             ),
             // Example with a really long name and tags and integrations
@@ -67,7 +68,7 @@ public class MockDatabase : IModDatabase
                 string.Join("", Enumerable.Repeat("Very", 8)) + "LongModName",
                 "An example",
                 "https://example.com/really/really/really/really/really/long/url/to/test/wrapping/impls/....",
-                new[] { "Tag1", "Tag2", "Tag3" },
+                new () { Tag.Cosmetic, Tag.Expansion, Tag.Gameplay },
                 new[] { "NormalEx" }
             )
         };
