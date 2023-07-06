@@ -16,8 +16,9 @@
             d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
             Name="UserControl">
     <DockPanel>
-
-
+        <!-- We disable these because ReSharper doesn't support finding the themes classes/resources afaict -->
+        <!-- ReSharper disable Xaml.StyleClassNotFound -->
+        <!-- ReSharper disable Xaml.StaticResourceNotResolved -->
         <ProgressBar
             DockPanel.Dock="Bottom"
 
@@ -33,18 +34,10 @@
             Minimum="0"
             Maximum="100"
             Value="{Binding Progress}" />
+        
         <!-- fa-solid fa-magnifying-glass -->
-        <Grid DockPanel.Dock="Top">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="110" />
-                <ColumnDefinition Width="50" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-            </Grid.RowDefinitions>
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="auto,*,110,50" RowDefinitions="auto,auto">
+            <!-- Search bar -->
             <Border
                 Grid.Column="0"
                 Theme="{StaticResource CardBorder}"
@@ -62,6 +55,8 @@
                         Text="{Binding Search}" />
                 </DockPanel>
             </Border>
+            
+            <!-- Donate -->
             <Button Classes="Tertiary"
                     Theme="{DynamicResource SolidButton}"
                     Grid.Column="2"
@@ -71,6 +66,8 @@
                     <TextBlock Text="Donate" />
                 </StackPanel>
             </Button>
+            
+            <!-- Pop-out menu with remaining options -->
             <Button Classes="Primary"
                     Theme="{DynamicResource SolidButton}"
                     Grid.Column="3"
@@ -85,12 +82,14 @@
                     </MenuFlyout>
                 </Button.Flyout>
             </Button>
+            
             <!-- Top section -->
             <StackPanel
                 Grid.Row="1"
-                Orientation="Horizontal">
+                Orientation="Horizontal"
+            >
+                
                 <Border
-                    Grid.Row="2"
                     Margin="8,6"
                     HorizontalAlignment="Left"
                     Theme="{StaticResource RadioButtonGroupBorder}">
@@ -109,20 +108,21 @@
                         <!-- ReSharper restore Xaml.StyleClassNotFound -->
                     </StackPanel>
                 </Border>
-                <!--TODO: localize-->
+                
+                <!--TODO: Localize tags, Use a value converter? -->
                 <ComboBox
                     Grid.Row="2"
                     Grid.Column="1"
-                    x:Name = "TagBox"
+                    x:Name="TagBox"
                     Margin="8, 8"
                     PlaceholderText="Filter Tags"
-                ItemsSource="{Binding Tags, Mode=OneWay}"
+                    ItemsSource="{Binding Tags, Mode=OneWay}"
                     Classes="Small" />
             </StackPanel>
         </Grid>
 
         <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-            <ListBox ItemsSource="{Binding FilteredItems}" Margin="8 0 ">
+            <ListBox ItemsSource="{Binding FilteredItems}" Margin="8 0">
                 <ListBox.Styles>
                     <!-- Remove the selected effect entirely -->
                     <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
@@ -130,12 +130,7 @@
                         <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
                     </Style>
 
-                    <!-- 
-                         Remove the pointerover effect and replace it with our own, 
-                         which just makes the text brighter 
-                    -->
-
-
+                    <!-- Remove the pointerover effect -->
                     <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
                         <Setter Property="Background" Value="Transparent" />
                         <Setter Property="Foreground" Value="Transparent" />
@@ -145,41 +140,33 @@
                         <Setter Property="Background" Value="Transparent" />
                     </Style>
 
-
+                    <!-- Hide the separator built into the expander -->
                     <Style
                         Selector="Expander:down /template/ Border">
                         <Setter Property="BorderThickness" Value="0"></Setter>
                     </Style>
 
+                    <!-- Decrease the margin so the on-hover looks right -->
                     <Style
                         Selector="Expander:down /template/ LayoutTransformControl">
                         <Setter Property="Margin" Value="0"></Setter>
-
                     </Style>
 
-                    <Style
-                        Selector="Border.Hover:pointerover">
+                    <!-- Make the border hover match the expander hover so it looks correct -->
+                    <Style Selector="Border.Hover:pointerover">
                         <Setter Property="Background" Value="{DynamicResource ExpanderHeaderHoverBackground}"></Setter>
                     </Style>
-
-
                 </ListBox.Styles>
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:ModItem">
                         <Border Classes="Hover" Padding="0" Margin="0" Theme="{StaticResource CardBorder}">
-                            <Expander Name="ModExpander" HorizontalContentAlignment="Stretch"
-                                      HorizontalAlignment="Stretch">
+                            <Expander 
+                                Name="ModExpander" 
+                                HorizontalContentAlignment="Stretch" 
+                                HorizontalAlignment="Stretch">
                                 <Expander.Header>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="260" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="100" />
-                                            <ColumnDefinition Width="150" />
-
-                                        </Grid.ColumnDefinitions>
-
+                                    <Grid ColumnDefinitions="260,*,100,150">
                                         <TextBlock
                                             Grid.Column="0"
                                             Text="{Binding Name}"
@@ -197,8 +184,7 @@
                                             HorizontalAlignment="Center"
                                             VerticalContentAlignment="Center" />
 
-                                        <Border
-                                            Grid.Column="3">
+                                        <Border Grid.Column="3">
                                             <StackPanel Orientation="Horizontal" Spacing="0">
                                                 <Button
                                                     Width="100"
@@ -213,6 +199,7 @@
                                                     </StackPanel>
 
                                                 </Button>
+                                                
                                                 <DropDownButton
                                                     Margin=" 2 0 0 0"
                                                     Width="30"
@@ -227,20 +214,6 @@
                                                 </DropDownButton>
                                             </StackPanel>
                                         </Border>
-
-
-                                        <!--<Grid
-                                            Grid.Column="3"
-                                            ColumnDefinitions="Auto,*"
-                                            IsVisible="{Binding UpdateAvailable}"
-                                            VerticalAlignment="Stretch">
-                                            <Button
-
-                                                BorderBrush="{DynamicResource ThemeBorderMidBrush}"
-                                                Command="{Binding $parent[views:ModListView].DataContext.OnUpdate}"
-                                                CommandParameter="{Binding .}">
-                                            </Button>
-                                        </Grid>-->
                                     </Grid>
                                 </Expander.Header>
 
@@ -281,15 +254,18 @@
                                             </StackPanel>
                                         </DockPanel>
 
+                                        <!-- Second column for tags, deps, integrations -->
                                         <StackPanel ClipToBounds="True" Grid.Column="1" Margin="5 0 0 0">
                                             <StackPanel IsVisible="{Binding HasDependencies}">
                                                 <TextBlock Text="{ext:Localize XAML_Dependencies}" FontWeight="Bold" />
                                                 <TextBlock Text="{Binding DependenciesDesc}" />
                                             </StackPanel>
+                                            
                                             <StackPanel IsVisible="{Binding HasTags}" Margin="0 10 0 0">
                                                 <TextBlock Text="{ext:Localize XAML_Tags}" FontWeight="Bold" />
                                                 <TextBlock Text="{Binding TagDesc}" />
                                             </StackPanel>
+                                            
                                             <StackPanel IsVisible="{Binding HasIntegrations}" Margin="0 10 0 0">
                                                 <TextBlock Text="{ext:Localize XAML_Integrations}" FontWeight="Bold" />
                                                 <TextBlock Text="{Binding IntegrationsDesc}" />
