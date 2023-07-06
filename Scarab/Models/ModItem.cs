@@ -105,7 +105,7 @@ namespace Scarab.Models
             _ => throw new ArgumentOutOfRangeException(nameof(_state))
         };
 
-        public String InstallFg => State switch
+        public string InstallFg => State switch
         {
             InstalledState { Updated: false } => "Warning",
             InstalledState => "Danger",
