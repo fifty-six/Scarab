@@ -5,11 +5,17 @@
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
-
+    <Application.Resources>
+        <FontFamily x:Key="InterFont">avares://Avalonia.Fonts.Inter/Assets#Inter</FontFamily>
+    </Application.Resources>
     <Application.Styles>
         <SimpleTheme/> 
         <StyleInclude Source="avares://Semi.Avalonia/Themes/Index.axaml" />
+        <Style Selector="Window">
+            <Setter Property="FontFamily" Value="{StaticResource InterFont}"/>
+        </Style>
     </Application.Styles>
+    
     
     <Application.RequestedThemeVariant>Dark</Application.RequestedThemeVariant>
 </Application>

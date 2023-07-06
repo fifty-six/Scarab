@@ -1,10 +1,16 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:s="using:Scarab.ViewModels"
+        xmlns:views="using:Scarab.Views"
         Width="670" Height="450"
         x:Class="Scarab.Views.MainWindow"
         x:DataType="s:MainWindowViewModel"
         Icon="/Assets/omegamaggotprime.ico"
-        Content="{Binding Content}"
         Title="Scarab">
+        <TabControl TabStripPlacement="Top" HorizontalAlignment="Center">
+                <TabItem Header="Mods">
+                </TabItem>
+                <TabItem Content="Settings" Header="Settings" />
+                <TabItem Content="Info" Header="Info" />
+        </TabControl>
 </Window>

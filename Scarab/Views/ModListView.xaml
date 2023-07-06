@@ -199,7 +199,7 @@
                                             <ColumnDefinition Width="260" MaxWidth="260" />
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="150" />
-                                          
+
                                         </Grid.ColumnDefinitions>
 
                                         <TextBlock
@@ -221,11 +221,10 @@
                                             VerticalContentAlignment="Center" />
 
                                         <Border
-                                            Grid.Column="2"
-                                            >
+                                            Grid.Column="2">
                                             <StackPanel Orientation="Horizontal" Spacing="0">
                                                 <Button
-                                                 
+
                                                     Width="100"
                                                     CommandParameter="{Binding .}"
                                                     IsEnabled="{Binding !Installing}"
@@ -234,7 +233,7 @@
                                                     VerticalAlignment="Center">
                                                     <StackPanel Orientation="Horizontal" Spacing="5">
                                                         <i:Icon Value="{Binding InstallIcon}" />
-                                                        <TextBlock Text="{Binding InstallText}"/>
+                                                        <TextBlock Text="{Binding InstallText}" />
                                                     </StackPanel>
 
                                                 </Button>
@@ -245,8 +244,8 @@
                                                     CornerRadius="0 3 3 0">
                                                     <DropDownButton.Flyout>
                                                         <MenuFlyout Placement="BottomEdgeAlignedRight">
-                                                            <MenuItem Header="Uninstall" 
-                                                                      i:MenuItem.Icon="fa-solid fa-trash-can"/>
+                                                            <MenuItem Header="Uninstall"
+                                                                      i:MenuItem.Icon="fa-solid fa-trash-can" />
                                                         </MenuFlyout>
                                                     </DropDownButton.Flyout>
                                                 </DropDownButton>
