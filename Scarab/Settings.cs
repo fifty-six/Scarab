@@ -42,10 +42,9 @@ namespace Scarab
             ".local/share/Steam/steamapps/common/Hollow Knight",
             ".steam/steam/steamapps/common/Hollow Knight",
             // Flatpak
-            ".var/app/ocm.valvesoftware.Steam/data/Steam/steamapps/common",
+            ".var/app/com.valvesoftware.Steam/data/Steam/steamapps/common/Hollow Knight",
             // Symlinks to the Steam root on linux
-            ".steam/steam",
-            ".steam/root",
+            ".steam/root/steamapps/common/Hollow Knight",
             // Default for macOS
             "Library/Application Support/Steam/steamapps/common/Hollow Knight/hollow_knight.app"
         }
