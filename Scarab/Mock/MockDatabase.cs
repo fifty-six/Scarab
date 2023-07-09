@@ -26,7 +26,7 @@ public class MockDatabase : IModDatabase
                 "NormalEx",
                 "An example", 
                 "github.com/fifty-six/no",
-                new () { Tag.Boss, Tag.Utility },
+                ImmutableArray.Create(Tag.Boss, Tag.Utility),
                 Array.Empty<string>()
             ),
             // Installed but out of date
@@ -40,7 +40,7 @@ public class MockDatabase : IModDatabase
                 "OutOfDateEx",
                 "An example",
                 "https://github.com/fifty-six/yup",
-                new () { Tag.Library },
+                ImmutableArray.Create(Tag.Library),
                 Array.Empty<string>()
             ),
             // Not installed
@@ -68,7 +68,7 @@ public class MockDatabase : IModDatabase
                 string.Join("", Enumerable.Repeat("Very", 8)) + "LongModName",
                 "An example",
                 "https://example.com/really/really/really/really/really/long/url/to/test/wrapping/impls/....",
-                new () { Tag.Cosmetic, Tag.Expansion, Tag.Gameplay },
+                ImmutableArray.Create(Tag.Cosmetic, Tag.Expansion, Tag.Gameplay),
                 new[] { "NormalEx" }
             )
         };
