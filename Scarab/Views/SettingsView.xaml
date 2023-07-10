@@ -1,0 +1,58 @@
+<views:View x:TypeArguments="views:SettingsViewModel" xmlns="https://github.com/avaloniaui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:views="clr-namespace:Scarab.Views"
+            xmlns:system="clr-namespace:System;assembly=System.Runtime"
+            mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+            x:Class="Scarab.Views.SettingsView">
+    <StackPanel Margin="8">
+        <StackPanel.Styles>
+            <Style Selector="CheckBox">
+                <Setter Property="CornerRadius" Value="4" />
+            </Style>
+        </StackPanel.Styles>
+        <TextBlock FontWeight="Bold" FontSize="20" Margin="15 15 15 0">
+            Settings
+        </TextBlock>
+
+        <Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="*,*,*" Margin="20">
+            <Grid.Styles>
+                <Style Selector=":is(Control)">
+                    <Setter Property="Margin" Value="0 3 0 3" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                </Style>
+            </Grid.Styles>
+
+            <TextBlock Margin="0 0 10 0" FontWeight="Bold" Grid.Column="0" Grid.Row="0">
+                Current install path:
+            </TextBlock>
+
+            <DataValidationErrors>
+                <Panel>
+                </Panel>
+            </DataValidationErrors>
+
+            <TextBlock Grid.Column="0" Grid.Row="1" FontWeight="Bold">
+                Language:
+            </TextBlock>
+
+            <ComboBox
+                Grid.Row="1"
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Stretch"
+                Margin="0 0 0 0"
+                PlaceholderText="Locale">
+                <ComboBoxItem>en</ComboBoxItem>
+                <ComboBoxItem>fr</ComboBoxItem>
+                <ComboBoxItem>hu</ComboBoxItem>
+                <ComboBoxItem>pt</ComboBoxItem>
+                <ComboBoxItem>zh</ComboBoxItem>
+            </ComboBox>
+            <CheckBox Grid.Column="1" Grid.Row="2">
+                Automatically remove dependencies when uninstalling mods
+            </CheckBox>
+        </Grid>
+    </StackPanel>
+</views:View>

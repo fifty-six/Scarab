@@ -77,4 +77,8 @@
         <LastGenOutput>resources.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="Controls\" />
+    </ItemGroup>
 </Project>

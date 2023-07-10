@@ -39,10 +39,10 @@ namespace Scarab.ViewModels
             }
         }
 
-        private ViewModelBase _content = null!;
+        private ReactiveObject _content = null!;
 
         [UsedImplicitly]
-        private ViewModelBase Content
+        private ReactiveObject Content
         {
             get => _content;
             set => this.RaiseAndSetIfChanged(ref _content, value);
