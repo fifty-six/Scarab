@@ -38,6 +38,7 @@
         <Border
             Theme="{StaticResource CardBorder}"
             Padding="5"
+            Margin="15 10"
             DockPanel.Dock="Top">
 
             <Grid
@@ -66,18 +67,24 @@
                     Grid.Column="1"
                     Grid.Row="0"
                     Margin="5 0"
-                    VerticalAlignment="Stretch"
+                    VerticalAlignment="Center"
                     Theme="{StaticResource RadioButtonGroupBorder}">
                     <StackPanel Orientation="Horizontal">
                         <!-- ReSharper disable Xaml.StyleClassNotFound -->
-                        <RadioButton Classes="Small" IsChecked="True" Theme="{DynamicResource ButtonRadioButton}"
+                        <RadioButton 
+                                     Classes="Small"
+                                     IsChecked="True"
+                                     Theme="{DynamicResource ButtonRadioButton}"
                                      Content="{ext:Localize XAML_ModsFilter_All}" Command="{Binding SelectAll}" />
-                        <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
+                        <RadioButton Classes="Small"
+                                     Theme="{DynamicResource ButtonRadioButton}"
                                      Content="{ext:Localize XAML_ModsFilter_Installed}"
                                      Command="{Binding SelectInstalled}" />
-                        <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
+                        <RadioButton Classes="Small"
+                                     Theme="{DynamicResource ButtonRadioButton}"
                                      Content="{ext:Localize XAML_ModsFilter_Enabled}" Command="{Binding SelectEnabled}" />
-                        <RadioButton Classes="Small" Theme="{DynamicResource ButtonRadioButton}"
+                        <RadioButton Classes="Small"
+                                     Theme="{DynamicResource ButtonRadioButton}"
                                      Content="{ext:Localize XAML_ModsFilter_OutOfDate}"
                                      Command="{Binding SelectUnupdated}" />
                         <!-- ReSharper restore Xaml.StyleClassNotFound -->
@@ -89,7 +96,8 @@
                     Grid.Row="0"
                     Grid.Column="2"
                     Margin="5 0"
-                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
                     x:Name="TagBox"
                     PlaceholderText="Filter Tags"
                     ItemsSource="{Binding Tags, Mode=OneWay}"
@@ -98,52 +106,34 @@
         </Border>
 
         <Border DockPanel.Dock="Top"
-                Margin="5 0">
+                Margin="10 0 10 5">
             <Grid
-                ColumnDefinitions="*,*,*, *">
-                <Button Classes="Primary"
-                        Theme="{DynamicResource SolidButton}"
-                        Grid.Column="0"
-                        Margin=" 10 0"
-                        VerticalAlignment="Stretch"
-                        i:Attached.Icon="fa-solid fa-ellipsis">
-                    <Button.Flyout>
-                        <MenuFlyout Placement="BottomEdgeAlignedRight">
-                            <MenuItem Header="Update All Mods" />
-                            <MenuItem Header="Update API" />
-                            <MenuItem Header="Enable API" />
-                            <MenuItem Header="Open Mod Folder" />
-                        </MenuFlyout>
-                    </Button.Flyout>
-                </Button>
-
-                <!-- Donate -->
-                <Button Classes="Tertiary"
-                        Theme="{DynamicResource SolidButton}"
-                        Grid.Column="1"
-                        Margin=" 10 0"
-                        VerticalAlignment="Stretch">
-                    <StackPanel Orientation="Horizontal" Spacing="5">
-                        <i:Icon Value="fa-solid fa-hand-holding-dollar" />
-                        <TextBlock Text="Donate" />
-                    </StackPanel>
-                </Button>
-                <!-- Donate -->
+                ColumnDefinitions="auto,*,auto,auto">
                 <ToggleButton Classes="Primary"
-                              Grid.Column="2"
-                        Margin=" 10 0"
-                        VerticalAlignment="Stretch">
+                              Grid.Column="0"
+                              Margin=" 5 0"
+                              VerticalAlignment="Stretch">
                     <StackPanel Orientation="Horizontal" Spacing="5">
                         <i:Icon Value="fa-solid fa-power-off" />
                         <TextBlock Text="Enable API" />
                     </StackPanel>
                 </ToggleButton>
 
-                <!-- Donate -->
+                <Button Classes="Primary"
+                        Theme="{DynamicResource SolidButton}"
+                        Grid.Column="2"
+                        Margin=" 5 0"
+                        VerticalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <i:Icon Value="fa-regular fa-folder-open" />
+                        <TextBlock Text="Open Mods" />
+                    </StackPanel>
+                </Button>
+
                 <Button Classes="Primary"
                         Theme="{DynamicResource SolidButton}"
                         Grid.Column="3"
-                        Margin=" 10 0"
+                        Margin=" 5 0"
                         VerticalAlignment="Stretch">
                     <StackPanel Orientation="Horizontal" Spacing="5">
                         <i:Icon Value="fa-solid fa-rotate" />
@@ -153,8 +143,10 @@
             </Grid>
         </Border>
 
+        <Separator DockPanel.Dock="Top" />
+
         <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-            <ListBox ItemsSource="{Binding FilteredItems}" Margin="8 0">
+            <ListBox ItemsSource="{Binding FilteredItems}" Margin="15 0">
                 <ListBox.Styles>
                     <!-- Remove the selected effect entirely -->
                     <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
@@ -166,6 +158,12 @@
                     <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
                         <Setter Property="Background" Value="Transparent" />
                         <Setter Property="Foreground" Value="Transparent" />
+                    </Style>
+
+
+                    <Style Selector="ListBoxItem">
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="0 5" />
                     </Style>
 
                     <Style Selector="Expander /template/ ToggleButton#ExpanderHeader:pointerover">

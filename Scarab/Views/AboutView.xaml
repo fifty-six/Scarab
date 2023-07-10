@@ -6,6 +6,7 @@
             xmlns:system="clr-namespace:System;assembly=System.Runtime"
             xmlns:mock="clr-namespace:Scarab.Mock"
             xmlns:viewModels="clr-namespace:Scarab.ViewModels"
+            xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
             x:DataType="viewModels:AboutViewModel"
             x:Class="Scarab.Views.AboutView"
@@ -24,8 +25,18 @@
             </TextBlock>
             <Separator Margin="0 5 0 5" />
             <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button DockPanel.Dock="Left" HorizontalAlignment="Left" Command="{Binding Donate}">Donate</Button>
-                <Button DockPanel.Dock="Right" HorizontalAlignment="Left" Command="{Binding OpenLogs}">Open Logs Folder</Button>
+                <Button DockPanel.Dock="Left" HorizontalAlignment="Left" Command="{Binding Donate}">
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <i:Icon Value="fa-solid fa-hand-holding-dollar" />
+                        <TextBlock Text="Donate" />
+                    </StackPanel>
+                </Button>
+                <Button DockPanel.Dock="Right" HorizontalAlignment="Left" Command="{Binding OpenLogs}">
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <i:Icon Value="fa-solid fa-book" />
+                        <TextBlock Text="Open Logs Folder" />
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </StackPanel>
     </Grid>
