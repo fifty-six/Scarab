@@ -12,7 +12,3 @@ public partial class SettingsView : View<SettingsViewModel>
         InitializeComponent();
     }
 }
-
-public class SettingsViewModel : ViewModelBase
-{
-}

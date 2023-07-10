@@ -8,16 +8,16 @@
         Icon="/Assets/omegamaggotprime.ico"
         Title="Scarab">
     <TabControl TabStripPlacement="Top" HorizontalAlignment="Stretch">
-        <!--
-                <TabItem x:Name="ModListTab" Header="Mods" Content="{Binding Content}" HorizontalContentAlignment="Stretch"/> 
-                -->
         <TabItem x:Name="ModListTab" Header="Mods" HorizontalContentAlignment="Stretch">
             <ProgressBar Theme="{DynamicResource ProgressRing}" Width="100" Height="100" IsIndeterminate="True" />
         </TabItem>
 
         <TabItem Header="Settings">
-            <views:SettingsView />
+            <s:SettingsViewModel />
         </TabItem>
-        <TabItem Content="Info" Header="Info" />
+        
+        <TabItem Header="About">
+            <s:AboutViewModel />
+        </TabItem>
     </TabControl>
 </Window>

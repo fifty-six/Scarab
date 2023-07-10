@@ -189,8 +189,6 @@ namespace Scarab.ViewModels
             });
         }
 
-        public static void Donate() => Process.Start(new ProcessStartInfo("https://paypal.me/ybham") { UseShellExecute = true });
-
         public void SelectAll() => SelectionFilter = _ => true;
 
         public void SelectInstalled() => SelectionFilter = x => x.Installed;

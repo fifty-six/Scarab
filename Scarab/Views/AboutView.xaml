@@ -1,12 +1,32 @@
-<views:View x:TypeArguments="views:AboutViewModel" xmlns="https://github.com/avaloniaui"
+<views:View x:TypeArguments="viewModels:AboutViewModel" xmlns="https://github.com/avaloniaui"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             xmlns:views="clr-namespace:Scarab.Views"
             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+            xmlns:mock="clr-namespace:Scarab.Mock"
+            xmlns:viewModels="clr-namespace:Scarab.ViewModels"
             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-            x:Class="Scarab.Views.AboutView">
-    <Grid>
-        <Image Source="avares://Assets/omegamaggotprime.ico"/>
+            x:DataType="viewModels:AboutViewModel"
+            x:Class="Scarab.Views.AboutView"
+            d:DataContext="{x:Static mock:MockViewModel.AboutInstance}">
+    <Grid ColumnDefinitions="*,2*" RowDefinitions=".4*,3*,*" Margin="30">
+        <Image Grid.Column="0" Grid.RowSpan="3" Source="avares://Scarab/Assets/omegamaggotprime.ico"
+               Margin="20 10 0 10" />
+        <StackPanel Grid.Row="1" Grid.Column="1" Margin="20 0 0 0" Spacing="10" VerticalAlignment="Center">
+            <TextBlock FontWeight="Bold" FontSize="70">
+                Scarab
+            </TextBlock>
+            <TextBlock Text="{Binding Version}" FontSize="20" />
+            <TextBlock Text="{Binding OSString}" FontSize="15" />
+            <TextBlock>
+                Created by 56 et al.
+            </TextBlock>
+            <Separator Margin="0 5 0 5" />
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button DockPanel.Dock="Left" HorizontalAlignment="Left" Command="{Binding Donate}">Donate</Button>
+                <Button DockPanel.Dock="Right" HorizontalAlignment="Left" Command="{Binding OpenLogs}">Open Logs Folder</Button>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </views:View>

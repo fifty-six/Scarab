@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Scarab.Interfaces;
 using Scarab.Models;
 using Scarab.ViewModels;
+using Scarab.Views;
 
 namespace Scarab.Mock;
 
@@ -15,6 +16,19 @@ public static class MockViewModel
             src.SetupGet(x => x.ApiInstall).Returns(new NotInstalledState());
             
             return new ModListViewModel(Moq.Mock.Of<ISettings>(), new MockDatabase(), Moq.Mock.Of<IInstaller>(), src.Object);
+        }
+    }
+
+    public static AboutViewModel AboutInstance { get; } = new();
+
+    public static SettingsViewModel SettingsInstance
+    {
+        get
+        {
+            var settings = new Moq.Mock<ISettings>();
+            settings.SetupGet(x => x.ManagedFolder).Returns("/home/home/src/test/Managed");
+
+            return new SettingsViewModel(settings.Object);
         }
     }
 
