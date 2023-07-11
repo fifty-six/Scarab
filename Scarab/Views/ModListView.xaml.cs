@@ -1,71 +1,60 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using Avalonia.Controls;
+using Avalonia.Data.Converters;
 using Avalonia.Input;
 using JetBrains.Annotations;
 using ReactiveUI;
 using Scarab.Models;
 using Scarab.ViewModels;
 
-namespace Scarab.Views
+namespace Scarab.Views;
+
+public partial class ModListView : View<ModListViewModel>
 {
-    public partial class ModListView : View<ModListViewModel>
+    public ModListView()
     {
-        public ModListView()
-        {
-            InitializeComponent();
+        InitializeComponent();
 
-            this.WhenAnyValue(x => ((Control) x).DataContext)
-                .BindTo(this, x => x.DataContext);
+        Resources.Add("ToggleIcon", new ToggleIconConverter());
 
-            this.WhenAnyValue(x => x.TagBox.SelectionBoxItem)
-                .Subscribe(x =>
-                {
-                    // It's non-nullable by NRTs, but we initialize it after the constructor, and we can't
-                    // pass it in earlier as the XAML requires a (public) parameterless constructor
-                    // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-                    if (DataContext is not null)
-                        DataContext.SelectedTag = (Tag) (x ?? Models.Tag.All);
-                });
-            
-            UserControl.KeyDown += OnKeyDown;
-        }
+        this.WhenAnyValue(x => ((Control)x).DataContext)
+            .BindTo(this, x => x.DataContext);
 
-        private void OnKeyDown(object? sender, KeyEventArgs e)
-        {
-            if (!Search.IsFocused)
-                Search.Focus();
-        }
-
-        [UsedImplicitly]
-        private void RepositoryTextClick(object? sender, PointerReleasedEventArgs _)
-        {
-            if (sender is not TextBlock txt)
+        this.WhenAnyValue(x => x.TagBox.SelectionBoxItem)
+            .Subscribe(x =>
             {
-                Trace.TraceWarning($"{nameof(RepositoryTextClick)} called with non TextBlock sender!");
-                return;
-            }
+                // It's non-nullable by NRTs, but we initialize it after the constructor, and we can't
+                // pass it in earlier as the XAML requires a (public) parameterless constructor
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+                if (DataContext is not null)
+                    DataContext.SelectedTag = (Tag)(x ?? Models.Tag.All);
+            });
 
-            Trace.WriteLine(txt.Text);
+        UserControl.KeyDown += OnKeyDown;
+    }
 
-            if (string.IsNullOrEmpty(txt.Text))
-                return;
+    private void OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (!Search.IsFocused)
+            Search.Focus();
+    }
 
-            try
-            {
+    
+}
 
-                Process.Start
-                (
-                    new ProcessStartInfo(txt.Text)
-                    {
-                        UseShellExecute = true
-                    }
-                );
-            }
-            catch (Exception e)
-            {
-                Trace.TraceError($"{nameof(RepositoryTextClick)} process spawn failed with error {e}");
-            }
-        }
+public class ToggleIconConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if ((bool)value)
+            return "fa-solid fa-chevron-right";
+        return "fa-solid fa-chevron-left";
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
     }
 }

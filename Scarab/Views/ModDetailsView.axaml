@@ -1,0 +1,81 @@
+<UserControl x:Class="Scarab.Views.ModDetailsView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:Scarab.Models"
+             xmlns:viewModels="clr-namespace:Scarab.ViewModels"
+             xmlns:views="clr-namespace:Scarab.Views"
+             xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
+             xmlns:ext="clr-namespace:Scarab.Extensions"
+             xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="550"
+             x:DataType="models:ModItem">
+
+    <DockPanel HorizontalAlignment="Left"
+               VerticalAlignment="Stretch">
+        <!-- Details of the selected item -->
+        <StackPanel Margin="12 0 0 0" DataContext="{Binding SelectedModItem}">
+            <TextBlock Text="{Binding Description}" TextWrapping="Wrap"
+                       Margin="0 0 15 15" />
+            <Grid ColumnDefinitions="*,*">
+                <DockPanel ClipToBounds="True" VerticalAlignment="Stretch" Height="NaN">
+                    <StackPanel DockPanel.Dock="Top">
+                        <TextBlock Text="{ext:Localize XAML_Repository}"
+                                   FontWeight="Bold" />
+                        <TextBlock
+                            Text="{Binding Repository}"
+                            MaxWidth="{Binding $parent.Bounds.Width}"
+                            TextTrimming="CharacterEllipsis"
+                            PointerReleased="RepositoryTextClick"
+                            Foreground="{DynamicResource Highlight}">
+                            <TextBlock.Resources>
+                                <SolidColorBrush x:Key="Highlight" Color="#1ebbff" />
+                            </TextBlock.Resources>
+                        </TextBlock>
+                    </StackPanel>
+
+                    <StackPanel Margin="0 10 0 0" DockPanel.Dock="Bottom"
+                                VerticalAlignment="Bottom">
+                        <TextBlock Text="{ext:Localize XAML_Version}" FontWeight="Bold" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding VersionText}" />
+                            <TextBlock
+                                Text="{Binding UpdateText}"
+                                IsVisible="{Binding UpdateAvailable}"
+                                Foreground="{DynamicResource Highlight}"
+                                Margin="4 0 0 0"
+                                FontWeight="Bold">
+                                <TextBlock.Resources>
+                                    <SolidColorBrush x:Key="Highlight" Color="#f49107" />
+                                </TextBlock.Resources>
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </DockPanel>
+
+                <!-- Second column for tags, deps, integrations -->
+                <StackPanel ClipToBounds="True" Grid.Column="1" Margin="5 0 0 0">
+                    <StackPanel IsVisible="{Binding HasDependencies}">
+                        <TextBlock Text="{ext:Localize XAML_Dependencies}"
+                                   FontWeight="Bold" />
+                        <TextBlock Text="{Binding DependenciesDesc}" />
+                    </StackPanel>
+
+                    <StackPanel IsVisible="{Binding HasTags}" Margin="0 10 0 0">
+                        <TextBlock Text="{ext:Localize XAML_Tags}" FontWeight="Bold" />
+                        <TextBlock Text="{Binding TagDesc}" />
+                    </StackPanel>
+
+                    <StackPanel IsVisible="{Binding HasIntegrations}" Margin="0 10 0 0">
+                        <TextBlock Text="{ext:Localize XAML_Integrations}"
+                                   FontWeight="Bold" />
+                        <TextBlock Text="{Binding IntegrationsDesc}" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </DockPanel>
+</UserControl>

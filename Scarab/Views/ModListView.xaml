@@ -3,7 +3,6 @@
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-            xmlns:sys="clr-namespace:System;assembly=netstandard"
             xmlns:models="clr-namespace:Scarab.Models"
             xmlns:viewModels="clr-namespace:Scarab.ViewModels"
             xmlns:views="clr-namespace:Scarab.Views"
@@ -35,78 +34,9 @@
             Maximum="100"
             Value="{Binding Progress}" />
 
-        <Border
-            Theme="{StaticResource CardBorder}"
-            Padding="5"
-            Margin="15 10"
-            DockPanel.Dock="Top">
-
-            <Grid
-                ColumnDefinitions="*,auto,130"
-                RowDefinitions="auto,auto">
-                <!-- Search bar -->
-                <Border
-                    Grid.Column="0"
-                    Theme="{StaticResource CardBorder}"
-                    Margin="5 0"
-                    Padding="0"
-                    Background="{DynamicResource TextBoxDefaultBackground}">
-                    <DockPanel>
-                        <i:Icon Margin=" 5 0 5 0" Value="fa-solid fa-magnifying-glass" />
-                        <TextBox
-                            x:Name="Search"
-                            Name="Search"
-                            Watermark="{ext:Localize XAML_SearchMark}"
-                            BorderThickness="0"
-                            Background="Transparent"
-                            Text="{Binding Search}" />
-                    </DockPanel>
-                </Border>
-
-                <Border
-                    Grid.Column="1"
-                    Grid.Row="0"
-                    Margin="5 0"
-                    VerticalAlignment="Center"
-                    Theme="{StaticResource RadioButtonGroupBorder}">
-                    <StackPanel Orientation="Horizontal">
-                        <!-- ReSharper disable Xaml.StyleClassNotFound -->
-                        <RadioButton 
-                                     Classes="Small"
-                                     IsChecked="True"
-                                     Theme="{DynamicResource ButtonRadioButton}"
-                                     Content="{ext:Localize XAML_ModsFilter_All}" Command="{Binding SelectAll}" />
-                        <RadioButton Classes="Small"
-                                     Theme="{DynamicResource ButtonRadioButton}"
-                                     Content="{ext:Localize XAML_ModsFilter_Installed}"
-                                     Command="{Binding SelectInstalled}" />
-                        <RadioButton Classes="Small"
-                                     Theme="{DynamicResource ButtonRadioButton}"
-                                     Content="{ext:Localize XAML_ModsFilter_Enabled}" Command="{Binding SelectEnabled}" />
-                        <RadioButton Classes="Small"
-                                     Theme="{DynamicResource ButtonRadioButton}"
-                                     Content="{ext:Localize XAML_ModsFilter_OutOfDate}"
-                                     Command="{Binding SelectUnupdated}" />
-                        <!-- ReSharper restore Xaml.StyleClassNotFound -->
-                    </StackPanel>
-                </Border>
-
-                <!--TODO: Localize tags, Use a value converter? -->
-                <ComboBox
-                    Grid.Row="0"
-                    Grid.Column="2"
-                    Margin="5 0"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center"
-                    x:Name="TagBox"
-                    PlaceholderText="Filter Tags"
-                    ItemsSource="{Binding Tags, Mode=OneWay}"
-                    Classes="Small" />
-            </Grid>
-        </Border>
 
         <Border DockPanel.Dock="Top"
-                Margin="10 0 10 5">
+                Margin="10 10 10 5">
             <Grid
                 ColumnDefinitions="auto,*,auto,auto">
                 <ToggleButton Classes="Primary"
@@ -143,59 +73,153 @@
             </Grid>
         </Border>
 
+        <Border
+            Padding="0"
+            Margin="10 10"
+            DockPanel.Dock="Top">
+
+            <Grid
+                ColumnDefinitions="*,auto,130"
+                RowDefinitions="auto,auto">
+                <!-- Search bar -->
+                <Border
+                    Grid.Column="0"
+                    Theme="{StaticResource CardBorder}"
+                    Margin="5 0"
+                    Padding="0"
+                    Background="{DynamicResource TextBoxDefaultBackground}">
+                    <DockPanel>
+                        <i:Icon Margin=" 5 0 5 0" Value="fa-solid fa-magnifying-glass" />
+                        <TextBox
+                            x:Name="Search"
+                            Name="Search"
+                            Watermark="{ext:Localize XAML_SearchMark}"
+                            BorderThickness="0"
+                            Background="Transparent"
+                            Text="{Binding Search}" />
+                    </DockPanel>
+                </Border>
+
+                <Border
+                    Grid.Column="1"
+                    Grid.Row="0"
+                    Margin="5 0"
+                    VerticalAlignment="Center"
+                    Theme="{StaticResource RadioButtonGroupBorder}">
+                    <StackPanel Orientation="Horizontal">
+                        <!-- ReSharper disable Xaml.StyleClassNotFound -->
+                        <RadioButton
+                            Classes="Small"
+                            IsChecked="True"
+                            Theme="{DynamicResource ButtonRadioButton}"
+                            Content="{ext:Localize XAML_ModsFilter_All}" Command="{Binding SelectAll}" />
+                        <RadioButton Classes="Small"
+                                     Theme="{DynamicResource ButtonRadioButton}"
+                                     Content="{ext:Localize XAML_ModsFilter_Installed}"
+                                     Command="{Binding SelectInstalled}" />
+                        <RadioButton Classes="Small"
+                                     Theme="{DynamicResource ButtonRadioButton}"
+                                     Content="{ext:Localize XAML_ModsFilter_Enabled}" Command="{Binding SelectEnabled}" />
+                        <RadioButton Classes="Small"
+                                     Theme="{DynamicResource ButtonRadioButton}"
+                                     Content="{ext:Localize XAML_ModsFilter_OutOfDate}"
+                                     Command="{Binding SelectUnupdated}" />
+                        <!-- ReSharper restore Xaml.StyleClassNotFound -->
+                    </StackPanel>
+                </Border>
+
+                <!--TODO: Localize tags, Use a value converter? -->
+                <ComboBox
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Margin="5 0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    x:Name="TagBox"
+                    PlaceholderText="Filter Tags"
+                    ItemsSource="{Binding Tags, Mode=OneWay}"
+                    Classes="Small" />
+            </Grid>
+        </Border>
+
         <Separator DockPanel.Dock="Top" />
 
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-            <ListBox ItemsSource="{Binding FilteredItems}" Margin="15 0">
-                <ListBox.Styles>
-                    <!-- Remove the selected effect entirely -->
-                    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
-                    </Style>
-
-                    <!-- Remove the pointerover effect -->
-                    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Foreground" Value="Transparent" />
-                    </Style>
+        <SplitView
+            Name="SplitView"
+            DisplayMode="CompactInline"
+            OpenPaneLength="400"
+            PanePlacement="Right"
+            IsPaneOpen="True">
 
 
-                    <Style Selector="ListBoxItem">
-                        <Setter Property="Padding" Value="0" />
-                        <Setter Property="Margin" Value="0 5" />
-                    </Style>
+            <SplitView.Pane>
+                
+                <DockPanel HorizontalAlignment="Left"
+                           VerticalAlignment="Stretch">
+                    <ToggleButton Name="ToggleButton" DockPanel.Dock="Left" Classes="Tertiary"
+                                  Theme="{DynamicResource BorderlessButton}" VerticalAlignment="Stretch" Margin="5"
+                                  IsChecked="{Binding IsPaneOpen, ElementName=SplitView}">
+                        <ToggleButton.Resources>
+                            <views:ToggleIconConverter x:Key="ToggleIconConverter" />
+                        </ToggleButton.Resources>
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <i:Icon Name="Icon"
+                                    Value="{Binding IsPaneOpen, ElementName=SplitView, Converter={StaticResource ToggleIconConverter}}" />
+                        </StackPanel>
+                    </ToggleButton>
+                    <!-- Details of the selected item -->
+                    <views:ModDetailsView/>
+                </DockPanel>
+            </SplitView.Pane>
+            <Grid>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                    <ListBox SelectedItem="{Binding SelectedModItem}"
+                             ItemsSource="{Binding FilteredItems}"
+                             Margin="15 0">
+                        <ListBox.Styles>
+                            <!-- Remove the selected effect entirely -->
+                            <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
+                            </Style>
 
-                    <Style Selector="Expander /template/ ToggleButton#ExpanderHeader:pointerover">
-                        <Setter Property="Background" Value="Transparent" />
-                    </Style>
+                            <!-- Remove the pointerover effect -->
+                            <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Foreground" Value="Transparent" />
+                            </Style>
 
-                    <!-- Hide the separator built into the expander -->
-                    <Style
-                        Selector="Expander:down /template/ Border">
-                        <Setter Property="BorderThickness" Value="0"></Setter>
-                    </Style>
 
-                    <!-- Decrease the margin so the on-hover looks right -->
-                    <Style
-                        Selector="Expander:down /template/ LayoutTransformControl">
-                        <Setter Property="Margin" Value="0"></Setter>
-                    </Style>
+                            <Style Selector="ListBoxItem">
+                                <Setter Property="Padding" Value="0" />
+                                <Setter Property="Margin" Value="0 5" />
+                            </Style>
 
-                    <!-- Make the border hover match the expander hover so it looks correct -->
-                    <Style Selector="Border.Hover:pointerover">
-                        <Setter Property="Background" Value="{DynamicResource ExpanderHeaderHoverBackground}"></Setter>
-                    </Style>
-                </ListBox.Styles>
+                            <Style Selector="Expander /template/ ToggleButton#ExpanderHeader:pointerover">
+                                <Setter Property="Background" Value="Transparent" />
+                            </Style>
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="models:ModItem">
-                        <Border Classes="Hover" Padding="0" Margin="0" Theme="{StaticResource CardBorder}">
-                            <Expander
-                                Name="ModExpander"
-                                HorizontalContentAlignment="Stretch"
-                                HorizontalAlignment="Stretch">
-                                <Expander.Header>
+                            <!-- Hide the separator built into the expander -->
+                            <Style
+                                Selector="Expander:down /template/ Border">
+                                <Setter Property="BorderThickness" Value="0" />
+                            </Style>
+
+                            <!-- Decrease the margin so the on-hover looks right -->
+                            <Style
+                                Selector="Expander:down /template/ LayoutTransformControl">
+                                <Setter Property="Margin" Value="0" />
+                            </Style>
+
+                            <!-- Make the border hover match the expander hover so it looks correct -->
+                            <Style Selector="Border.Hover:pointerover">
+                                <Setter Property="Background" Value="{DynamicResource ExpanderHeaderHoverBackground}" />
+                            </Style>
+                        </ListBox.Styles>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="models:ModItem">
+                                <Border Classes="Hover" Padding="0" Margin="0" Theme="{StaticResource CardBorder}">
                                     <Grid ColumnDefinitions="260,*,100,150">
                                         <TextBlock
                                             Grid.Column="0"
@@ -245,69 +269,13 @@
                                             </StackPanel>
                                         </Border>
                                     </Grid>
-                                </Expander.Header>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ListBox>
+                </ScrollViewer>
+            </Grid>
 
-                                <StackPanel Margin="12 0 0 0">
-                                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Margin="0 0 15 15" />
-                                    <Grid ColumnDefinitions="*,*">
-                                        <DockPanel ClipToBounds="True" VerticalAlignment="Stretch" Height="NaN">
-                                            <StackPanel DockPanel.Dock="Top">
-                                                <TextBlock Text="{ext:Localize XAML_Repository}" FontWeight="Bold" />
-                                                <TextBlock
-                                                    Text="{Binding Repository}"
-                                                    MaxWidth="{Binding $parent.Bounds.Width}"
-                                                    TextTrimming="CharacterEllipsis"
-                                                    PointerReleased="RepositoryTextClick"
-                                                    Foreground="{DynamicResource Highlight}">
-                                                    <TextBlock.Resources>
-                                                        <SolidColorBrush x:Key="Highlight" Color="#1ebbff" />
-                                                    </TextBlock.Resources>
-                                                </TextBlock>
-                                            </StackPanel>
-
-                                            <StackPanel Margin="0 10 0 0" DockPanel.Dock="Bottom"
-                                                        VerticalAlignment="Bottom">
-                                                <TextBlock Text="{ext:Localize XAML_Version}" FontWeight="Bold" />
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding VersionText}" />
-                                                    <TextBlock
-                                                        Text="{Binding UpdateText}"
-                                                        IsVisible="{Binding UpdateAvailable}"
-                                                        Foreground="{DynamicResource Highlight}"
-                                                        Margin="4 0 0 0"
-                                                        FontWeight="Bold">
-                                                        <TextBlock.Resources>
-                                                            <SolidColorBrush x:Key="Highlight" Color="#f49107" />
-                                                        </TextBlock.Resources>
-                                                    </TextBlock>
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </DockPanel>
-
-                                        <!-- Second column for tags, deps, integrations -->
-                                        <StackPanel ClipToBounds="True" Grid.Column="1" Margin="5 0 0 0">
-                                            <StackPanel IsVisible="{Binding HasDependencies}">
-                                                <TextBlock Text="{ext:Localize XAML_Dependencies}" FontWeight="Bold" />
-                                                <TextBlock Text="{Binding DependenciesDesc}" />
-                                            </StackPanel>
-
-                                            <StackPanel IsVisible="{Binding HasTags}" Margin="0 10 0 0">
-                                                <TextBlock Text="{ext:Localize XAML_Tags}" FontWeight="Bold" />
-                                                <TextBlock Text="{Binding TagDesc}" />
-                                            </StackPanel>
-
-                                            <StackPanel IsVisible="{Binding HasIntegrations}" Margin="0 10 0 0">
-                                                <TextBlock Text="{ext:Localize XAML_Integrations}" FontWeight="Bold" />
-                                                <TextBlock Text="{Binding IntegrationsDesc}" />
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </Grid>
-                                </StackPanel>
-                            </Expander>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ListBox>
-        </ScrollViewer>
+        </SplitView>
     </DockPanel>
 </views:View>
