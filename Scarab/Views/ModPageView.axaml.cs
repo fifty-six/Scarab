@@ -11,9 +11,9 @@ using Scarab.ViewModels;
 
 namespace Scarab.Views;
 
-public partial class ModListView : View<ModListViewModel>
+public partial class ModPageView : View<ModPageViewModel>
 {
-    public ModListView()
+    public ModPageView()
     {
         InitializeComponent();
 

@@ -27,7 +27,7 @@ using Scarab.Util;
 
 namespace Scarab.ViewModels;
 
-public partial class ModListViewModel : ViewModelBase
+public partial class ModPageViewModel : ViewModelBase
 {
     private readonly IModDatabase _db;
 
@@ -59,7 +59,7 @@ public partial class ModListViewModel : ViewModelBase
 
     private bool _updating;
 
-    public ModListViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods)
+    public ModPageViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods)
     {
         _settings = settings;
         _installer = inst;

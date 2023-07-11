@@ -136,7 +136,7 @@ namespace Scarab.ViewModels
                   new ModDatabase(sp.GetRequiredService<IModSource>(), content)
               )
               .AddSingleton<IInstaller, Installer>()
-              .AddSingleton<ModListViewModel>();
+              .AddSingleton<ModPageViewModel>();
             
             Trace.WriteLine("Building service provider");
             ServiceProvider sp = sc.BuildServiceProvider(new ServiceProviderOptions
@@ -146,7 +146,7 @@ namespace Scarab.ViewModels
             Trace.WriteLine("Built service provider");
 
             Trace.WriteLine("Displaying model");
-            Content = sp.GetRequiredService<ModListViewModel>();
+            Content = sp.GetRequiredService<ModPageViewModel>();
         }
 
         private static async Task CheckUpToDate()

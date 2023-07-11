@@ -1,4 +1,4 @@
-<views:View x:TypeArguments="viewModels:ModListViewModel"
+<views:View x:TypeArguments="viewModels:ModPageViewModel"
             xmlns="https://github.com/avaloniaui"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,8 +10,8 @@
             xmlns:ext="clr-namespace:Scarab.Extensions"
             xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
-            x:Class="Scarab.Views.ModListView"
-            x:DataType="viewModels:ModListViewModel"
+            x:Class="Scarab.Views.ModPageView"
+            x:DataType="viewModels:ModPageViewModel"
             d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
             Name="UserControl">
     <DockPanel>
@@ -232,7 +232,7 @@
                                             CommandParameter="{Binding .}"
                                             OnContent="{ext:Localize XAML_On}"
                                             OffContent="{ext:Localize XAML_Off}"
-                                            Command="{Binding $parent[views:ModListView].DataContext.OnEnable}"
+                                            Command="{Binding $parent[views:ModPageView].DataContext.OnEnable}"
                                             IsChecked="{Binding EnabledIsChecked}"
                                             IsEnabled="{Binding Installed}"
                                             HorizontalAlignment="Center"
@@ -245,7 +245,7 @@
                                                     CommandParameter="{Binding .}"
                                                     IsEnabled="{Binding !Installing}"
                                                     CornerRadius="3 0 0 3"
-                                                    Command="{Binding $parent[views:ModListView].DataContext.OnInstall}"
+                                                    Command="{Binding $parent[views:ModPageView].DataContext.OnInstall}"
                                                     VerticalAlignment="Center">
                                                     <StackPanel Orientation="Horizontal" Spacing="5">
                                                         <i:Icon Value="{Binding InstallIcon}" />

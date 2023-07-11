@@ -8,14 +8,14 @@ namespace Scarab.Mock;
 
 public static class MockViewModel
 {
-    public static ModListViewModel DesignInstance
+    public static ModPageViewModel DesignInstance
     {
         get
         {
             var src = new Moq.Mock<IModSource>();
             src.SetupGet(x => x.ApiInstall).Returns(new NotInstalledState());
             
-            return new ModListViewModel(Moq.Mock.Of<ISettings>(), new MockDatabase(), Moq.Mock.Of<IInstaller>(), src.Object);
+            return new ModPageViewModel(Moq.Mock.Of<ISettings>(), new MockDatabase(), Moq.Mock.Of<IInstaller>(), src.Object);
         }
     }
 
