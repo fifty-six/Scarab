@@ -5,6 +5,7 @@ using System.Linq;
 using System.Resources;
 using System.Threading.Tasks;
 using Avalonia.Media;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PropertyChanged.SourceGenerator;
 using Scarab.Interfaces;
 
@@ -35,33 +36,32 @@ namespace Scarab.Models
             Name = name;
             Description = description;
             Repository = repository;
-            Tags = tags.Aggregate((Tag) 0, (acc, x) => acc | x);
+            Tags = tags.Aggregate((Tag)0, (acc, x) => acc | x);
             Integrations = integrations;
 
             DependenciesDesc = string.Join(Environment.NewLine, Dependencies);
             // TODO: i18n
-            TagDesc          = string.Join(Environment.NewLine, tags.Select(x => x.ToString()));
+            TagDesc = string.Join(Environment.NewLine, tags.Select(x => x.ToString()));
             IntegrationsDesc = string.Join(Environment.NewLine, Integrations);
         }
 
 
-        public Version  Version          { get; }
-        public string[] Dependencies     { get; }
-        public string   Link             { get; }
-        public string   Sha256           { get; }
-        public string   Name             { get; }
-        public string   Description      { get; }
-        public string   Repository       { get; }
+        public Version Version { get; }
+        public string[] Dependencies { get; }
+        public string Link { get; }
+        public string Sha256 { get; }
+        public string Name { get; }
+        public string Description { get; }
+        public string Repository { get; }
 
         public Tag Tags { get; }
         public string[] Integrations { get; }
-        
-        public string   DependenciesDesc { get; }
-        public string   TagDesc          { get; }
-        public string   IntegrationsDesc { get; }
 
-        [Notify]
-        private ModState _state;
+        public string DependenciesDesc { get; }
+        public string TagDesc { get; }
+        public string IntegrationsDesc { get; }
+
+        [Notify] private ModState _state;
 
         public bool EnabledIsChecked => State switch
         {
@@ -75,20 +75,26 @@ namespace Scarab.Models
 
         public string InstallText => State switch
         {
-            InstalledState { Updated: false } => Resources.XAML_Update,
-            InstalledState => Resources.MI_InstallText_Installed,
+            InstalledState => Resources.XAML_Update,
             NotInstalledState => Resources.MI_InstallText_NotInstalled,
             _ => throw new InvalidOperationException("Unreachable")
         };
-        
+
         public string InstallIcon => State switch
         {
-            InstalledState { Updated: false } => "fa-solid fa-rotate",
-            InstalledState => "fa-solid fa-trash-can",
+            InstalledState => "fa-solid fa-rotate",
             NotInstalledState => "fa-solid fa-download",
             _ => throw new InvalidOperationException("Unreachable")
         };
 
+        public bool InstallEnabled => State switch
+        {
+            InstalledState { Updated: false } => true,
+            InstalledState { Updated: true } => false,
+            NotInstalledState { Installing: true } => false,
+            NotInstalledState => true,
+            _ => throw new InvalidOperationException("Unreachable")
+        };
 
         public bool Installed => State is InstalledState;
 
@@ -98,7 +104,7 @@ namespace Scarab.Models
 
         public bool UpdateAvailable => State is InstalledState s && s.Version < Version;
 
-        public string UpdateText  => $"\u279E {Version}";
+        public string UpdateText => $"\u279E {Version}";
 
         public string VersionText => State switch
         {
@@ -126,7 +132,7 @@ namespace Scarab.Models
                 setProgress(new ModProgressArgs());
 
                 await inst.Install(this, setProgress, enabled);
-                
+
                 setProgress(new ModProgressArgs { Completed = true });
             }
             catch
@@ -139,16 +145,23 @@ namespace Scarab.Models
         public async Task OnInstall(IInstaller inst, Action<ModProgressArgs> setProgress)
         {
             ModState origState = State;
-            
+
             try
             {
                 if (State is InstalledState)
                 {
-                    await inst.Uninstall(this);
+                    if (State is not InstalledState { Updated: false, Enabled: var enabled })
+                        throw new InvalidOperationException("Not able to be updated!");
+
+                    setProgress(new ModProgressArgs());
+
+                    await inst.Install(this, setProgress, enabled);
+
+                    setProgress(new ModProgressArgs { Completed = true });
                 }
                 else
                 {
-                    State = (NotInstalledState) State with { Installing = true };
+                    State = (NotInstalledState)State with { Installing = true };
 
                     setProgress(new ModProgressArgs());
 
@@ -163,32 +176,48 @@ namespace Scarab.Models
                 throw;
             }
         }
-        
+
+        public async Task OnUninstall(IInstaller inst, Action<ModProgressArgs> setProgress)
+        {
+            ModState origState = State;
+
+            try
+            {
+                await inst.Uninstall(this);
+            }
+            catch
+            {
+                State = origState;
+                throw;
+            }
+        }
+
         public void CallOnPropertyChanged(string propertyName)
         {
             OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
         }
 
         #region Equality
+
         public bool Equals(ModItem? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            
+
             return _state.Equals(other._state)
-                && Version.Equals(other.Version)
-                && Dependencies.Zip(other.Dependencies).All(tuple => tuple.First == tuple.Second)
-                && Link == other.Link
-                && Name == other.Name
-                && Description == other.Description;
+                   && Version.Equals(other.Version)
+                   && Dependencies.Zip(other.Dependencies).All(tuple => tuple.First == tuple.Second)
+                   && Link == other.Link
+                   && Name == other.Name
+                   && Description == other.Description;
         }
 
         public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            
-            return obj.GetType() == GetType() && Equals((ModItem) obj);
+
+            return obj.GetType() == GetType() && Equals((ModItem)obj);
         }
 
         public override int GetHashCode()
@@ -205,6 +234,7 @@ namespace Scarab.Models
         {
             return !Equals(left, right);
         }
+
         #endregion
     }
 }

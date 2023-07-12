@@ -9,7 +9,7 @@
              xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
              xmlns:ext="clr-namespace:Scarab.Extensions"
              xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="550"
              x:DataType="viewModels:ModPageViewModel"
              d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
              Name="UserControl">
@@ -23,93 +23,102 @@
                     <Setter Property="Background" Value="Transparent" />
                     <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
                 </Style>
-
-                <!-- Remove the pointerover effect -->
-                <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-                    <Setter Property="Background" Value="Transparent" />
-                    <Setter Property="Foreground" Value="Transparent" />
+                <Style Selector="ListBoxItem:selected > Border">
+                    <Setter Property="Background" Value="{DynamicResource BorderCardBorderBrush}" />
                 </Style>
-
+                <!-- -->
+                <!-- ~1~ Remove the pointerover effect @1@ -->
+                <!-- <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter"> -->
+                <!--     <Setter Property="Background" Value="Transparent" /> -->
+                <!--     <Setter Property="Foreground" Value="Transparent" /> -->
+                <!-- </Style> -->
 
                 <Style Selector="ListBoxItem">
                     <Setter Property="Padding" Value="0" />
-                    <Setter Property="Margin" Value="0 5" />
+                    <Setter Property="Margin" Value="0 1" />
                 </Style>
 
-                <Style Selector="Expander /template/ ToggleButton#ExpanderHeader:pointerover">
-                    <Setter Property="Background" Value="Transparent" />
-                </Style>
 
-                <!-- Hide the separator built into the expander -->
-                <Style
-                    Selector="Expander:down /template/ Border">
-                    <Setter Property="BorderThickness" Value="0" />
-                </Style>
-
-                <!-- Decrease the margin so the on-hover looks right -->
-                <Style
-                    Selector="Expander:down /template/ LayoutTransformControl">
-                    <Setter Property="Margin" Value="0" />
-                </Style>
-
-                <!-- Make the border hover match the expander hover so it looks correct -->
-                <Style Selector="Border.Hover:pointerover">
-                    <Setter Property="Background" Value="{DynamicResource ExpanderHeaderHoverBackground}" />
-                </Style>
             </ListBox.Styles>
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="models:ModItem">
-                    <Border Classes="Hover" Padding="0" Margin="0" Theme="{StaticResource CardBorder}">
-                        <Grid ColumnDefinitions="260,*,100,150">
-                            <TextBlock
-                                Grid.Column="0"
-                                Text="{Binding Name}"
-                                TextTrimming="CharacterEllipsis"
-                                VerticalAlignment="Center" />
+                    <Border Padding="5 2"
+                            Margin="0"
 
-                            <ToggleSwitch
-                                Grid.Column="2"
-                                CommandParameter="{Binding .}"
-                                OnContent="{ext:Localize XAML_On}"
-                                OffContent="{ext:Localize XAML_Off}"
-                                Command="{Binding $parent[views:ModPageView].DataContext.OnEnable}"
-                                IsChecked="{Binding EnabledIsChecked}"
-                                IsEnabled="{Binding Installed}"
-                                HorizontalAlignment="Center"
-                                VerticalContentAlignment="Center" />
+                            CornerRadius="{DynamicResource RadiusCardCornerRadius}">
+                            
+                            <Grid
+                                ColumnDefinitions="auto, *, auto, auto"
+                                RowDefinitions="Auto"
+                                ShowGridLines="False">
+                                <Image
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Source="avares://Scarab/Assets/placeholder.png"
+                                    Height="40"
+                                    Width="40"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center" />
+                                <TextBlock
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Margin="10 0"
+                                    Text="{Binding Name}"
+                                    FontWeight="DemiBold"
+                                    TextTrimming="CharacterEllipsis"
+                                    VerticalAlignment="Center" />
 
-                            <Border Grid.Column="3">
-                                <StackPanel Orientation="Horizontal" Spacing="0">
-                                    <Button
-                                        Width="100"
-                                        CommandParameter="{Binding .}"
-                                        IsEnabled="{Binding !Installing}"
-                                        CornerRadius="3 0 0 3"
-                                        Command="{Binding $parent[views:ModPageView].DataContext.OnInstall}"
-                                        VerticalAlignment="Center">
-                                        <StackPanel Orientation="Horizontal" Spacing="5">
-                                            <i:Icon Value="{Binding InstallIcon}" />
-                                            <TextBlock Text="{Binding InstallText}" />
-                                        </StackPanel>
+                                <ToggleSwitch
+                                    Grid.Row="0"
+                                    Grid.Column="2"
+                                    CommandParameter="{Binding .}"
+                                    OnContent=""
+                                    OffContent=""
+                                    Command="{Binding $parent[views:ModPageView].DataContext.OnEnable}"
+                                    IsChecked="{Binding EnabledIsChecked}"
+                                    IsEnabled="{Binding Installed}"
+                                    HorizontalAlignment="Center"
+                                    VerticalContentAlignment="Center" />
 
-                                    </Button>
+                                <Border
+                                    Grid.Row="0"
+                                    Grid.Column="3"
+                                >
+                                    <StackPanel Orientation="Horizontal" Spacing="0">
+                                        <Button
+                                            Width="90"
+                                            CommandParameter="{Binding .}"
+                                            CornerRadius="3 0 0 3"
+                                            Command="{Binding $parent[views:ModPageView].DataContext.OnInstall}"
+                                            VerticalAlignment="Center"
+                                            IsEnabled="{Binding InstallEnabled}">
+                                            
+                                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                                <i:Icon Value="{Binding InstallIcon}" />
+                                                <TextBlock Text="{Binding InstallText}" />
+                                            </StackPanel>
 
-                                    <DropDownButton
-                                        Margin=" 2 0 0 0"
-                                        Width="30"
-                                        IsEnabled="{Binding Installed}"
-                                        CornerRadius="0 3 3 0">
-                                        <DropDownButton.Flyout>
-                                            <MenuFlyout Placement="BottomEdgeAlignedRight">
-                                                <MenuItem Header="Uninstall"
-                                                          i:MenuItem.Icon="fa-solid fa-trash-can" />
-                                            </MenuFlyout>
-                                        </DropDownButton.Flyout>
-                                    </DropDownButton>
-                                </StackPanel>
-                            </Border>
-                        </Grid>
+                                        </Button>
+
+                                        <DropDownButton
+                                            Margin=" 2 0 0 0"
+                                            Width="30"
+                                            IsEnabled="{Binding Installed}"
+                                            Height="31"
+                                            VerticalAlignment="Center"
+                                            CornerRadius="0 3 3 0">
+                                            <DropDownButton.Flyout>
+                                                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                                    <MenuItem Header="Uninstall"
+                                                              i:MenuItem.Icon="fa-solid fa-trash-can"
+                                                              Command="{Binding $parent[views:ModPageView].DataContext.OnUninstall}"/>
+                                                </MenuFlyout>
+                                            </DropDownButton.Flyout>
+                                        </DropDownButton>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

@@ -90,6 +90,7 @@ public partial class ModPageViewModel : ViewModelBase
 
         OnUpdate = ReactiveCommand.CreateFromTask<ModItem>(OnUpdateAsync);
         OnInstall = ReactiveCommand.CreateFromTask<ModItem>(OnInstallAsync);
+        OnUninstall = ReactiveCommand.CreateFromTask<ModItem>(OnUninstallAsync);
         OnEnable = ReactiveCommand.CreateFromTask<ModItem>(OnEnableAsync);
 
         this.WhenAnyValue(x => x.Search)
@@ -108,6 +109,7 @@ public partial class ModPageViewModel : ViewModelBase
 
     public ReactiveCommand<ModItem, Unit> OnUpdate { get; }
     public ReactiveCommand<ModItem, Unit> OnInstall { get; }
+    public ReactiveCommand<ModItem, Unit> OnUninstall { get; }
     public ReactiveCommand<ModItem, Unit> OnEnable { get; }
 
     [UsedImplicitly] public ReadOnlyObservableCollection<ModItem> FilteredItems => _filteredItems;
@@ -368,6 +370,12 @@ public partial class ModPageViewModel : ViewModelBase
     private async Task OnInstallAsync(ModItem item)
     {
         await InternalInstallWithConfirmationAsync(item, item.OnInstall);
+    }
+    
+    [UsedImplicitly]
+    private async Task OnUninstallAsync(ModItem item)
+    {
+        await InternalInstallWithConfirmationAsync(item, item.OnUninstall);
     }
 
     private static async Task DisplayHashMismatch(HashMismatchException e)

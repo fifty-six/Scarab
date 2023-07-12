@@ -3,7 +3,6 @@
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-            xmlns:models="clr-namespace:Scarab.Models"
             xmlns:viewModels="clr-namespace:Scarab.ViewModels"
             xmlns:views="clr-namespace:Scarab.Views"
             xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
@@ -33,8 +32,7 @@
             Minimum="0"
             Maximum="100"
             Value="{Binding Progress}" />
-
-
+        
         <Border DockPanel.Dock="Top"
                 Margin="10 10 10 5">
             <Grid
@@ -153,7 +151,7 @@
 
 
             <SplitView.Pane>
-                
+
                 <DockPanel HorizontalAlignment="Left"
                            VerticalAlignment="Stretch">
                     <ToggleButton Name="ToggleButton" DockPanel.Dock="Left" Classes="Tertiary"
@@ -168,7 +166,7 @@
                         </StackPanel>
                     </ToggleButton>
                     <!-- Details of the selected item -->
-                    <views:ModDetailsView/>
+                    <views:ModDetailsView DataContext="{Binding}"/>
                 </DockPanel>
             </SplitView.Pane>
             <Grid>
