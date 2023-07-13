@@ -111,6 +111,7 @@
                                             <DropDownButton.Flyout>
                                                 <MenuFlyout Placement="BottomEdgeAlignedRight">
                                                     <MenuItem Header="Uninstall"
+                                                              CommandParameter="{Binding .}"
                                                               i:MenuItem.Icon="fa-solid fa-trash-can"
                                                               Command="{Binding $parent[views:ModPageView].DataContext.OnUninstall}"/>
                                                 </MenuFlyout>

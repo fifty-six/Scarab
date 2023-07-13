@@ -1,10 +1,11 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Scarab.ViewModels;
 
 namespace Scarab.Views;
 
-public partial class ModListView : UserControl
+public partial class ModListView : View<ModPageViewModel>
 {
     public ModListView()
     {

@@ -170,7 +170,7 @@
                 </DockPanel>
             </SplitView.Pane>
             <Grid>
-                <views:ModListView DataContext="{Binding}" />
+                <views:ModListView />
             </Grid>
 
         </SplitView>
