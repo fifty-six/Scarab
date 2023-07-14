@@ -58,8 +58,9 @@
                 </Border>
                 <Grid Grid.Column="0"
                       Grid.Row="2"
-                      ColumnDefinitions="auto, *, auto">
+                      ColumnDefinitions="auto, *">
                     <Border
+                        Grid.Column="0"
                         Margin="5 0"
                         VerticalAlignment="Center"
                         Theme="{StaticResource RadioButtonGroupBorder}">
@@ -88,7 +89,6 @@
 
                     <!--TODO: Localize tags, Use a value converter? -->
                     <ComboBox
-                        Grid.Row="1"
                         Grid.Column="1"
                         Margin="5 0"
                         HorizontalAlignment="Stretch"
@@ -99,10 +99,9 @@
                         Classes="Small" />
                 </Grid>
 
-
                 <ToggleButton Classes="Primary"
                               Grid.Column="3"
-                              Grid.Row="2"
+                              Grid.Row="0"
                               Margin=" 5 0"
                               VerticalAlignment="Stretch">
                     <StackPanel Orientation="Horizontal" Spacing="5">
@@ -114,7 +113,7 @@
                 <Button Classes="Primary"
                         Theme="{DynamicResource SolidButton}"
                         Grid.Column="2"
-                        Grid.Row="0"
+                        Grid.Row="2"
                         Margin=" 5 0"
                         VerticalAlignment="Stretch">
                     <StackPanel Orientation="Horizontal" Spacing="5">
@@ -126,7 +125,7 @@
                 <Button Classes="Primary"
                         Theme="{DynamicResource SolidButton}"
                         Grid.Column="3"
-                        Grid.Row="0"
+                        Grid.Row="2"
                         Margin=" 5 0"
                         VerticalAlignment="Stretch">
                     <StackPanel Orientation="Horizontal" Spacing="5">
@@ -145,61 +144,13 @@
             DisplayMode="CompactInline"
             OpenPaneLength="510"
             PanePlacement="Left"
-            IsPaneOpen="True"
-            CompactPaneLength="20">
+            IsPaneOpen="True">
 
+            <!-- Details of the selected item -->
+            <views:ModDetailsView DataContext="{Binding}" />
 
-            <Grid HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch"
-                  ColumnDefinitions="20, *"
-                  RowDefinitions="auto, *">
-                <!--<StackPanel 
-                        Orientation="Horizontal"
-                        Grid.RowSpan="2">
-                        <ToggleButton
-                            Width="20"
-                            VerticalAlignment="Stretch"
-                            Name="ToggleButton"
-                            Classes="Tertiary"
-                            Padding="0"
-                            Margin="0"
-                            Theme="{DynamicResource BorderlessButton}"
-                            IsChecked="{Binding IsPaneOpen, ElementName=SplitView}">
-                            <ToggleButton.Styles>
-                                <Style Selector="ToggleButton /template/ TextBlock">
-                                    <Setter Property="Margin" Value="0" />
-                                </Style>
-                            </ToggleButton.Styles>
-                            <ToggleButton.Resources>
-                                <views:ToggleIconConverter x:Key="ToggleIconConverter" />
-                            </ToggleButton.Resources>
-                            <StackPanel Orientation="Horizontal">
-                                <i:Icon Name="Icon"
-                                        Value="{Binding IsPaneOpen, ElementName=SplitView, Converter={StaticResource ToggleIconConverter}}" />
-                            </StackPanel>
-                        </ToggleButton>
-                        <Separator 
-                            Height="NaN" 
-                            Width="1" 
-                            Margin="0"/>
-                    </StackPanel>-->
-                <TextBlock
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Text="{Binding SelectedModItem.Name}"
-                    FontSize="24"
-                    FontWeight="Black"
-                    Margin="10 10 10 0" />
-                <!-- Details of the selected item -->
-                <views:ModDetailsView
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    DataContext="{Binding}" />
-            </Grid>
             <SplitView.Pane>
-                <Grid>
-                    <views:ModListView DataContext="{Binding}" />
-                </Grid>
+                <views:ModListView DataContext="{Binding}" />
             </SplitView.Pane>
 
         </SplitView>

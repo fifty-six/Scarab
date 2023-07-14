@@ -17,8 +17,6 @@ public partial class ModPageView : View<ModPageViewModel>
     {
         InitializeComponent();
 
-        Resources.Add("ToggleIcon", new ToggleIconConverter());
-
         this.WhenAnyValue(x => ((Control)x).DataContext)
             .BindTo(this, x => x.DataContext);
 
@@ -42,19 +40,4 @@ public partial class ModPageView : View<ModPageViewModel>
     }
 
     
-}
-
-public class ToggleIconConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        if ((bool)value)
-            return "fa-solid fa-chevron-right";
-        return "fa-solid fa-chevron-left";
-    }
-
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
 }

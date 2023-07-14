@@ -19,6 +19,8 @@ public static class MockViewModel
         }
     }
 
+    
+    
     public static AboutViewModel AboutInstance { get; } = new();
 
     public static SettingsViewModel SettingsInstance
