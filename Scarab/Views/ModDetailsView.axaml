@@ -15,7 +15,7 @@
              x:DataType="models:ModItem">
     <!-- Details of the selected item -->
     <StackPanel
-        Margin="5 0"
+        Margin="10 0"
         DataContext="{Binding SelectedModItem}"
         IsVisible="{Binding SelectedModItem, Converter={x:Static ObjectConverters.IsNotNull}}">
         <TextBlock Text="{Binding Description}" TextWrapping="Wrap"

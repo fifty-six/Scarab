@@ -36,7 +36,7 @@
         <Border DockPanel.Dock="Top"
                 Margin="10 10 10 5">
             <Grid
-                ColumnDefinitions="Auto,*,Auto,Auto"
+                ColumnDefinitions="500,*,Auto,Auto"
                 RowDefinitions="Auto, 5, Auto">
                 <Border
                     Grid.Row="0"
@@ -56,9 +56,9 @@
                             Text="{Binding Search}" />
                     </DockPanel>
                 </Border>
-                <StackPanel Grid.Column="0"
-                            Grid.Row="2"
-                            Orientation="Horizontal">
+                <Grid Grid.Column="0"
+                      Grid.Row="2"
+                      ColumnDefinitions="auto, *, auto">
                     <Border
                         Margin="5 0"
                         VerticalAlignment="Center"
@@ -97,7 +97,7 @@
                         PlaceholderText="Filter Tags"
                         ItemsSource="{Binding Tags, Mode=OneWay}"
                         Classes="Small" />
-                </StackPanel>
+                </Grid>
 
 
                 <ToggleButton Classes="Primary"
@@ -143,20 +143,17 @@
         <SplitView
             Name="SplitView"
             DisplayMode="CompactInline"
-            OpenPaneLength="400"
-
-            PanePlacement="Right"
+            OpenPaneLength="510"
+            PanePlacement="Left"
             IsPaneOpen="True"
             CompactPaneLength="20">
 
 
-            <SplitView.Pane>
-
-                <Grid HorizontalAlignment="Stretch"
-                      VerticalAlignment="Stretch"
-                      ColumnDefinitions="20, *"
-                      RowDefinitions="auto, *">
-                    <StackPanel 
+            <Grid HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  ColumnDefinitions="20, *"
+                  RowDefinitions="auto, *">
+                <!--<StackPanel 
                         Orientation="Horizontal"
                         Grid.RowSpan="2">
                         <ToggleButton
@@ -185,24 +182,25 @@
                             Height="NaN" 
                             Width="1" 
                             Margin="0"/>
-                    </StackPanel>
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Text="{Binding SelectedModItem.Name}"
-                        FontSize="24"
-                        FontWeight="Black"
-                        Margin="5 10 5 0" />
-                    <!-- Details of the selected item -->
-                    <views:ModDetailsView
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        DataContext="{Binding}" />
+                    </StackPanel>-->
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Text="{Binding SelectedModItem.Name}"
+                    FontSize="24"
+                    FontWeight="Black"
+                    Margin="10 10 10 0" />
+                <!-- Details of the selected item -->
+                <views:ModDetailsView
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    DataContext="{Binding}" />
+            </Grid>
+            <SplitView.Pane>
+                <Grid>
+                    <views:ModListView DataContext="{Binding}" />
                 </Grid>
             </SplitView.Pane>
-            <Grid>
-                <views:ModListView DataContext="{Binding}" />
-            </Grid>
 
         </SplitView>
     </DockPanel>
