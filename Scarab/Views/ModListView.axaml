@@ -47,78 +47,81 @@
                             Margin="0"
 
                             CornerRadius="{DynamicResource RadiusCardCornerRadius}">
-                            
-                            <Grid
-                                ColumnDefinitions="auto, *, auto, auto"
-                                RowDefinitions="Auto"
-                                ShowGridLines="False">
+
+                        <Grid
+                            ColumnDefinitions="auto, *, auto, auto"
+                            RowDefinitions="Auto"
+                            ShowGridLines="False">
+                            <Border
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                CornerRadius="5"
+                                ClipToBounds="True">
                                 <Image
-                                    Grid.Row="0"
-                                    Grid.Column="0"
-                                    Source="avares://Scarab/Assets/hk1.png"
+                                    Source="avares://Scarab/Assets/placeholder.png"
                                     Height="40"
                                     Width="40"
                                     VerticalAlignment="Center"
                                     HorizontalAlignment="Center" />
-                                <TextBlock
-                                    Grid.Row="0"
-                                    Grid.Column="1"
-                                    Margin="10 0"
-                                    Text="{Binding Name}"
-                                    FontWeight="DemiBold"
-                                    TextTrimming="CharacterEllipsis"
-                                    VerticalAlignment="Center" />
+                            </Border>
+                            <TextBlock
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Margin="10 0"
+                                Text="{Binding Name}"
+                                FontWeight="DemiBold"
+                                TextTrimming="CharacterEllipsis"
+                                VerticalAlignment="Center" />
 
-                                <ToggleSwitch
-                                    Grid.Row="0"
-                                    Grid.Column="2"
-                                    CommandParameter="{Binding .}"
-                                    OnContent=""
-                                    OffContent=""
-                                    Command="{Binding $parent[views:ModPageView].DataContext.OnEnable}"
-                                    IsChecked="{Binding EnabledIsChecked}"
-                                    IsEnabled="{Binding Installed}"
-                                    HorizontalAlignment="Center"
-                                    VerticalContentAlignment="Center" />
+                            <ToggleSwitch
+                                Grid.Row="0"
+                                Grid.Column="2"
+                                CommandParameter="{Binding .}"
+                                OnContent=""
+                                OffContent=""
+                                Command="{Binding $parent[views:ModPageView].DataContext.OnEnable}"
+                                IsChecked="{Binding EnabledIsChecked}"
+                                IsEnabled="{Binding Installed}"
+                                HorizontalAlignment="Center"
+                                VerticalContentAlignment="Center" />
 
-                                <Border
-                                    Grid.Row="0"
-                                    Grid.Column="3"
-                                >
-                                    <StackPanel Orientation="Horizontal" Spacing="0">
-                                        <Button
-                                            Width="90"
-                                            CommandParameter="{Binding .}"
-                                            CornerRadius="3 0 0 3"
-                                            Command="{Binding $parent[views:ModPageView].DataContext.OnInstall}"
-                                            VerticalAlignment="Center"
-                                            IsEnabled="{Binding InstallEnabled}">
-                                            
-                                            <StackPanel Orientation="Horizontal" Spacing="5">
-                                                <i:Icon Value="{Binding InstallIcon}" />
-                                                <TextBlock Text="{Binding InstallText}" />
-                                            </StackPanel>
+                            <Border
+                                Grid.Row="0"
+                                Grid.Column="3">
+                                <StackPanel Orientation="Horizontal" Spacing="0">
+                                    <Button
+                                        Width="90"
+                                        CommandParameter="{Binding .}"
+                                        CornerRadius="3 0 0 3"
+                                        Command="{Binding $parent[views:ModPageView].DataContext.OnInstall}"
+                                        VerticalAlignment="Center"
+                                        IsEnabled="{Binding InstallEnabled}">
 
-                                        </Button>
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <i:Icon Value="{Binding InstallIcon}" />
+                                            <TextBlock Text="{Binding InstallText}" />
+                                        </StackPanel>
 
-                                        <DropDownButton
-                                            Margin=" 2 0 0 0"
-                                            Width="30"
-                                            IsEnabled="{Binding Installed}"
-                                            Height="31"
-                                            VerticalAlignment="Center"
-                                            CornerRadius="0 3 3 0">
-                                            <DropDownButton.Flyout>
-                                                <MenuFlyout Placement="BottomEdgeAlignedRight">
-                                                    <MenuItem Header="Uninstall"
-                                                              i:MenuItem.Icon="fa-solid fa-trash-can"
-                                                              Command="{Binding $parent[views:ModPageView].DataContext.OnUninstall}"/>
-                                                </MenuFlyout>
-                                            </DropDownButton.Flyout>
-                                        </DropDownButton>
-                                    </StackPanel>
-                                </Border>
-                            </Grid>
+                                    </Button>
+
+                                    <DropDownButton
+                                        Margin=" 2 0 0 0"
+                                        Width="30"
+                                        IsEnabled="{Binding Installed}"
+                                        Height="31"
+                                        VerticalAlignment="Center"
+                                        CornerRadius="0 3 3 0">
+                                        <DropDownButton.Flyout>
+                                            <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                                <MenuItem Header="Uninstall"
+                                                          i:MenuItem.Icon="fa-solid fa-trash-can"
+                                                          Command="{Binding $parent[views:ModPageView].DataContext.OnUninstall}" />
+                                            </MenuFlyout>
+                                        </DropDownButton.Flyout>
+                                    </DropDownButton>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
