@@ -55,7 +55,7 @@
                                 <Image
                                     Grid.Row="0"
                                     Grid.Column="0"
-                                    Source="avares://Scarab/Assets/placeholder.png"
+                                    Source="avares://Scarab/Assets/hk1.png"
                                     Height="40"
                                     Width="40"
                                     VerticalAlignment="Center"
