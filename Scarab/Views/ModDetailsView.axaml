@@ -4,24 +4,27 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:models="clr-namespace:Scarab.Models"
-             xmlns:viewModels="clr-namespace:Scarab.ViewModels"
-             xmlns:views="clr-namespace:Scarab.Views"
              xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
              xmlns:ext="clr-namespace:Scarab.Extensions"
              xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
              mc:Ignorable="d"
-             d:DesignWidth="800"
+             d:DesignWidth="400"
              d:DesignHeight="550"
+             d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
              x:DataType="models:ModItem">
-
-    <DockPanel HorizontalAlignment="Left"
-               VerticalAlignment="Stretch"
-               IsVisible="{Binding SelectedModItem, Converter={x:Static ObjectConverters.IsNotNull}}"
-               >
-        <!-- Details of the selected item -->
-        <StackPanel Margin="12 0 0 0" DataContext="{Binding SelectedModItem}">
+    <!-- Details of the selected item -->
+    <Border IsVisible="{Binding SelectedModItem, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <StackPanel
+            Margin="10 0"
+            DataContext="{Binding SelectedModItem}">
+            <TextBlock
+                Text="{Binding Name}"
+                FontSize="24"
+                FontWeight="Black"
+                Margin="0 10 0 0"
+                TextTrimming="CharacterEllipsis"/>
             <TextBlock Text="{Binding Description}" TextWrapping="Wrap"
-                       Margin="0 0 15 15" />
+                       Margin="0 0 0 15" />
             <Grid ColumnDefinitions="*,*">
                 <DockPanel ClipToBounds="True" VerticalAlignment="Stretch" Height="NaN">
                     <StackPanel DockPanel.Dock="Top">
@@ -79,5 +82,5 @@
                 </StackPanel>
             </Grid>
         </StackPanel>
-    </DockPanel>
+    </Border>
 </UserControl>
