@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using Avalonia.Svg.Skia;
 using JetBrains.Annotations;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.FontAwesome;
@@ -92,8 +93,14 @@ namespace Scarab
         // Avalonia configuration, don't remove; also used by visual designer.
         private static AppBuilder BuildAvaloniaApp()
         {
-            IconProvider.Current
-                .Register<FontAwesomeIconProvider>();
+            IconProvider.Current.Register<FontAwesomeIconProvider>();
+            
+            // Used to make Avalonia.Svg.Skia controls work in the previewer
+            #if DEBUG
+            GC.KeepAlive(typeof(SvgImageExtension).Assembly);
+            GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
+            #endif
+            
             return AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .WithInterFont()

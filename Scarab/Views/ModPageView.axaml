@@ -150,7 +150,7 @@
             <views:ModDetailsView DataContext="{Binding}" />
 
             <SplitView.Pane>
-                <views:ModListView DataContext="{Binding}" />
+                <views:ModListView />
             </SplitView.Pane>
         </SplitView>
     </DockPanel>

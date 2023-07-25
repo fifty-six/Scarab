@@ -57,8 +57,8 @@
                                 Grid.Column="0"
                                 CornerRadius="5"
                                 ClipToBounds="True">
-                                <Image
-                                    Source="avares://Scarab/Assets/placeholder.png"
+                                <Svg
+                                    Path="avares://Scarab/Assets/placeholder.svg"
                                     Height="40"
                                     Width="40"
                                     VerticalAlignment="Center"
