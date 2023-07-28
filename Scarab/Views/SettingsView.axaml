@@ -1,16 +1,17 @@
-<views:View x:TypeArguments="viewModels:SettingsViewModel" xmlns="https://github.com/avaloniaui"
-            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-            xmlns:views="clr-namespace:Scarab.Views"
-            xmlns:system="clr-namespace:System;assembly=System.Runtime"
-            xmlns:viewModels="clr-namespace:Scarab.ViewModels"
-            xmlns:mock="clr-namespace:Scarab.Mock"
-            xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-            mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-            x:Class="Scarab.Views.SettingsView"
-            x:DataType="viewModels:SettingsViewModel"
-            d:DataContext="{x:Static mock:MockViewModel.SettingsInstance}">
+<reactiveUi:ReactiveUserControl x:TypeArguments="viewModels:SettingsViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:views="clr-namespace:Scarab.Views"
+                                xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                                xmlns:viewModels="clr-namespace:Scarab.ViewModels"
+                                xmlns:mock="clr-namespace:Scarab.Mock"
+                                xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="Scarab.Views.SettingsView"
+                                x:DataType="viewModels:SettingsViewModel"
+                                d:DataContext="{x:Static mock:MockViewModel.SettingsInstance}">
     <StackPanel Margin="8">
         <StackPanel.Styles>
             <Style Selector="CheckBox">
@@ -41,18 +42,16 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Center">
                 <DockPanel>
-                    <TextBlock 
+                    <TextBlock
                         HorizontalAlignment="Left"
-                        DockPanel.Dock="Left" 
+                        DockPanel.Dock="Left"
                         FontWeight="SemiBold"
-                        Text="{Binding Settings.ManagedFolder}" 
-                        Background="{DynamicResource ButtonBackground}" 
-                    />
-                    <i:Icon 
+                        Text="{Binding Settings.ManagedFolder}"
+                        Background="{DynamicResource ButtonBackground}" />
+                    <i:Icon
                         HorizontalAlignment="Right"
-                        DockPanel.Dock="Right" 
-                        Value="fa-regular fa-folder-open" 
-                    />
+                        DockPanel.Dock="Right"
+                        Value="fa-regular fa-folder-open" />
                 </DockPanel>
             </Button>
 
@@ -91,4 +90,4 @@
             </CheckBox>
         </Grid>
     </StackPanel>
-</views:View>
+</reactiveUi:ReactiveUserControl>

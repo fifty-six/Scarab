@@ -1,11 +1,9 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 using Scarab.ViewModels;
 
 namespace Scarab.Views;
 
-public partial class SettingsView : View<SettingsViewModel>
+public partial class SettingsView : ReactiveUserControl<SettingsViewModel>
 {
     public SettingsView()
     {

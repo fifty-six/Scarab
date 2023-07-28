@@ -79,7 +79,7 @@
                                 CommandParameter="{Binding .}"
                                 OnContent=""
                                 OffContent=""
-                                Command="{Binding $parent[views:ModPageView].DataContext.OnEnable}"
+                                Command="{Binding $parent[views:ModPageView].ViewModel.OnEnable}"
                                 IsChecked="{Binding EnabledIsChecked}"
                                 IsEnabled="{Binding Installed}"
                                 HorizontalAlignment="Center"
@@ -93,7 +93,7 @@
                                         Width="90"
                                         CommandParameter="{Binding .}"
                                         CornerRadius="3 0 0 3"
-                                        Command="{Binding $parent[views:ModPageView].DataContext.OnInstall}"
+                                        Command="{Binding $parent[views:ModPageView].ViewModel.OnInstall}"
                                         VerticalAlignment="Center"
                                         IsEnabled="{Binding InstallEnabled}">
 
@@ -116,7 +116,7 @@
                                                 <MenuItem Header="Uninstall"
                                                               CommandParameter="{Binding .}"
                                                           i:MenuItem.Icon="fa-solid fa-trash-can"
-                                                          Command="{Binding $parent[views:ModPageView].DataContext.OnUninstall}" />
+                                                          Command="{Binding $parent[views:ModPageView].ViewModel.OnUninstall}" />
                                             </MenuFlyout>
                                         </DropDownButton.Flyout>
                                     </DropDownButton>

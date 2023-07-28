@@ -1,4 +1,4 @@
-<views:View x:TypeArguments="viewModels:ModPageViewModel"
+<reactiveUi:ReactiveUserControl x:TypeArguments="viewModels:ModPageViewModel"
             xmlns="https://github.com/avaloniaui"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,6 +8,7 @@
             xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
             xmlns:ext="clr-namespace:Scarab.Extensions"
             xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+            xmlns:reactiveUi="http://reactiveui.net"
             mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
             x:Class="Scarab.Views.ModPageView"
             x:DataType="viewModels:ModPageViewModel"
@@ -154,4 +155,4 @@
             </SplitView.Pane>
         </SplitView>
     </DockPanel>
-</views:View>
+</reactiveUi:ReactiveUserControl>

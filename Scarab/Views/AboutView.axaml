@@ -1,4 +1,4 @@
-<views:View x:TypeArguments="viewModels:AboutViewModel" xmlns="https://github.com/avaloniaui"
+<reactiveUi:ReactiveUserControl x:TypeArguments="viewModels:AboutViewModel" xmlns="https://github.com/avaloniaui"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,6 +7,7 @@
             xmlns:mock="clr-namespace:Scarab.Mock"
             xmlns:viewModels="clr-namespace:Scarab.ViewModels"
             xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+            xmlns:reactiveUi="http://reactiveui.net"
             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
             x:DataType="viewModels:AboutViewModel"
             x:Class="Scarab.Views.AboutView"
@@ -40,4 +41,4 @@
             </StackPanel>
         </StackPanel>
     </Grid>
-</views:View>
+</reactiveUi:ReactiveUserControl>

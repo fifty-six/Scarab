@@ -1,11 +1,12 @@
 using System;
 using Avalonia.Controls;
+using Avalonia.ReactiveUI;
 using ReactiveUI;
 using Scarab.ViewModels;
 
 namespace Scarab.Views;
 
-public partial class MainWindow : Window
+public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
     public MainWindow()
     {
