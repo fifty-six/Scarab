@@ -8,9 +8,13 @@ namespace Scarab.Interfaces
         
         string ManagedFolder { get; set; }
         
+        string PreferredCulture { get; set; }
+        
         string ModsFolder     => Path.Combine(ManagedFolder, "Mods");
         string DisabledFolder => Path.Combine(ModsFolder, "Disabled");
 
         void Save();
+
+        void Apply();
     }
 }

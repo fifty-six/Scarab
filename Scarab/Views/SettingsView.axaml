@@ -78,12 +78,9 @@
                 Grid.ColumnSpan="2"
                 HorizontalAlignment="Stretch"
                 Margin="0 0 0 0"
+                SelectedItem="{Binding Selected}"
+                ItemsSource="{Binding Languages}"
                 PlaceholderText="Locale">
-                <ComboBoxItem>en</ComboBoxItem>
-                <ComboBoxItem>fr</ComboBoxItem>
-                <ComboBoxItem>hu</ComboBoxItem>
-                <ComboBoxItem>pt</ComboBoxItem>
-                <ComboBoxItem>zh</ComboBoxItem>
             </ComboBox>
             <CheckBox Grid.Column="1" Grid.Row="2">
                 Automatically remove dependencies when uninstalling mods

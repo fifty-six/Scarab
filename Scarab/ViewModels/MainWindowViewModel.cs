@@ -42,6 +42,9 @@ namespace Scarab.ViewModels
         [Notify]
         private ReactiveObject? _content;
 
+        [Notify] 
+        private SettingsViewModel? _settingsPage;
+
         private async Task Impl()
         {
             Trace.WriteLine("Checking if up to date...");
@@ -131,7 +134,8 @@ namespace Scarab.ViewModels
                   new ModDatabase(sp.GetRequiredService<IModSource>(), content)
               )
               .AddSingleton<IInstaller, Installer>()
-              .AddSingleton<ModPageViewModel>();
+              .AddSingleton<ModPageViewModel>()
+              .AddSingleton<SettingsViewModel>();
             
             Trace.WriteLine("Building service provider");
             ServiceProvider sp = sc.BuildServiceProvider(new ServiceProviderOptions
@@ -141,6 +145,7 @@ namespace Scarab.ViewModels
             Trace.WriteLine("Built service provider");
 
             Trace.WriteLine("Displaying model");
+            SettingsPage = sp.GetRequiredService<SettingsViewModel>();
             Content = sp.GetRequiredService<ModPageViewModel>();
         }
 

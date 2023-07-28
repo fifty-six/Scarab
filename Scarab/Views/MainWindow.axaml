@@ -12,9 +12,7 @@
             <ProgressBar Theme="{DynamicResource ProgressRing}" Width="100" Height="100" IsIndeterminate="True" />
         </TabItem>
 
-        <TabItem Header="Settings">
-            <s:SettingsViewModel />
-        </TabItem>
+        <TabItem x:Name="SettingsTab" Header="Settings" Content="{Binding SettingsPage, TargetNullValue=''}"/>
         
         <TabItem Header="About">
             <s:AboutViewModel />

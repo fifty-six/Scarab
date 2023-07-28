@@ -22,7 +22,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         if (DataContext is null)
             return;
 
-        var vm = (MainWindowViewModel)DataContext;
+        var vm = (MainWindowViewModel) DataContext;
 
         vm.WhenAnyValue(x => x.Content).Subscribe(v =>
         {
