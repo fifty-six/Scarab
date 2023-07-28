@@ -11,13 +11,13 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
-using JetBrains.Annotations;
 using MessageBox.Avalonia;
 using MessageBox.Avalonia.BaseWindows.Base;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 using MessageBox.Avalonia.Models;
 using Microsoft.Extensions.DependencyInjection;
+using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using Scarab.Interfaces;
 using Scarab.Models;
@@ -38,15 +38,9 @@ namespace Scarab.ViewModels
                 #endif
             }
         }
-
+        
+        [Notify]
         private ReactiveObject? _content;
-
-        [UsedImplicitly]
-        public ReactiveObject? Content
-        {
-            get => _content;
-            set => this.RaiseAndSetIfChanged(ref _content, value);
-        }
 
         private async Task Impl()
         {

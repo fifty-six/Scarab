@@ -143,17 +143,6 @@ public partial class ModPageViewModel : ViewModelBase
 
     public ImmutableArray<Tag> Tags { get; } = Enum.GetValues<Tag>().ToImmutableArray();
 
-    // Needed for source generator to find it.
-    private void RaisePropertyChanged(string name)
-    {
-        IReactiveObjectExtensions.RaisePropertyChanged(this, name);
-    }
-
-    private void RaisePropertyChanging(string name)
-    {
-        IReactiveObjectExtensions.RaisePropertyChanging(this, name);
-    }
-
     private async void ToggleApiCommand()
     {
         await _installer.ToggleApi();
