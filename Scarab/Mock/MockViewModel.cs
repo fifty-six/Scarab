@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Scarab.Interfaces;
 using Scarab.Models;
@@ -13,8 +14,13 @@ public static class MockViewModel
         {
             var src = new Moq.Mock<IModSource>();
             src.SetupGet(x => x.ApiInstall).Returns(new NotInstalledState());
-            
-            return new ModPageViewModel(Moq.Mock.Of<ISettings>(), new MockDatabase(), Moq.Mock.Of<IInstaller>(), src.Object);
+
+            var db = new MockDatabase();
+
+            return new ModPageViewModel(Moq.Mock.Of<ISettings>(), db, Moq.Mock.Of<IInstaller>(), src.Object) 
+            {
+                SelectedModItem = db.Items.First()
+            };
         }
     }
 
