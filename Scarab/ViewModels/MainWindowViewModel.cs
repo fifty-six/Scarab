@@ -58,6 +58,7 @@ namespace Scarab.ViewModels
 
             Trace.WriteLine("Loading settings.");
             Settings settings = Settings.Load() ?? Settings.Create(await GetSettingsPath());
+            settings.Apply();
 
             if (!PathUtil.ValidateExisting(settings.ManagedFolder))
                 settings = await ResetSettings();

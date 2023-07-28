@@ -1,17 +1,46 @@
 ﻿using Avalonia.Markup.Xaml;
 using System;
+using System.ComponentModel;
+using System.Globalization;
+using System.Runtime.CompilerServices;
+using Avalonia.Data;
 
 namespace Scarab.Extensions
 {
-    internal class LocalizeExtension : MarkupExtension
+    internal sealed class LocalizeExtension : MarkupExtension, INotifyPropertyChanged
     {
-        private string Key { get; }
+        public static void ChangeLanguage(CultureInfo ci)
+        {
+            Resources.Culture = ci;
+            OnLanguageChanged?.Invoke();
+        }
         
-        public LocalizeExtension(string key) => Key = key;
+        private static event Action? OnLanguageChanged;
+        
+        private string Key { get; }
 
+        public string Result => 
+            Resources.ResourceManager.GetString(Key, Resources.Culture)?.Replace("\\n", "\n") ?? $"#{Key}#";
+
+        public LocalizeExtension(string key)
+        {
+            Key = key;
+            
+            OnLanguageChanged += () => {
+                OnPropertyChanged(nameof(Result));
+            };
+        }
+        
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            return Resources.ResourceManager.GetString(Key, Resources.Culture)?.Replace("\\n", "\n") ?? $"#{Key}#";
+            return new Binding(nameof(Result)) { Source = this };
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null) 
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

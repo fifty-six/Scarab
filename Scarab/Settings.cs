@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text.Json;
+using Avalonia;
 using Microsoft.Win32;
+using Scarab.Extensions;
 using Scarab.Interfaces;
 using Scarab.Util;
 
@@ -22,6 +25,8 @@ namespace Scarab
         public bool AutoRemoveDeps { get; }
         
         public bool RequiresWorkaroundClient { get; set; }
+
+        public string PreferredCulture { get; set; }
 
         // @formatter:off
         private static readonly ImmutableList<string> STATIC_PATHS = new List<string>
@@ -62,13 +67,14 @@ namespace Scarab
             "HKInstallerSettings.json"
         );
 
-        internal Settings(string path) => ManagedFolder = path;
+        internal Settings(string path) : this() => ManagedFolder = path;
 
         // Used by serializer.
         public Settings()
         {
             ManagedFolder = null!;
             AutoRemoveDeps = false;
+            PreferredCulture = CultureInfo.CurrentUICulture.Name;
         }
 
         public static string GetOrCreateDirPath()
@@ -213,6 +219,11 @@ namespace Scarab
             string path = ConfigPath;
 
             File.WriteAllText(path, content);
+        }
+
+        public void Apply()
+        {
+            LocalizeExtension.ChangeLanguage(new CultureInfo(PreferredCulture));
         }
     }
 }
