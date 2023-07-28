@@ -1,11 +1,6 @@
 using System;
-using System.Diagnostics;
-using System.Globalization;
-using Avalonia.Controls;
-using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
-using JetBrains.Annotations;
 using ReactiveUI;
 using Scarab.Models;
 using Scarab.ViewModels;

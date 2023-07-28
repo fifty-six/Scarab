@@ -2,10 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
-using System.Resources;
 using System.Threading.Tasks;
-using Avalonia.Media;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PropertyChanged.SourceGenerator;
 using Scarab.Interfaces;
 

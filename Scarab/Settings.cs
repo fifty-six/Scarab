@@ -9,7 +9,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text.Json;
-using Avalonia;
 using Microsoft.Win32;
 using Scarab.Extensions;
 using Scarab.Interfaces;

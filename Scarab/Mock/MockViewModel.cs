@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Scarab.Interfaces;
 using Scarab.Models;
 using Scarab.ViewModels;
-using Scarab.Views;
 
 namespace Scarab.Mock;
 

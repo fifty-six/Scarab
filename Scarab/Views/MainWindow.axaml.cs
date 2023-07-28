@@ -1,5 +1,4 @@
 using System;
-using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 using Scarab.ViewModels;
