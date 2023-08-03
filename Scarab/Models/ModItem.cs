@@ -33,13 +33,11 @@ namespace Scarab.Models
             Name = name;
             Description = description;
             Repository = repository;
-            Tags = tags.Aggregate((Tag)0, (acc, x) => acc | x);
+            Tags = tags.Aggregate((Tag) 0, (acc, x) => acc | x);
             Integrations = integrations;
 
-            DependenciesDesc = string.Join(Environment.NewLine, Dependencies);
             // TODO: i18n
             TagDesc = string.Join(Environment.NewLine, tags.Select(x => x.ToString()));
-            IntegrationsDesc = string.Join(Environment.NewLine, Integrations);
         }
 
 
@@ -54,67 +52,21 @@ namespace Scarab.Models
         public Tag Tags { get; }
         public string[] Integrations { get; }
 
-        public string DependenciesDesc { get; }
         public string TagDesc { get; }
-        public string IntegrationsDesc { get; }
 
         [Notify] private ModState _state;
 
-        public bool EnabledIsChecked => State switch
-        {
-            InstalledState { Enabled: var x } => x,
-
-            // Can't enable what isn't installed.
-            _ => false
-        };
-
-        public bool Installing => State is NotInstalledState { Installing: true };
-
-        public string InstallText => State switch
-        {
-            InstalledState => Resources.XAML_Update,
-            NotInstalledState => Resources.MI_InstallText_NotInstalled,
-            _ => throw new InvalidOperationException("Unreachable")
-        };
-
-        public string InstallIcon => State switch
-        {
-            InstalledState => "fa-solid fa-rotate",
-            NotInstalledState => "fa-solid fa-download",
-            _ => throw new InvalidOperationException("Unreachable")
-        };
-
-        public bool InstallEnabled => State switch
-        {
-            InstalledState { Updated: false } => true,
-            InstalledState { Updated: true } => false,
-            NotInstalledState { Installing: true } => false,
-            NotInstalledState => true,
-            _ => throw new InvalidOperationException("Unreachable")
-        };
+        public bool Enabled => State is InstalledState { Enabled: true };
 
         public bool Installed => State is InstalledState;
 
-        public bool HasDependencies => Dependencies.Length > 0;
-        public bool HasIntegrations => Integrations.Length > 0;
-        public bool HasTags => Tags != 0;
-
         public bool UpdateAvailable => State is InstalledState s && s.Version < Version;
-
-        public string UpdateText => $"\u279E {Version}";
 
         public string VersionText => State switch
         {
             InstalledState st => st.Version.ToString(),
             NotInstalledState => Version.ToString(),
             _ => throw new ArgumentOutOfRangeException(nameof(_state))
-        };
-
-        public string InstallFg => State switch
-        {
-            InstalledState { Updated: false } => "Warning",
-            InstalledState => "Danger",
-            _ => "Primary"
         };
 
         public async Task OnUpdate(IInstaller inst, Action<ModProgressArgs> setProgress)
@@ -158,7 +110,7 @@ namespace Scarab.Models
                 }
                 else
                 {
-                    State = (NotInstalledState)State with { Installing = true };
+                    State = (NotInstalledState) State with { Installing = true };
 
                     setProgress(new ModProgressArgs());
 

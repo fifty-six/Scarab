@@ -1,0 +1,155 @@
+<rx:ReactiveUserControl x:TypeArguments="models:ModItem" xmlns="https://github.com/avaloniaui"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                        xmlns:views="clr-namespace:Scarab.Views"
+                        xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+                        xmlns:mock="clr-namespace:Scarab.Mock"
+                        xmlns:rx="http://reactiveui.net"
+                        xmlns:models="clr-namespace:Scarab.Models"
+                        xmlns:ext="clr-namespace:Scarab.Extensions"
+                        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="45"
+                        d:DataContext="{x:Static mock:MockViewModel.DesignMod}"
+                        x:Name="mli"
+                        x:Class="Scarab.Views.ModListItem">
+    <UserControl.Styles>
+        <Style Selector="#mli:installed">
+            <Style Selector="^ i|Icon#InstallIcon">
+                <Setter Property="Value" Value="fa-solid fa-rotate" />
+            </Style>
+
+            <Style Selector="^ #InstallUpdateButton TextBlock">
+                <Setter Property="Text" Value="{ext:Localize XAML_Update}" />
+            </Style>
+
+        </Style>
+
+        <Style Selector="#mli:updated">
+            <Style Selector="^ Button#InstallUpdateButton">
+                <Setter Property="IsEnabled" Value="False" />
+            </Style>
+        </Style>
+
+        <Style Selector="#mli:not(:installed)">
+            <Style Selector="^ i|Icon#InstallIcon">
+                <Setter Property="Value" Value="fa-solid fa-download" />
+            </Style>
+
+            <Style Selector="^ #InstallUpdateButton TextBlock">
+                <Setter Property="Text" Value="{ext:Localize MI_InstallText_NotInstalled}" />
+            </Style>
+
+            <!-- Maybe remove this one; we want to be able to queue mods -->
+            <Style Selector="^ #mli:installing">
+                <Style Selector="^ Button#InstallUpdateButton">
+                    <Setter Property="IsEnabled" Value="False" />
+                </Style>
+            </Style>
+        </Style>
+    </UserControl.Styles>
+
+    <Border
+        Padding="5 2"
+        Margin="0"
+        CornerRadius="{DynamicResource RadiusCardCornerRadius}">
+        <Grid
+            ColumnDefinitions="auto, *, auto, auto"
+            RowDefinitions="Auto"
+            ShowGridLines="False">
+
+            <Border
+                Grid.Row="0"
+                Grid.Column="0"
+                CornerRadius="5"
+                ClipToBounds="True">
+                <Svg
+                    Path="avares://Scarab/Assets/placeholder.svg"
+                    Height="40"
+                    Width="40"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center" />
+            </Border>
+
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="1"
+                Margin="10 0"
+                Text="{Binding Name}"
+                FontWeight="DemiBold"
+                TextTrimming="CharacterEllipsis"
+                VerticalAlignment="Center" />
+
+            <ToggleSwitch
+                x:Name="EnableSwitch"
+                Grid.Row="0"
+                Grid.Column="2"
+                OnContent=""
+                OffContent=""
+                CommandParameter="{Binding .}"
+                Command="{Binding $parent[views:ModPageView].ViewModel.OnEnable}"
+                IsChecked="{Binding Enabled}"
+                IsEnabled="{Binding Installed}"
+                HorizontalAlignment="Center"
+                VerticalContentAlignment="Center">
+                <ToggleSwitch.Styles>
+                    <Style Selector="ToggleSwitch:checked /template/ Border#SwitchBackgroundBorder">
+                        <Setter Property="Background" Value="{DynamicResource SemiBlue4Color}" />
+                    </Style>
+                    <Style Selector="ToggleSwitch:checked:pointerover /template/ Border#SwitchBackgroundBorder">
+                        <Setter Property="Background" Value="{DynamicResource SemiBlue5Color}" />
+                    </Style>
+                    <Style Selector="ToggleSwitch:checked:pressed /template/ Border#SwitchBackgroundBorder">
+                        <Setter Property="Background" Value="{DynamicResource SemiBlue6Color}" />
+                    </Style>
+                </ToggleSwitch.Styles>
+            </ToggleSwitch>
+
+            <Border
+                Grid.Row="0"
+                Grid.Column="3">
+
+                <StackPanel Orientation="Horizontal" Spacing="0">
+
+                    <Button
+                        x:Name="InstallUpdateButton"
+                        Width="90"
+                        CommandParameter="{Binding .}"
+                        CornerRadius="3 0 0 3"
+                        Command="{Binding $parent[views:ModPageView].ViewModel.OnInstall}"
+                        VerticalAlignment="Center">
+
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <i:Icon x:Name="InstallIcon" />
+                            <TextBlock />
+                        </StackPanel>
+
+                    </Button>
+
+                    <DropDownButton
+                        Margin="2 0 0 0"
+                        Width="30"
+                        IsEnabled="{Binding Installed}"
+                        Height="31"
+                        VerticalAlignment="Center"
+                        CornerRadius="0 3 3 0">
+
+                        <DropDownButton.Flyout>
+
+                            <MenuFlyout Placement="BottomEdgeAlignedRight">
+
+                                <MenuItem
+                                    Header="Uninstall"
+                                    CommandParameter="{Binding .}"
+                                    i:MenuItem.Icon="fa-solid fa-trash-can"
+                                    Command="{Binding $parent[views:ModPageView].ViewModel.OnUninstall}" />
+
+                            </MenuFlyout>
+
+                        </DropDownButton.Flyout>
+
+                    </DropDownButton>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</rx:ReactiveUserControl>

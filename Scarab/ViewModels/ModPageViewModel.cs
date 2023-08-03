@@ -229,13 +229,13 @@ public partial class ModPageViewModel : ViewModelBase
         {
             var dependents = _reverseDependencySearch.GetAllEnabledDependents(item).ToList();
 
-            if (!item.EnabledIsChecked ||
+            if (!item.Enabled ||
                 dependents.Count == 0 ||
                 await DisplayHasDependentsWarning(item.Name, dependents))
                 await _installer.Toggle(item);
 
             // to reset the visuals of the toggle to the correct value
-            item.CallOnPropertyChanged(nameof(item.EnabledIsChecked));
+            item.CallOnPropertyChanged(nameof(item.Enabled));
         }
         catch (Exception e)
         {

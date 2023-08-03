@@ -23,9 +23,9 @@ public static class MockViewModel
             };
         }
     }
+    
+    public static ModItem DesignMod => new MockDatabase().Items.ToArray()[0];
 
-    
-    
     public static AboutViewModel AboutInstance { get; } = new();
 
     public static SettingsViewModel SettingsInstance

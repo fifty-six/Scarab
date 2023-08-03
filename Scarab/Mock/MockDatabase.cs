@@ -20,14 +20,14 @@ public class MockDatabase : IModDatabase
             (
                 new InstalledState(true, new Version(1, 0), true),
                 new Version(1, 0),
-                Array.Empty<string>(),
+                new string[] { "ILove", "Having", "Dependencies" },
                 "link",
                 "sha",
                 "NormalEx",
                 "An example", 
                 "github.com/fifty-six/no",
                 ImmutableArray.Create(Tag.Boss, Tag.Utility),
-                Array.Empty<string>()
+                new string[] { "ILove", "Having", "Integrations" }
             ),
             // Installed but out of date
             new
