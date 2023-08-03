@@ -148,7 +148,7 @@
             IsPaneOpen="True">
 
             <!-- Details of the selected item -->
-            <views:ModDetailsView DataContext="{Binding}" />
+            <views:ModDetailsView />
 
             <SplitView.Pane>
                 <views:ModListView />

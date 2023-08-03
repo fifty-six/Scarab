@@ -6,9 +6,22 @@ using Scarab.ViewModels;
 
 namespace Scarab.Mock;
 
+public class DesignModPageViewModel : ModPageViewModel
+{
+    public DesignModPageViewModel(ISettings settings,
+        IModDatabase db,
+        IInstaller inst,
+        IModSource mods) : base(settings, db, inst, mods)
+    {
+        Database = db;
+    }
+
+    public IModDatabase Database { get; }
+}
+
 public static class MockViewModel
 {
-    public static ModPageViewModel DesignInstance
+    public static DesignModPageViewModel DesignInstance
     {
         get
         {
@@ -17,9 +30,9 @@ public static class MockViewModel
 
             var db = new MockDatabase();
 
-            return new ModPageViewModel(Moq.Mock.Of<ISettings>(), db, Moq.Mock.Of<IInstaller>(), src.Object) 
+            return new DesignModPageViewModel(Moq.Mock.Of<ISettings>(), db, Moq.Mock.Of<IInstaller>(), src.Object) 
             {
-                SelectedModItem = db.Items.First()
+                SelectedModItem = db.Items.ToList()[1]
             };
         }
     }

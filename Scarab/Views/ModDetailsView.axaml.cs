@@ -7,7 +7,6 @@ using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using Scarab.ViewModels;
 
-
 namespace Scarab.Views;
 
 public partial class ModDetailsView : ReactiveUserControl<ModPageViewModel>
