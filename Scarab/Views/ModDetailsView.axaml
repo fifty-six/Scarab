@@ -8,11 +8,21 @@
              xmlns:ext="clr-namespace:Scarab.Extensions"
              xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
              xmlns:conv="clr-namespace:Scarab.Converters"
+             xmlns:views="clr-namespace:Scarab.Views"
              mc:Ignorable="d"
              d:DesignWidth="400"
              d:DesignHeight="550"
              d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
              x:DataType="models:ModItem">
+    <!--
+    <Design.PreviewWith>
+        <TabControl ItemsSource="{Binding Database.Items}">
+            <TabControl.ContentTemplate>
+                <views:ModDetailsView DataContext={/>
+            </TabControl.ContentTemplate>
+        </TabControl>
+    </Design.PreviewWith>
+    -->
     <!-- Details of the selected item -->
     <Border IsVisible="{Binding SelectedModItem, Converter={x:Static ObjectConverters.IsNotNull}}">
         <StackPanel
@@ -23,7 +33,7 @@
                 FontSize="24"
                 FontWeight="Black"
                 Margin="0 10 0 0"
-                TextTrimming="CharacterEllipsis"/>
+                TextTrimming="CharacterEllipsis" />
             <TextBlock Text="{Binding Description}" TextWrapping="Wrap"
                        Margin="0 0 0 15" />
             <Grid ColumnDefinitions="*,*">
@@ -46,18 +56,22 @@
                     <StackPanel Margin="0 10 0 0" DockPanel.Dock="Bottom"
                                 VerticalAlignment="Bottom">
                         <TextBlock Text="{ext:Localize XAML_Version}" FontWeight="Bold" />
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel x:Name="VersionBlock" Orientation="Horizontal">
+                            <StackPanel.Resources>
+                                <SolidColorBrush x:Key="Highlight" Color="#f49107" />
+                            </StackPanel.Resources>
+                            <StackPanel.Styles>
+                                <Style Selector="TextBlock.Update">
+                                    <Setter Property="Foreground" Value="{DynamicResource Highlight}" />
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                    <Setter Property="Margin" Value="4 0 0 0" />
+                                </Style>
+                            </StackPanel.Styles>
+                            
                             <TextBlock Text="{Binding VersionText}" />
-                            <TextBlock
-                                IsVisible="{Binding UpdateAvailable}"
-                                Foreground="{DynamicResource Highlight}"
-                                Margin="4 0 0 0"
-                                FontWeight="Bold">
-                                <Run Text="-> "/>
-                                <Run Text="{Binding Version}"/>
-                                <TextBlock.Resources>
-                                    <SolidColorBrush x:Key="Highlight" Color="#f49107" />
-                                </TextBlock.Resources>
+                            <TextBlock Classes="Update" IsVisible="{Binding UpdateAvailable}">
+                                <Run Text="-> " />
+                                <Run Text="{Binding Version}" />
                             </TextBlock>
                         </StackPanel>
                     </StackPanel>
@@ -68,10 +82,12 @@
                     <StackPanel IsVisible="{Binding !!Dependencies.Length}">
                         <TextBlock Text="{ext:Localize XAML_Dependencies}"
                                    FontWeight="Bold" />
-                        <TextBlock Text="{Binding Dependencies, Converter={x:Static conv:CollectionConverters.ConcatStrLines}}" />
+                        <TextBlock
+                            Text="{Binding Dependencies, Converter={x:Static conv:CollectionConverters.ConcatStrLines}}" />
                     </StackPanel>
 
-                    <StackPanel IsVisible="{Binding Tags, Converter={x:Static conv:IntConverters.NonZero}}" Margin="0 10 0 0">
+                    <StackPanel IsVisible="{Binding Tags, Converter={x:Static conv:IntConverters.NonZero}}"
+                                Margin="0 10 0 0">
                         <TextBlock Text="{ext:Localize XAML_Tags}" FontWeight="Bold" />
                         <TextBlock Text="{Binding Tags, Converter={x:Static conv:TagConverters.AsString}}" />
                     </StackPanel>
@@ -79,7 +95,8 @@
                     <StackPanel IsVisible="{Binding !!Integrations.Length}" Margin="0 10 0 0">
                         <TextBlock Text="{ext:Localize XAML_Integrations}"
                                    FontWeight="Bold" />
-                        <TextBlock Text="{Binding Integrations, Converter={x:Static conv:CollectionConverters.ConcatStrLines}}" />
+                        <TextBlock
+                            Text="{Binding Integrations, Converter={x:Static conv:CollectionConverters.ConcatStrLines}}" />
                     </StackPanel>
                 </StackPanel>
             </Grid>
