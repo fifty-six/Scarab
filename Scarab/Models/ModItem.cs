@@ -35,11 +35,7 @@ namespace Scarab.Models
             Repository = repository;
             Tags = tags.Aggregate((Tag) 0, (acc, x) => acc | x);
             Integrations = integrations;
-
-            // TODO: i18n
-            TagDesc = string.Join(Environment.NewLine, tags.Select(x => x.ToString()));
         }
-
 
         public Version Version { get; }
         public string[] Dependencies { get; }
@@ -51,8 +47,6 @@ namespace Scarab.Models
 
         public Tag Tags { get; }
         public string[] Integrations { get; }
-
-        public string TagDesc { get; }
 
         [Notify] private ModState _state;
 

@@ -73,7 +73,7 @@
 
                     <StackPanel IsVisible="{Binding Tags, Converter={x:Static conv:IntConverters.NonZero}}" Margin="0 10 0 0">
                         <TextBlock Text="{ext:Localize XAML_Tags}" FontWeight="Bold" />
-                        <TextBlock Text="{Binding Tags, Converter={x:Static conv:CollectionConverters.ConcatStrLines}}" />
+                        <TextBlock Text="{Binding Tags, Converter={x:Static conv:TagConverters.AsString}}" />
                     </StackPanel>
 
                     <StackPanel IsVisible="{Binding !!Integrations.Length}" Margin="0 10 0 0">
