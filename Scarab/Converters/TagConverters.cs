@@ -1,33 +1,29 @@
-using System.Text;
+using System.Collections.Generic;
 using Avalonia.Data.Converters;
 using Scarab.Models;
 
 namespace Scarab.Converters;
 
-public class TagConverters
+public static class TagConverters
 {
-    public static IValueConverter AsString = new FuncValueConverter<Tag, string>(
+    public static IValueConverter NonZero = new FuncValueConverter<Tag, bool>(t => (int) t != 0);
+    
+    public static IValueConverter AsStrings = new FuncValueConverter<Tag, IEnumerable<string>>(
         t =>
         {
-            var sb = new StringBuilder();
-            bool first = true;
+            var l = new List<string>();
 
-            for (int i = 0; i < sizeof(Tag); i++)
+            for (int i = 0; i < sizeof(Tag) * 8; i++)
             {
                 var tag = (Tag) (1 << i);
 
                 if (!t.HasFlag(tag))
                     continue;
 
-                if (!first)
-                    sb.Append('\n');
-                else
-                    first = false;
-
-                sb.Append(tag);
+                l.Add(tag.ToString());
             }
 
-            return sb.ToString();
+            return l;
         }
     );
 }

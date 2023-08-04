@@ -9,7 +9,7 @@
             xmlns:ext="clr-namespace:Scarab.Extensions"
             xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
             xmlns:reactiveUi="http://reactiveui.net"
-            mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="550"
+            mc:Ignorable="d" d:DesignWidth="980" d:DesignHeight="550"
             x:Class="Scarab.Views.ModPageView"
             x:DataType="viewModels:ModPageViewModel"
             d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"

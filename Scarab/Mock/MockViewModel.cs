@@ -32,7 +32,7 @@ public static class MockViewModel
 
             return new DesignModPageViewModel(Moq.Mock.Of<ISettings>(), db, Moq.Mock.Of<IInstaller>(), src.Object) 
             {
-                SelectedModItem = db.Items.ToList()[1]
+                SelectedModItem = db.Items.ToList()[0]
             };
         }
     }
