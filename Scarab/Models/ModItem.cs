@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using PropertyChanged.SourceGenerator;
 using Scarab.Interfaces;
 
@@ -133,6 +134,11 @@ namespace Scarab.Models
                 State = origState;
                 throw;
             }
+        }
+
+        protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            Dispatcher.UIThread.Invoke(() => PropertyChanged?.Invoke(this, e));
         }
 
         public void CallOnPropertyChanged(string propertyName)
