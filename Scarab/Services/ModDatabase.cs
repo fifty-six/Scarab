@@ -65,10 +65,12 @@ namespace Scarab.Services
         
         public static async Task<(ModLinks, ApiLinks)> FetchContent(HttpClient hc)
         {
-            ModLinks ml = await FetchModLinks(hc);
-            ApiLinks al = await FetchApiLinks(hc);
+            var ml = FetchModLinks(hc);
+            var al = FetchApiLinks(hc);
 
-            return (ml, al);
+            await Task.WhenAll(ml, al);
+
+            return (await ml, await al);
         }
         
         private static T FromString<T>(string xml)
