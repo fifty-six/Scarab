@@ -89,6 +89,12 @@
                     <ItemsControl Classes="Bulleted" ItemsSource="{Binding Integrations}" />
                 </TabItem>
 
+                <TabItem
+                    IsVisible="{Binding !!Authors.Length}"
+                    Header="Authors">
+                    <ItemsControl Classes="Bulleted" ItemsSource="{Binding Authors}" />
+                </TabItem>
+
                 <TabItem Header="Repository">
                     <StackPanel>
                         <TextBlock Text="{ext:Localize XAML_Repository}" FontWeight="Bold" />

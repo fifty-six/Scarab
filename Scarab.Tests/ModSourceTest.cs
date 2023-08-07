@@ -36,6 +36,7 @@ namespace Scarab.Tests
                 "test",
                 "repo",
                 ImmutableArray<Tag>.Empty,
+                Array.Empty<string>(),
                 Array.Empty<string>()
             );
             

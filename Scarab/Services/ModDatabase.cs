@@ -46,6 +46,7 @@ namespace Scarab.Services
                     
                     tags: tags,
                     integrations: mod.Integrations,
+                    authors: mod.Authors,
                     
                     state: mods.FromManifest(mod)
                     

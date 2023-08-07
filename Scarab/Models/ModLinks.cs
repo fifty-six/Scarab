@@ -58,6 +58,10 @@ namespace Scarab.Models
         [XmlArray(ElementName = "Integrations")]
         [XmlArrayItem(ElementName = "Integration")]
         public string[] Integrations { get; set; } = Array.Empty<string>();
+        
+        [XmlArray(ElementName = "Authors")]
+        [XmlArrayItem(ElementName = "Author")]
+        public string[] Authors { get; set; } = Array.Empty<string>();
 
         public override string ToString()
         {
@@ -66,6 +70,7 @@ namespace Scarab.Models
                 + $"\t{nameof(Name)}: {Name},\n"
                 + $"\t{nameof(Links)}: {(object?) _link ?? Links},\n"
                 + $"\t{nameof(Dependencies)}: {string.Join(", ", Dependencies)},\n"
+                + $"\t{nameof(Authors)}: {string.Join(", ", Authors)},\n"
                 + $"\t{nameof(Description)}: {Description}\n"
                 + "}";
         }

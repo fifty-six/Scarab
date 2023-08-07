@@ -27,7 +27,8 @@ public class MockDatabase : IModDatabase
                 "An example", 
                 "github.com/fifty-six/no",
                 ImmutableArray.Create(Tag.Boss, Tag.Utility),
-                new string[] { "ILove", "Having", "Integrations" }
+                new string[] { "ILove", "Having", "Integrations" },
+                new[] { "56", "57", "58" }
             ),
             // Installed but out of date
             new
@@ -41,6 +42,7 @@ public class MockDatabase : IModDatabase
                 "An example",
                 "https://github.com/fifty-six/yup",
                 ImmutableArray.Create(Tag.Library),
+                Array.Empty<string>(),
                 Array.Empty<string>()
             ),
             // Not installed
@@ -55,6 +57,7 @@ public class MockDatabase : IModDatabase
                 "An example",
                 "example.com",
                 ImmutableArray<Tag>.Empty,
+                Array.Empty<string>(),
                 Array.Empty<string>()
             ),
             // Example with a really long name and tags and integrations
@@ -69,7 +72,8 @@ public class MockDatabase : IModDatabase
                 "An example",
                 "https://example.com/really/really/really/really/really/long/url/to/test/wrapping/impls/....",
                 ImmutableArray.Create(Tag.Cosmetic, Tag.Expansion, Tag.Gameplay),
-                new[] { "NormalEx" }
+                new[] { "NormalEx" },
+                Array.Empty<string>()
             )
         };
     }

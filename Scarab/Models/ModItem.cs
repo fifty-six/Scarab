@@ -11,9 +11,7 @@ namespace Scarab.Models
 {
     public partial class ModItem : INotifyPropertyChanged, IEquatable<ModItem>
     {
-        public ModItem
-        (
-            ModState state,
+        public ModItem(ModState state,
             Version version,
             string[] dependencies,
             string link,
@@ -22,7 +20,8 @@ namespace Scarab.Models
             string description,
             string repository,
             ImmutableArray<Tag> tags,
-            string[] integrations
+            string[] integrations,
+            string[] authors
         )
         {
             _state = state;
@@ -36,20 +35,27 @@ namespace Scarab.Models
             Repository = repository;
             Tags = tags.Aggregate((Tag) 0, (acc, x) => acc | x);
             Integrations = integrations;
+            Authors = authors;
         }
 
+        // Install details
+        public string Name { get; }
         public Version Version { get; }
         public string[] Dependencies { get; }
+        
+        // Download details
         public string Link { get; }
         public string Sha256 { get; }
-        public string Name { get; }
+        
+        // Displayed info
+        public Tag Tags { get; }
         public string Description { get; }
         public string Repository { get; }
-
-        public Tag Tags { get; }
         public string[] Integrations { get; }
+        public string[] Authors { get; set; }
 
-        [Notify] private ModState _state;
+        [Notify] 
+        private ModState _state;
 
         public bool Enabled => State is InstalledState { Enabled: true };
 
