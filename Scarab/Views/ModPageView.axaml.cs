@@ -1,12 +1,14 @@
 using System;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
+using JetBrains.Annotations;
 using ReactiveUI;
 using Scarab.Models;
 using Scarab.ViewModels;
 
 namespace Scarab.Views;
 
+[UsedImplicitly]
 public partial class ModPageView : ReactiveUserControl<ModPageViewModel>
 {
     public ModPageView()

@@ -4,6 +4,6 @@ namespace Scarab.Models;
 
 public record struct ModProgressArgs
 {
-    public DownloadProgressArgs? Download  { get; internal set; }
-    public bool                  Completed { get; internal set; }
+    public DownloadProgressArgs? Download  { get; internal init; }
+    public bool                  Completed { get; internal init; }
 }

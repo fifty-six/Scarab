@@ -1,14 +1,14 @@
 using System;
-using System.Globalization;
+using JetBrains.Annotations;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
-using Scarab.Extensions;
 using Scarab.Interfaces;
 
 namespace Scarab.ViewModels;
 
 public partial class SettingsViewModel : ViewModelBase
 {
+    [UsedImplicitly]
     private ISettings Settings { get; }
 
     public static string[] Languages => new[] {

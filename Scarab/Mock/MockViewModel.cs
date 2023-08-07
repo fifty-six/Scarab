@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Threading.Tasks;
 using Scarab.Interfaces;
 using Scarab.Models;
 using Scarab.ViewModels;
@@ -50,20 +49,5 @@ public static class MockViewModel
 
             return new SettingsViewModel(settings.Object);
         }
-    }
-
-    public class MockSource : IModSource
-    {
-        public ModState ApiInstall { get; } = new NotInstalledState();
-        
-        public Task RecordApiState(ModState st) { throw new System.NotImplementedException(); }
-
-        public ModState FromManifest(Manifest manifest) { throw new System.NotImplementedException(); }
-
-        public Task RecordInstalledState(ModItem item) { throw new System.NotImplementedException(); }
-
-        public Task RecordUninstall(ModItem item) { throw new System.NotImplementedException(); }
-
-        public Task Reset() { throw new System.NotImplementedException(); }
     }
 }

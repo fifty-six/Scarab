@@ -111,7 +111,7 @@ namespace Scarab.Models
                 }
                 else
                 {
-                    State = (NotInstalledState) State with { Installing = true };
+                    State = new NotInstalledState { Installing = true };
 
                     setProgress(new ModProgressArgs());
 
@@ -142,7 +142,7 @@ namespace Scarab.Models
             }
         }
 
-        protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
+        private void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             Dispatcher.UIThread.Invoke(() => PropertyChanged?.Invoke(this, e));
         }

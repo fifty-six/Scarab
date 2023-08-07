@@ -9,7 +9,7 @@ namespace Scarab.Models
     public record InstalledState : ModState
     {
         [JsonConverter(typeof(JsonVersionConverter))]
-        public Version Version { get; init; }
+        public Version Version { get; }
         
         [JsonIgnore]
         public bool Updated { get; init; }
@@ -21,12 +21,6 @@ namespace Scarab.Models
             this.Enabled = Enabled;
             this.Version = Version;
             this.Updated = Updated;
-        }
-        
-        public void Deconstruct(out bool enabled, out bool updated)
-        {
-            enabled = Enabled;
-            updated = Updated;
         }
     }
 

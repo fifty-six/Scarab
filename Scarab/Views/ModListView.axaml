@@ -7,8 +7,6 @@
              xmlns:viewModels="clr-namespace:Scarab.ViewModels"
              xmlns:views="clr-namespace:Scarab.Views"
              xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
-             xmlns:ext="clr-namespace:Scarab.Extensions"
-             xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="550"
              x:DataType="viewModels:ModPageViewModel"
              d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"

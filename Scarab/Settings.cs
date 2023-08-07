@@ -124,10 +124,10 @@ namespace Scarab
                 return false;
 
             // Double check, just in case.
-            if (PathUtil.ValidateWithSuffix(gog_path) is not ValidPath vpath)
+            if (PathUtil.ValidateWithSuffix(gog_path) is not { } validPath)
                 return false;
 
-            path = vpath;
+            path = validPath;
 
             return true;
         }

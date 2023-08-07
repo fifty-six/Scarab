@@ -9,18 +9,12 @@ namespace Scarab.ViewModels;
 
 public class AboutViewModel : ViewModelBase
 {
-    public ReactiveCommand<Unit, Unit> Donate { get; set; }
-    public ReactiveCommand<Unit, Unit> OpenLogs { get; set; }
-
-    public AboutViewModel()
-    {
-        Donate = ReactiveCommand.Create(_Donate);
-        OpenLogs = ReactiveCommand.Create(_OpenLogs);
-    }
+    public ReactiveCommand<Unit, Unit> Donate { get; set; } = ReactiveCommand.Create(_Donate);
+    public ReactiveCommand<Unit, Unit> OpenLogs { get; set; } = ReactiveCommand.Create(_OpenLogs);
 
     public string Version { get; } = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown";
 
-    public string OSString => $"{OS} {Environment.OSVersion.Version}";
+    public static string OSString => $"{OS} {Environment.OSVersion.Version}";
 
     [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
     private static string OS

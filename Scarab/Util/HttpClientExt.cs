@@ -48,7 +48,7 @@ public static class HttpClientExt
         var memory = new MemoryStream(dl_size);
 
         var args = new DownloadProgressArgs {
-            TotalBytes = (int?) content.Headers.ContentLength,
+            TotalBytes = (int?) content.Headers.ContentLength
         };
 
         progress.Report(args);

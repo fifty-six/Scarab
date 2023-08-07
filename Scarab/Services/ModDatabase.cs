@@ -55,7 +55,7 @@ namespace Scarab.Services
                 _items.Add(item);
             }
 
-            _items.Sort((a, b) => string.Compare(a.Name, b.Name));
+            _items.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
 
             Api = (al.Manifest.Links.OSUrl, al.Manifest.Version, al.Manifest.Links.SHA256);
         }

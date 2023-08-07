@@ -25,7 +25,7 @@ namespace Scarab.Services
         public ModState ApiInstall
         {
             get => (ModState?) _ApiState ?? new NotInstalledState();
-            private set => _ApiState = value is InstalledState s ? s : null; 
+            private set => _ApiState = value as InstalledState; 
         } 
 
         [JsonInclude]

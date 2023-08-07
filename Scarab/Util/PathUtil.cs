@@ -55,6 +55,7 @@ namespace Scarab.Util
             }
         }
 
+        // ReSharper disable once SuggestBaseTypeForParameter
         private static async Task<string> SelectMacApp(Window parent, bool fail)
         {
             while (true)

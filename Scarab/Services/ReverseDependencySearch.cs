@@ -16,28 +16,19 @@ public class ReverseDependencySearch
 
     public IEnumerable<ModItem> GetAllEnabledDependents(ModItem item)
     {
-        var dependants = new List<ModItem>();
-        
-        // check all enabled mods if they have a dependency on this mod
-        foreach (var mod in _items.Values.Where(x => x.Enabled))
-        {
-            if (IsDependent(mod, item))
-            {
-                dependants.Add(mod);
-            }
-        }
-        return dependants;
+        // Check all enabled mods if they have a dependency on this mod
+        return _items.Values.Where(x => x.Enabled).Where(mod => IsDependent(mod, item)).ToList();
     }
 
     private bool IsDependent(ModItem mod, ModItem targetMod)
     {
         foreach (var dependency in mod.Dependencies.Select(x => _items[x]))
         {
-            // if the mod's listed dependency is the targetMod, it is a dependency
+            // If the mod's listed dependency is the targetMod, it's a dependency
             if (dependency == targetMod) 
                 return true;
 
-            // it also is a dependent if it has a transitive dependent
+            // It's also a dependent if it has a transitive dependent
             if (IsDependent(dependency, targetMod)) 
                 return true;
         }

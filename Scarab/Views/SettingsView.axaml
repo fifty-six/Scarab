@@ -2,8 +2,6 @@
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                                xmlns:views="clr-namespace:Scarab.Views"
-                                xmlns:system="clr-namespace:System;assembly=System.Runtime"
                                 xmlns:viewModels="clr-namespace:Scarab.ViewModels"
                                 xmlns:mock="clr-namespace:Scarab.Mock"
                                 xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
@@ -80,8 +78,7 @@
                 Margin="0 0 0 0"
                 SelectedItem="{Binding Selected}"
                 ItemsSource="{Binding Languages}"
-                PlaceholderText="Locale">
-            </ComboBox>
+                PlaceholderText="Locale" />
             <CheckBox Grid.Column="1" Grid.Row="2">
                 Automatically remove dependencies when uninstalling mods
             </CheckBox>
