@@ -33,10 +33,9 @@ public partial class SettingsViewModel : ViewModelBase
                 if (string.IsNullOrEmpty(item))
                     return;
 
-                LocalizeExtension.ChangeLanguage(new CultureInfo(item));
-                
                 settings.PreferredCulture = item;
                 
+                settings.Apply();
                 settings.Save();
             });
     }
