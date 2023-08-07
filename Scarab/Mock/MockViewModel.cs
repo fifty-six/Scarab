@@ -5,17 +5,15 @@ using Scarab.ViewModels;
 
 namespace Scarab.Mock;
 
-public class DesignModPageViewModel : ModPageViewModel
-{
-    public DesignModPageViewModel(ISettings settings,
+public class DesignModPageViewModel(
+        ISettings settings,
         IModDatabase db,
         IInstaller inst,
-        IModSource mods) : base(settings, db, inst, mods)
-    {
-        Database = db;
-    }
-
-    public IModDatabase Database { get; }
+        IModSource mods
+    )
+    : ModPageViewModel(settings, db, inst, mods)
+{
+    public IModDatabase Database { get; } = db;
 }
 
 public static class MockViewModel

@@ -17,15 +17,15 @@ using Scarab.Util;
 namespace Scarab
 {
     [Serializable]
-    public class Settings : ISettings
+    public class Settings() : ISettings
     {
-        public string ManagedFolder { get; set; }
+        public string ManagedFolder { get; set; } = null!;
 
-        public bool AutoRemoveDeps { get; }
-        
+        public bool AutoRemoveDeps { get; } = false;
+
         public bool RequiresWorkaroundClient { get; set; }
 
-        public string PreferredCulture { get; set; }
+        public string PreferredCulture { get; set; } = CultureInfo.CurrentUICulture.Name;
 
         // @formatter:off
         private static readonly ImmutableList<string> STATIC_PATHS = new List<string>
@@ -69,12 +69,6 @@ namespace Scarab
         internal Settings(string path) : this() => ManagedFolder = path;
 
         // Used by serializer.
-        public Settings()
-        {
-            ManagedFolder = null!;
-            AutoRemoveDeps = false;
-            PreferredCulture = CultureInfo.CurrentUICulture.Name;
-        }
 
         public static string GetOrCreateDirPath()
         {
