@@ -1,19 +1,24 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:s="using:Scarab.ViewModels"
-        xmlns:views="clr-namespace:Scarab.Views"
         Width="850" Height="500"
         x:Class="Scarab.Views.MainWindow"
         x:DataType="s:MainWindowViewModel"
+        mc:Ignorable="d"
         Icon="/Assets/omegamaggotprime.ico"
         Title="Scarab">
+    <Design.DataContext>
+        <s:MainWindowViewModel />
+    </Design.DataContext>
     <TabControl TabStripPlacement="Top" HorizontalAlignment="Stretch">
         <TabItem x:Name="ModListTab" Header="Mods" HorizontalContentAlignment="Stretch">
             <ProgressBar Theme="{DynamicResource ProgressRing}" Width="100" Height="100" IsIndeterminate="True" />
         </TabItem>
 
-        <TabItem x:Name="SettingsTab" Header="Settings" Content="{Binding SettingsPage, TargetNullValue=''}"/>
-        
+        <TabItem x:Name="SettingsTab" Header="Settings" Content="{Binding SettingsPage, TargetNullValue=''}" />
+
         <TabItem Header="About">
             <s:AboutViewModel />
         </TabItem>
