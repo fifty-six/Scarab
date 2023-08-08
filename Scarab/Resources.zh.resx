@@ -202,7 +202,7 @@
     <value>更改游戏目录</value>
   </data>
   <data name="XAML_Dependencies" xml:space="preserve">
-    <value>依赖Mods：</value>
+    <value>依赖Mods</value>
   </data>
   <data name="XAML_Donate" xml:space="preserve">
     <value>捐赠</value>

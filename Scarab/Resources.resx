@@ -202,7 +202,7 @@
     <value>Change Path</value>
   </data>
   <data name="XAML_Dependencies" xml:space="preserve">
-    <value>Dependencies:</value>
+    <value>Dependencies</value>
   </data>
   <data name="XAML_Donate" xml:space="preserve">
     <value>Donate</value>
