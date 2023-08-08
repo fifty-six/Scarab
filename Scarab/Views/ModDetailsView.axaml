@@ -25,7 +25,13 @@
                 Margin="0 15 0 5"
                 TextTrimming="CharacterEllipsis" />
             <StackPanel Margin="0 0 0 8">
-                <TextBlock Text="{ext:Localize XAML_Version}" FontWeight="Bold" />
+                <StackPanel.Styles>
+                    <Style Selector="TextBlock">
+                        <Setter Property="FontWeight" Value="Bold" />
+                        <Setter Property="FontSize" Value="16" />
+                    </Style>
+                </StackPanel.Styles>
+                
                 <StackPanel x:Name="VersionBlock" Orientation="Horizontal">
                     <StackPanel.Resources>
                         <SolidColorBrush x:Key="Highlight" Color="#f49107" />
@@ -33,7 +39,6 @@
                     <StackPanel.Styles>
                         <Style Selector="TextBlock.Update">
                             <Setter Property="Foreground" Value="{DynamicResource Highlight}" />
-                            <Setter Property="FontWeight" Value="Bold" />
                             <Setter Property="Margin" Value="4 0 0 0" />
                         </Style>
                     </StackPanel.Styles>
