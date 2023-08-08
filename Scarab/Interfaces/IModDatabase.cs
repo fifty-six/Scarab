@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using Scarab.Models;
 
-namespace Scarab.Interfaces
+namespace Scarab.Interfaces;
+
+public interface IModDatabase
 {
-    public interface IModDatabase
-    {
-        IEnumerable<ModItem> Items { get; }
+    IEnumerable<ModItem> Items { get; }
         
-        (string Url, int Version, string SHA256) Api { get; }
-    }
+    (string Url, int Version, string SHA256) Api { get; }
 }

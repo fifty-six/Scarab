@@ -1,20 +1,19 @@
 using System.IO;
 
-namespace Scarab.Interfaces
+namespace Scarab.Interfaces;
+
+public interface ISettings
 {
-    public interface ISettings
-    {
-        bool AutoRemoveDeps { get; }
+    bool AutoRemoveDeps { get; }
         
-        string ManagedFolder { get; set; }
+    string ManagedFolder { get; set; }
         
-        string PreferredCulture { get; set; }
+    string PreferredCulture { get; set; }
         
-        string ModsFolder     => Path.Combine(ManagedFolder, "Mods");
-        string DisabledFolder => Path.Combine(ModsFolder, "Disabled");
+    string ModsFolder     => Path.Combine(ManagedFolder, "Mods");
+    string DisabledFolder => Path.Combine(ModsFolder, "Disabled");
 
-        void Save();
+    void Save();
 
-        void Apply();
-    }
+    void Apply();
 }

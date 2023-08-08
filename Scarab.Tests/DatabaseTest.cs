@@ -7,11 +7,11 @@ using Scarab.Models;
 using Scarab.Services;
 using Xunit;
 
-namespace Scarab.Tests
+namespace Scarab.Tests;
+
+public class DatabaseTest
 {
-    public class DatabaseTest
-    {
-        private static readonly string modlinks_xml = @"
+    private static readonly string modlinks_xml = @"
             <?xml version=""1.0""?>
             <ModLinks
                 xmlns=""https://github.com/HollowKnight-Modding/HollowKnight.ModLinks/HollowKnight.ModManager""
@@ -54,7 +54,7 @@ namespace Scarab.Tests
             </ModLinks>
         ".Trim();
 
-        private static readonly string api_xml = @"
+    private static readonly string api_xml = @"
             <?xml version=""1.0""?>
             <ApiLinks
                 xmlns=""https://github.com/HollowKnight-Modding/HollowKnight.ModLinks/HollowKnight.ModManager""
@@ -96,63 +96,62 @@ namespace Scarab.Tests
             </ApiLinks>
         ".Trim();
 
-        [Fact]
-        public void Serialization()
-        {
-            IModSource src = new InstalledMods(new MockFileSystem());
+    [Fact]
+    public void Serialization()
+    {
+        IModSource src = new InstalledMods(new MockFileSystem());
 
-            IModDatabase db = new ModDatabase(src, modlinks_xml, api_xml);
+        IModDatabase db = new ModDatabase(src, modlinks_xml, api_xml);
 
-            Assert.Equal
+        Assert.Equal
+        (
+            new ModItem
             (
-                new ModItem
-                (
-                    new NotInstalledState(),
-                    new Version(3, 0, 0, 0),
-                    new[] { "Vasi" },
-                    "https://github.com/fifty-six/HollowKnight.QoL/releases/download/v3/QoL.zip",
-                    string.Empty,
-                    "QoL",
-                    "A collection of various quality of life improvements.",
-                    "https://github.com/fifty-six/HollowKnight.QoL",
-                    ImmutableArray<Tag>.Empty, 
-                    Array.Empty<string>(),
-                    Array.Empty<string>()
-                ),
-                db.Items.First(x => x.Name == "QoL")
-            );
+                new NotInstalledState(),
+                new Version(3, 0, 0, 0),
+                new[] { "Vasi" },
+                "https://github.com/fifty-six/HollowKnight.QoL/releases/download/v3/QoL.zip",
+                string.Empty,
+                "QoL",
+                "A collection of various quality of life improvements.",
+                "https://github.com/fifty-six/HollowKnight.QoL",
+                ImmutableArray<Tag>.Empty, 
+                Array.Empty<string>(),
+                Array.Empty<string>()
+            ),
+            db.Items.First(x => x.Name == "QoL")
+        );
             
-            Assert.Equal(
-                63,
-                db.Api.Version
-            );
-        }
+        Assert.Equal(
+            63,
+            db.Api.Version
+        );
+    }
 
-        [Fact]
-        public void ReadEmptyState()
+    [Fact]
+    public void ReadEmptyState()
+    {
+        IModSource src = new InstalledMods(new MockFileSystem());
+
+        IModDatabase db = new ModDatabase(src, modlinks_xml, api_xml);
+
+        Assert.True(db.Items.All(x => x.State is NotInstalledState));
+    }
+
+    [Fact]
+    public void ReadState()
+    {
+        var src = new InstalledMods(new MockFileSystem())
         {
-            IModSource src = new InstalledMods(new MockFileSystem());
-
-            IModDatabase db = new ModDatabase(src, modlinks_xml, api_xml);
-
-            Assert.True(db.Items.All(x => x.State is NotInstalledState));
-        }
-
-        [Fact]
-        public void ReadState()
-        {
-            var src = new InstalledMods(new MockFileSystem())
+            Mods =
             {
-                Mods =
-                {
-                    ["QoL"] = new InstalledState(true, new Version(1, 0), false)
-                }
-            };
+                ["QoL"] = new InstalledState(true, new Version(1, 0), false)
+            }
+        };
 
-            IModDatabase db = new ModDatabase(src, modlinks_xml, api_xml);
+        IModDatabase db = new ModDatabase(src, modlinks_xml, api_xml);
 
-            Assert.True(db.Items.First(x => x.Name == "QoL").State is InstalledState { Updated: false, Enabled: true });
-            Assert.False(db.Items.First(x => x.Name == "Vasi").Installed);
-        }
+        Assert.True(db.Items.First(x => x.Name == "QoL").State is InstalledState { Updated: false, Enabled: true });
+        Assert.False(db.Items.First(x => x.Name == "Vasi").Installed);
     }
 }

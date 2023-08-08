@@ -6,29 +6,28 @@ using JetBrains.Annotations;
 using Scarab.ViewModels;
 using Scarab.Views;
 
-namespace Scarab
+namespace Scarab;
+
+[UsedImplicitly]
+public class App : Application
 {
-    [UsedImplicitly]
-    public class App : Application
+    public override void Initialize()
     {
-        public override void Initialize()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+        AvaloniaXamlLoader.Load(this);
+    }
 
-        public override void OnFrameworkInitializationCompleted()
+    public override void OnFrameworkInitializationCompleted()
+    {
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
                 
-                desktop.MainWindow = new MainWindow
-                {
-                    DataContext = new MainWindowViewModel()
-                };
-            }
-
-            base.OnFrameworkInitializationCompleted();
+            desktop.MainWindow = new MainWindow
+            {
+                DataContext = new MainWindowViewModel()
+            };
         }
+
+        base.OnFrameworkInitializationCompleted();
     }
 }
