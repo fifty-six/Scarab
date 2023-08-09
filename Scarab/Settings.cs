@@ -17,7 +17,7 @@ using Scarab.Util;
 namespace Scarab;
 
 [Serializable]
-public class Settings() : ISettings
+public class Settings : ISettings
 {
     public string ManagedFolder { get; set; } = null!;
 
@@ -69,6 +69,7 @@ public class Settings() : ISettings
     internal Settings(string path) : this() => ManagedFolder = path;
 
     // Used by serializer.
+    public Settings() { }
 
     public static string GetOrCreateDirPath()
     {
