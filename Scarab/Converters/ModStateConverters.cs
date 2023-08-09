@@ -1,6 +1,26 @@
+using System;
+using Avalonia.Data.Converters;
+using Scarab.Models;
+
 namespace Scarab.Converters;
 
-public class ModStateConverters
+public static class ModStateConverters
 {
-    
+    public static readonly IValueConverter ToApiToggleInstallString = new FuncValueConverter<ModState, string>(
+        s => s switch
+        {
+            InstalledState { Enabled: true  }  => Resources.MLVM_ApiButtonText_DisableAPI,
+            InstalledState { Enabled: false }  => Resources.MLVM_ApiButtonText_EnableAPI,
+            NotInstalledState                  => Resources.MI_InstallText_NotInstalled,
+            _                                  => throw new ArgumentOutOfRangeException(nameof(s))
+        }
+    );
+
+    public static readonly IValueConverter IsInstalled = new FuncValueConverter<ModState, bool>(
+        s => s is InstalledState
+    );
+
+    public static readonly IValueConverter IsInstalledAndEnabled = new FuncValueConverter<ModState, bool>(
+        s => s is InstalledState { Enabled: true }
+    );
 }

@@ -34,7 +34,7 @@ public partial class ModPageViewModel : ViewModelBase
     private readonly ReadOnlyObservableCollection<ModItem> _filteredItems;
     private readonly IInstaller _installer;
     private readonly SortableObservableCollection<ModItem> _items;
-    private readonly IModSource _mods;
+    public IModSource Mods { get; }
     private readonly ReverseDependencySearch _reverseDependencySearch;
 
     private readonly ISettings _settings;
@@ -63,7 +63,7 @@ public partial class ModPageViewModel : ViewModelBase
     {
         _settings = settings;
         _installer = inst;
-        _mods = mods;
+        Mods = mods;
         _db = db;
 
         _items = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
@@ -120,24 +120,7 @@ public partial class ModPageViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _selectedModItem, value);
     }
 
-    public string ApiButtonText => _mods.ApiInstall is InstalledState { Enabled: var enabled }
-        ? enabled
-            ? Resources.MLVM_ApiButtonText_DisableAPI
-            : Resources.MLVM_ApiButtonText_EnableAPI
-        : Resources.MLVM_ApiButtonText_ToggleAPI;
-
-    public bool ApiOutOfDate => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
-
-    public bool EnableApiButton => _mods.ApiInstall switch
-    {
-        NotInstalledState => false,
-        // Disabling, so we're putting back the vanilla assembly
-        InstalledState { Enabled: true } => File.Exists(Path.Combine(_settings.ManagedFolder, Installer.Vanilla)),
-        // Enabling, so take the modded one.
-        InstalledState { Enabled: false } => File.Exists(Path.Combine(_settings.ManagedFolder, Installer.Modded)),
-        // Unreachable
-        _ => throw new InvalidOperationException()
-    };
+    public bool ApiOutOfDate => Mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
 
     public bool CanUpdateAll => _items.Any(x => x.State is InstalledState { Updated: false }) && !_updating;
 
@@ -145,10 +128,10 @@ public partial class ModPageViewModel : ViewModelBase
 
     private async void ToggleApiCommand()
     {
-        await _installer.ToggleApi();
-
-        RaisePropertyChanged(nameof(ApiButtonText));
-        RaisePropertyChanged(nameof(EnableApiButton));
+        if (Mods.ApiInstall is not InstalledState)
+            await _installer.InstallApi();
+        else 
+            await _installer.ToggleApi();
     }
 
     private async Task ChangePathAsync()
@@ -161,7 +144,7 @@ public partial class ModPageViewModel : ViewModelBase
         _settings.ManagedFolder = path;
         _settings.Save();
 
-        await _mods.Reset();
+        await Mods.Reset();
 
         await MessageBoxManager.GetMessageBoxStandardWindow(Resources.MLVM_ChangePathAsync_Msgbox_Title,
             Resources.MLVM_ChangePathAsync_Msgbox_Text).Show();
@@ -260,8 +243,6 @@ public partial class ModPageViewModel : ViewModelBase
         }
 
         RaisePropertyChanged(nameof(ApiOutOfDate));
-        RaisePropertyChanged(nameof(ApiButtonText));
-        RaisePropertyChanged(nameof(EnableApiButton));
     }
 
     private async Task InternalUpdateInstallAsync(ModItem item, Func<IInstaller, Action<ModProgressArgs>, Task> f)
@@ -327,9 +308,6 @@ public partial class ModPageViewModel : ViewModelBase
 
         // Even if we threw, stop the progress bar.
         ProgressBarVisible = false;
-
-        RaisePropertyChanged(nameof(ApiButtonText));
-        RaisePropertyChanged(nameof(EnableApiButton));
 
         static int Comparer(ModItem x, ModItem y)
         {

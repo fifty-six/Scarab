@@ -1,19 +1,20 @@
 <reactiveUi:ReactiveUserControl x:TypeArguments="viewModels:ModPageViewModel"
-            xmlns="https://github.com/avaloniaui"
-            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-            xmlns:viewModels="clr-namespace:Scarab.ViewModels"
-            xmlns:views="clr-namespace:Scarab.Views"
-            xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
-            xmlns:ext="clr-namespace:Scarab.Extensions"
-            xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-            xmlns:reactiveUi="http://reactiveui.net"
-            mc:Ignorable="d" d:DesignWidth="980" d:DesignHeight="550"
-            x:Class="Scarab.Views.ModPageView"
-            x:DataType="viewModels:ModPageViewModel"
-            d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
-            Name="UserControl">
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:viewModels="clr-namespace:Scarab.ViewModels"
+                                xmlns:views="clr-namespace:Scarab.Views"
+                                xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
+                                xmlns:ext="clr-namespace:Scarab.Extensions"
+                                xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:c="clr-namespace:Scarab.Converters"
+                                mc:Ignorable="d" d:DesignWidth="980" d:DesignHeight="550"
+                                x:Class="Scarab.Views.ModPageView"
+                                x:DataType="viewModels:ModPageViewModel"
+                                d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
+                                Name="UserControl">
     <DockPanel>
         <!-- We disable these because ReSharper doesn't support finding the themes classes/resources afaict -->
         <!-- ReSharper disable Xaml.StyleClassNotFound -->
@@ -98,14 +99,17 @@
                         Classes="Small" />
                 </Grid>
 
-                <ToggleButton Classes="Primary"
-                              Grid.Column="3"
-                              Grid.Row="0"
-                              Margin=" 5 0"
-                              VerticalAlignment="Stretch">
+                <ToggleButton
+                    Classes="Primary"
+                    Grid.Column="3"
+                    Grid.Row="0"
+                    Margin=" 5 0"
+                    IsChecked="{Binding Mods.ApiInstall, Converter={x:Static c:ModStateConverters.IsInstalledAndEnabled}, Mode=OneWay}"
+                    Command="{Binding ToggleApi}"
+                    VerticalAlignment="Stretch">
                     <StackPanel Orientation="Horizontal" Spacing="5">
                         <i:Icon Value="fa-solid fa-power-off" />
-                        <TextBlock Text="Enable API" />
+                        <TextBlock Text="{Binding Mods.ApiInstall, Converter={x:Static c:ModStateConverters.ToApiToggleInstallString}}" />
                     </StackPanel>
                 </ToggleButton>
 
