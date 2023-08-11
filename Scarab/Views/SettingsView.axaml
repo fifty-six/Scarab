@@ -38,7 +38,8 @@
                 Grid.Row="0"
                 HorizontalContentAlignment="Stretch"
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Center">
+                VerticalAlignment="Center"
+                Command="{Binding ChangePath}">
                 <DockPanel>
                     <TextBlock
                         HorizontalAlignment="Left"

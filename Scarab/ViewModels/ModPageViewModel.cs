@@ -88,7 +88,6 @@ public partial class ModPageViewModel : ViewModelBase
         _reverseDependencySearch = new ReverseDependencySearch(_items);
 
         ToggleApi = ReactiveCommand.Create(ToggleApiCommand);
-        ChangePath = ReactiveCommand.CreateFromTask(ChangePathAsync);
         UpdateApi = ReactiveCommand.CreateFromTask(UpdateApiAsync);
 
         OnUpdate = ReactiveCommand.CreateFromTask<ModItem>(OnUpdateAsync);
@@ -107,8 +106,6 @@ public partial class ModPageViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> ToggleApi { get; }
     public ReactiveCommand<Unit, Unit> UpdateApi { get; }
-
-    public ReactiveCommand<Unit, Unit> ChangePath { get; }
 
     public ReactiveCommand<ModItem, Unit> OnUpdate { get; }
     public ReactiveCommand<ModItem, Unit> OnInstall { get; }
@@ -137,25 +134,6 @@ public partial class ModPageViewModel : ViewModelBase
             await _installer.ToggleApi();
         
         RaisePropertyChanged(nameof(Api));
-    }
-
-    private async Task ChangePathAsync()
-    {
-        var path = await PathUtil.SelectPathFallible();
-
-        if (path is null)
-            return;
-
-        _settings.ManagedFolder = path;
-        _settings.Save();
-
-        await _mods.Reset();
-
-        await MessageBoxManager.GetMessageBoxStandardWindow(Resources.MLVM_ChangePathAsync_Msgbox_Title,
-            Resources.MLVM_ChangePathAsync_Msgbox_Text).Show();
-
-        // Shutting down is easier than re-doing the source and all the items.
-        (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Shutdown();
     }
 
     public void OpenModsDirectory()

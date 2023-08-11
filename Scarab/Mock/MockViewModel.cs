@@ -47,7 +47,7 @@ public static class MockViewModel
             var settings = new Moq.Mock<ISettings>();
             settings.SetupGet(x => x.ManagedFolder).Returns("/home/home/src/test/Managed");
 
-            return new SettingsViewModel(settings.Object);
+            return new SettingsViewModel(settings.Object, Moq.Mock.Of<IModSource>());
         }
     }
 }
