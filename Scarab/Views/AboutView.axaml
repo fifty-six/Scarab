@@ -18,7 +18,7 @@
                 Scarab
             </TextBlock>
             <TextBlock Text="{Binding Version}" FontSize="20" />
-            <TextBlock Text="{Binding viewModels:AboutViewModel.OSString}" FontSize="15" />
+            <TextBlock Text="{x:Static viewModels:AboutViewModel.OSString}" FontSize="15" />
             <TextBlock>
                 Created by 56 et al.
             </TextBlock>
