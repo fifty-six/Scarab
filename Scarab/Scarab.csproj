@@ -31,11 +31,11 @@
         <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.0" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0" />
         <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0" />
+        <PackageReference Include="FakeItEasy" Version="8.0.0-alpha.1.10" />
         <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" />
         <PackageReference Include="MessageBox.Avalonia" Version="2.3.1-rc1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
         <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="7.1.2" />
-        <PackageReference Include="Moq" Version="4.18.4" />
         <PackageReference Include="Projektanker.Icons.Avalonia" Version="6.6.0-rc1.1" />
         <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="6.6.0-rc1.1" />
         <PackageReference Include="PropertyChanged.SourceGenerator" Version="1.0.8">

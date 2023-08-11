@@ -1,4 +1,5 @@
 using System.Linq;
+using FakeItEasy;
 using Scarab.Interfaces;
 using Scarab.Models;
 using Scarab.ViewModels;
@@ -24,12 +25,12 @@ public static class MockViewModel
     {
         get
         {
-            var src = new Moq.Mock<IModSource>();
-            src.SetupGet(x => x.ApiInstall).Returns(new NotInstalledState());
+            var src = A.Fake<IModSource>();
+            A.CallTo(() => src.ApiInstall).Returns(new NotInstalledState());
 
             var db = new MockDatabase();
 
-            return new DesignModPageViewModel(Moq.Mock.Of<ISettings>(), db, Moq.Mock.Of<IInstaller>(), src.Object) 
+            return new DesignModPageViewModel(A.Fake<ISettings>(), db, A.Fake<IInstaller>(), src) 
             {
                 SelectedModItem = db.Items.ToList()[0]
             };
@@ -44,10 +45,10 @@ public static class MockViewModel
     {
         get
         {
-            var settings = new Moq.Mock<ISettings>();
-            settings.SetupGet(x => x.ManagedFolder).Returns("/home/home/src/test/Managed");
+            var settings = A.Fake<ISettings>();
+            A.CallTo(() => settings.ManagedFolder).Returns("/home/home/src/test/Managed");
 
-            return new SettingsViewModel(settings.Object, Moq.Mock.Of<IModSource>());
+            return new SettingsViewModel(settings, A.Fake<IModSource>());
         }
     }
 }
