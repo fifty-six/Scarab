@@ -30,37 +30,60 @@ namespace Scarab.ViewModels;
 
 public partial class ModPageViewModel : ViewModelBase
 {
-    private readonly IModDatabase _db;
-
+    private static readonly Func<object, bool> ConstTrue = _ => true;
+    public static ImmutableArray<Tag> Tags { get; } = Enum.GetValues<Tag>().ToImmutableArray();
+    
     private readonly ReadOnlyObservableCollection<ModItem> _filteredItems;
-    private readonly IInstaller _installer;
     private readonly SortableObservableCollection<ModItem> _items;
+    
+    private readonly IModDatabase _db;
+    private readonly IInstaller _installer;
     private readonly IModSource _mods;
-    private readonly ReverseDependencySearch _reverseDependencySearch;
-
     private readonly ISettings _settings;
+    private readonly ReverseDependencySearch _reverseDependencySearch;
+    
+    public ReactiveCommand<Unit, Unit> UpdateAll { get; }
+    public ReactiveCommand<Unit, Unit> ToggleApi { get; }
+    public ReactiveCommand<Unit, Unit> UpdateApi { get; }
 
-    public ModState Api => _mods.ApiInstall;
+    public ReactiveCommand<ModItem, Unit> OnUpdate    { get; }
+    public ReactiveCommand<ModItem, Unit> OnInstall   { get; }
+    public ReactiveCommand<ModItem, Unit> OnUninstall { get; }
+    public ReactiveCommand<ModItem, Unit> OnEnable    { get; }
 
-    [Notify("ProgressBarIndeterminate")] private bool _pbIndeterminate;
+    [Notify("ProgressBarIndeterminate")] 
+    private bool _pbIndeterminate;
+    
+    [Notify("Progress")] 
+    private double _pbProgress;
 
-    [Notify("Progress")] private double _pbProgress;
+    [Notify("ProgressBarVisible")] 
+    private bool _pbVisible;
 
-    [Notify("ProgressBarVisible")] private bool _pbVisible;
+    [Notify] 
+    private string? _search;
 
-    [Notify] private string? _search;
-
-    [Notify] private Func<ModItem, bool> _searchFilter = _ => true;
-
+    [Notify]
     private ModItem? _selectedModItem;
 
-    [Notify] private Tag _selectedTag = Tag.All;
+    [Notify] 
+    private Tag _selectedTag = Tag.All;
+    
+    [Notify] 
+    private Func<ModItem, bool> _searchFilter = ConstTrue;
 
-    [Notify] private Func<ModItem, bool> _selectionFilter = _ => true;
+    [Notify] 
+    private Func<ModItem, bool> _selectionFilter = ConstTrue;
 
-    [Notify] private Func<ModItem, bool> _tagFilter = _ => true;
+    [Notify] 
+    private Func<ModItem, bool> _tagFilter = ConstTrue;
 
     private bool _updating;
+    
+    public ModState Api      => _mods.ApiInstall;
+    public bool ApiOutOfDate => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
+    public bool CanUpdateAll => _items.Any(x => x.State is InstalledState { Updated: false }) && !_updating;
+    public ReadOnlyObservableCollection<ModItem> FilteredItems => _filteredItems;
 
     public ModPageViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods)
     {
@@ -78,12 +101,12 @@ public partial class ModPageViewModel : ViewModelBase
         _filteredItems = new ReadOnlyObservableCollection<ModItem>(_items);
 
         cache.Connect()
-            .Filter(this.WhenAnyValue(x => x.SelectionFilter))
-            .Filter(this.WhenAnyValue(x => x.TagFilter))
-            .Filter(this.WhenAnyValue(x => x.SearchFilter))
-            .Sort(SortExpressionComparer<ModItem>.Ascending(x => ModToOrderedTuple(x)))
-            .Bind(out _filteredItems)
-            .Subscribe();
+             .Filter(this.WhenAnyValue(x => x.SelectionFilter))
+             .Filter(this.WhenAnyValue(x => x.TagFilter))
+             .Filter(this.WhenAnyValue(x => x.SearchFilter))
+             .Sort(SortExpressionComparer<ModItem>.Ascending(x => ModToOrderedTuple(x)))
+             .Bind(out _filteredItems)
+             .Subscribe();
 
         _reverseDependencySearch = new ReverseDependencySearch(_items);
 
@@ -104,29 +127,6 @@ public partial class ModPageViewModel : ViewModelBase
 
         this.WhenAnyValue(x => x.SelectedTag).Subscribe(t => { TagFilter = m => m.Tags.HasFlag(t); });
     }
-
-    public ReactiveCommand<Unit, Unit> UpdateAll { get; }
-    public ReactiveCommand<Unit, Unit> ToggleApi { get; }
-    public ReactiveCommand<Unit, Unit> UpdateApi { get; }
-
-    public ReactiveCommand<ModItem, Unit> OnUpdate { get; }
-    public ReactiveCommand<ModItem, Unit> OnInstall { get; }
-    public ReactiveCommand<ModItem, Unit> OnUninstall { get; }
-    public ReactiveCommand<ModItem, Unit> OnEnable { get; }
-
-    [UsedImplicitly] public ReadOnlyObservableCollection<ModItem> FilteredItems => _filteredItems;
-
-    public ModItem? SelectedModItem
-    {
-        get => _selectedModItem;
-        set => this.RaiseAndSetIfChanged(ref _selectedModItem, value);
-    }
-
-    public bool ApiOutOfDate => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
-
-    public bool CanUpdateAll => _items.Any(x => x.State is InstalledState { Updated: false }) && !_updating;
-
-    public ImmutableArray<Tag> Tags { get; } = Enum.GetValues<Tag>().ToImmutableArray();
 
     private async Task ToggleApiCommand()
     {
