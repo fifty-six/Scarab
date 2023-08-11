@@ -87,14 +87,15 @@ public partial class ModPageViewModel : ViewModelBase
 
         _reverseDependencySearch = new ReverseDependencySearch(_items);
 
-        ToggleApi = ReactiveCommand.Create(ToggleApiCommand);
+        ToggleApi = ReactiveCommand.CreateFromTask(ToggleApiCommand);
         UpdateApi = ReactiveCommand.CreateFromTask(UpdateApiAsync);
+        UpdateAll = ReactiveCommand.CreateFromTask(UpdateAllAsync);
 
         OnUpdate = ReactiveCommand.CreateFromTask<ModItem>(OnUpdateAsync);
         OnInstall = ReactiveCommand.CreateFromTask<ModItem>(OnInstallAsync);
         OnUninstall = ReactiveCommand.CreateFromTask<ModItem>(OnUninstallAsync);
         OnEnable = ReactiveCommand.CreateFromTask<ModItem>(OnEnableAsync);
-
+        
         this.WhenAnyValue(x => x.Search)
             .Subscribe(
                 s => SearchFilter = m =>
@@ -104,6 +105,7 @@ public partial class ModPageViewModel : ViewModelBase
         this.WhenAnyValue(x => x.SelectedTag).Subscribe(t => { TagFilter = m => m.Tags.HasFlag(t); });
     }
 
+    public ReactiveCommand<Unit, Unit> UpdateAll { get; }
     public ReactiveCommand<Unit, Unit> ToggleApi { get; }
     public ReactiveCommand<Unit, Unit> UpdateApi { get; }
 
@@ -126,7 +128,7 @@ public partial class ModPageViewModel : ViewModelBase
 
     public ImmutableArray<Tag> Tags { get; } = Enum.GetValues<Tag>().ToImmutableArray();
 
-    private async void ToggleApiCommand()
+    private async Task ToggleApiCommand()
     {
         if (_mods.ApiInstall is not InstalledState)
             await _installer.InstallApi();
@@ -170,7 +172,7 @@ public partial class ModPageViewModel : ViewModelBase
         SelectionFilter = x => x.State is InstalledState { Enabled: true };
     }
 
-    public async void UpdateUnupdated()
+    public async Task UpdateAllAsync()
     {
         _updating = false;
 
