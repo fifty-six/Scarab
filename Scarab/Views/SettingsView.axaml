@@ -45,7 +45,7 @@
                         HorizontalAlignment="Left"
                         DockPanel.Dock="Left"
                         FontWeight="SemiBold"
-                        Text="{Binding Settings.ManagedFolder}"
+                        Text="test"
                         Background="{DynamicResource ButtonBackground}" />
                     <i:Icon
                         HorizontalAlignment="Right"

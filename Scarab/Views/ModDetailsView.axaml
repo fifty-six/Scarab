@@ -8,11 +8,13 @@
              xmlns:ext="clr-namespace:Scarab.Extensions"
              xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
              xmlns:conv="clr-namespace:Scarab.Converters"
+             xmlns:viewModels="clr-namespace:Scarab.ViewModels"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d"
              d:DesignWidth="480"
              d:DesignHeight="550"
              d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
-             x:DataType="models:ModItem">
+             x:DataType="viewModels:ModPageViewModel">
     <Border IsVisible="{Binding SelectedModItem, Converter={x:Static ObjectConverters.IsNotNull}}">
         <StackPanel
             Margin="10 0"
@@ -60,7 +62,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <i:Icon FontSize="6" Value="fa-solid fa-circle" VerticalAlignment="Center" />
-                                    <TextBlock Margin="4 0 0 0" Text="{Binding}" VerticalAlignment="Center" />
+                                    <TextBlock Margin="4 0 0 0" Text="{Binding ., DataType={x:Type system:String}}" VerticalAlignment="Center" />
                                 </StackPanel>
                             </DataTemplate>
                         </Setter>

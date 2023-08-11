@@ -11,6 +11,7 @@
                         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="45"
                         d:DataContext="{x:Static mock:MockViewModel.DesignMod}"
                         x:Name="mli"
+                        x:DataType="models:ModItem"
                         x:Class="Scarab.Views.ModListItem">
     <UserControl.Styles>
         <Style Selector="#mli:installed">
@@ -86,7 +87,7 @@
                 OnContent=""
                 OffContent=""
                 CommandParameter="{Binding .}"
-                Command="{Binding $parent[views:ModPageView].ViewModel.OnEnable}"
+                Command="{ReflectionBinding $parent[views:ModPageView].ViewModel.OnEnable}"
                 IsChecked="{Binding Enabled}"
                 IsEnabled="{Binding Installed}"
                 HorizontalAlignment="Center"
@@ -115,7 +116,7 @@
                         Width="90"
                         CommandParameter="{Binding .}"
                         CornerRadius="3 0 0 3"
-                        Command="{Binding $parent[views:ModPageView].ViewModel.OnInstall}"
+                        Command="{ReflectionBinding $parent[views:ModPageView].ViewModel.OnInstall}"
                         VerticalAlignment="Center">
 
                         <StackPanel Orientation="Horizontal" Spacing="5">
@@ -141,7 +142,7 @@
                                     Header="Uninstall"
                                     CommandParameter="{Binding .}"
                                     i:MenuItem.Icon="fa-solid fa-trash-can"
-                                    Command="{Binding $parent[views:ModPageView].ViewModel.OnUninstall}" />
+                                    Command="{ReflectionBinding $parent[views:ModPageView].ViewModel.OnUninstall}" />
 
                             </MenuFlyout>
 

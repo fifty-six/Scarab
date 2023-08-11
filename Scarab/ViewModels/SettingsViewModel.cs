@@ -14,8 +14,7 @@ namespace Scarab.ViewModels;
 
 public partial class SettingsViewModel : ViewModelBase
 {
-    [Notify]
-    private readonly ISettings _settings;
+    public ISettings Settings { get; }
     private readonly IModSource _mods;
 
     public static string[] Languages => new[] {
@@ -33,7 +32,7 @@ public partial class SettingsViewModel : ViewModelBase
 
     public SettingsViewModel(ISettings settings, IModSource mods)
     {
-        _settings = settings;
+        Settings = settings;
         _mods = mods;
         
         Selected = settings.PreferredCulture;
@@ -60,8 +59,8 @@ public partial class SettingsViewModel : ViewModelBase
         if (path is null)
             return;
 
-        _settings.ManagedFolder = path;
-        _settings.Save();
+        Settings.ManagedFolder = path;
+        Settings.Save();
 
         await _mods.Reset();
 
