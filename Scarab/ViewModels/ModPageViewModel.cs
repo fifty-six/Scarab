@@ -78,6 +78,7 @@ public partial class ModPageViewModel : ViewModelBase
     [Notify] 
     private Func<ModItem, bool> _tagFilter = ConstTrue;
 
+    [Notify]
     private bool _updating;
     
     public ModState Api      => _mods.ApiInstall;
@@ -159,9 +160,7 @@ public partial class ModPageViewModel : ViewModelBase
 
     public async Task UpdateAllAsync()
     {
-        _updating = false;
-
-        RaisePropertyChanged(nameof(CanUpdateAll));
+        Updating = true;
 
         var outOfDate = _items.Where(x => x.State is InstalledState { Updated: false }).ToList();
 
@@ -174,6 +173,8 @@ public partial class ModPageViewModel : ViewModelBase
 
             await OnUpdateAsync(mod);
         }
+
+        Updating = false;
     }
     
     [UsedImplicitly]
