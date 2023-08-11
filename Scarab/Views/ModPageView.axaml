@@ -104,12 +104,12 @@
                     Grid.Column="3"
                     Grid.Row="0"
                     Margin=" 5 0"
-                    IsChecked="{Binding Mods.ApiInstall, Converter={x:Static c:ModStateConverters.IsInstalledAndEnabled}, Mode=OneWay}"
+                    IsChecked="{Binding Api, Converter={x:Static c:ModStateConverters.IsInstalledAndEnabled}, Mode=OneWay}"
                     Command="{Binding ToggleApi}"
                     VerticalAlignment="Stretch">
                     <StackPanel Orientation="Horizontal" Spacing="5">
                         <i:Icon Value="fa-solid fa-power-off" />
-                        <TextBlock Text="{Binding Mods.ApiInstall, Converter={x:Static c:ModStateConverters.ToApiToggleInstallString}}" />
+                        <TextBlock Text="{Binding Api, Converter={x:Static c:ModStateConverters.ToApiToggleInstallString}}" />
                     </StackPanel>
                 </ToggleButton>
 

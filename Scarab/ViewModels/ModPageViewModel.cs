@@ -34,10 +34,12 @@ public partial class ModPageViewModel : ViewModelBase
     private readonly ReadOnlyObservableCollection<ModItem> _filteredItems;
     private readonly IInstaller _installer;
     private readonly SortableObservableCollection<ModItem> _items;
-    public IModSource Mods { get; }
+    private readonly IModSource _mods;
     private readonly ReverseDependencySearch _reverseDependencySearch;
 
     private readonly ISettings _settings;
+
+    public ModState Api => _mods.ApiInstall;
 
     [Notify("ProgressBarIndeterminate")] private bool _pbIndeterminate;
 
@@ -63,7 +65,7 @@ public partial class ModPageViewModel : ViewModelBase
     {
         _settings = settings;
         _installer = inst;
-        Mods = mods;
+        _mods = mods;
         _db = db;
 
         _items = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
@@ -120,7 +122,7 @@ public partial class ModPageViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _selectedModItem, value);
     }
 
-    public bool ApiOutOfDate => Mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
+    public bool ApiOutOfDate => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
 
     public bool CanUpdateAll => _items.Any(x => x.State is InstalledState { Updated: false }) && !_updating;
 
@@ -128,10 +130,12 @@ public partial class ModPageViewModel : ViewModelBase
 
     private async void ToggleApiCommand()
     {
-        if (Mods.ApiInstall is not InstalledState)
+        if (_mods.ApiInstall is not InstalledState)
             await _installer.InstallApi();
         else 
             await _installer.ToggleApi();
+        
+        RaisePropertyChanged(nameof(Api));
     }
 
     private async Task ChangePathAsync()
@@ -144,7 +148,7 @@ public partial class ModPageViewModel : ViewModelBase
         _settings.ManagedFolder = path;
         _settings.Save();
 
-        await Mods.Reset();
+        await _mods.Reset();
 
         await MessageBoxManager.GetMessageBoxStandardWindow(Resources.MLVM_ChangePathAsync_Msgbox_Title,
             Resources.MLVM_ChangePathAsync_Msgbox_Text).Show();
