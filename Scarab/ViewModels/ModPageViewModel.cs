@@ -190,17 +190,13 @@ public partial class ModPageViewModel : ViewModelBase
             await OnUpdateAsync(mod);
         }
     }
-
+    
     [UsedImplicitly]
     private async Task OnEnableAsync(ModItem item)
     {
         try
         {
-            var dependents = _reverseDependencySearch.GetAllEnabledDependents(item).ToList();
-
-            if (!item.Enabled ||
-                dependents.Count == 0 ||
-                await DisplayHasDependentsWarning(item.Name, dependents))
+            if (!item.Enabled || await CheckDependents(item, onlyEnabled: true))
                 await _installer.Toggle(item);
 
             // to reset the visuals of the toggle to the correct value
@@ -309,33 +305,31 @@ public partial class ModPageViewModel : ViewModelBase
         _items.SortBy(Comparer);
     }
 
-    private async Task InternalInstallWithConfirmationAsync(ModItem item,
-        Func<IInstaller, Action<ModProgressArgs>, Task> f)
-    {
-        var dependents = _reverseDependencySearch.GetAllEnabledDependents(item).ToList();
-
-        if (!item.Installed ||
-            dependents.Count == 0 ||
-            await DisplayHasDependentsWarning(item.Name, dependents))
-            await InternalUpdateInstallAsync(item, f);
-    }
+    [UsedImplicitly]
+    private Task OnUpdateAsync(ModItem item) => InternalUpdateInstallAsync(item, item.OnUpdate);
 
     [UsedImplicitly]
-    private async Task OnUpdateAsync(ModItem item)
-    {
-        await InternalUpdateInstallAsync(item, item.OnUpdate);
-    }
+    private Task OnInstallAsync(ModItem item) => InternalUpdateInstallAsync(item, item.OnInstall);
 
-    [UsedImplicitly]
-    private async Task OnInstallAsync(ModItem item)
+    private async Task<bool> CheckDependents(ModItem item, bool onlyEnabled = false)
     {
-        await InternalInstallWithConfirmationAsync(item, item.OnInstall);
+        var deps = onlyEnabled
+            ? _reverseDependencySearch.GetAllEnabledDependents(item)
+            : _reverseDependencySearch.GetDependents(item);
+
+        if (deps.Count == 0)
+            return true;
+
+        return await DisplayHasDependentsWarning(item.Name, deps);
     }
     
     [UsedImplicitly]
     private async Task OnUninstallAsync(ModItem item)
     {
-        await InternalInstallWithConfirmationAsync(item, item.OnUninstall);
+        if (!await CheckDependents(item))
+            return;
+
+        await InternalUpdateInstallAsync(item, item.OnUninstall);
     }
 
     private static async Task DisplayHashMismatch(HashMismatchException e)

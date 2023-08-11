@@ -14,11 +14,13 @@ public class ReverseDependencySearch
         _items = allModItems.ToDictionary(x => x.Name, x => x);
     }
 
-    public IEnumerable<ModItem> GetAllEnabledDependents(ModItem item)
+    public List<ModItem> GetAllEnabledDependents(ModItem item)
     {
         // Check all enabled mods if they have a dependency on this mod
-        return _items.Values.Where(x => x.Enabled).Where(mod => IsDependent(mod, item)).ToList();
+        return _items.Values.Where(m => m.Enabled && IsDependent(m, item)).ToList();
     }
+
+    public List<ModItem> GetDependents(ModItem item) => _items.Values.Where(m => m.Installed && IsDependent(m, item)).ToList();
 
     private bool IsDependent(ModItem mod, ModItem targetMod)
     {
