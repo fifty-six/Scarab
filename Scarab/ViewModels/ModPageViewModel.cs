@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -268,8 +269,15 @@ public partial class ModPageViewModel : ViewModelBase
                 SizeToContent = SizeToContent.WidthAndHeight
             }).Show();
 
-            if (res == ButtonResult.Yes)
-                proc.Kill();
+            try
+            {
+                if (res == ButtonResult.Yes)
+                    proc.Kill();
+            }
+            catch (Win32Exception)
+            {
+                // tragic, but oh well.
+            }
         }
 
         try
