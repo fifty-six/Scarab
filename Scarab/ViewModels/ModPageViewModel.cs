@@ -152,25 +152,10 @@ public partial class ModPageViewModel : ViewModelBase
         });
     }
 
-    public void SelectAll()
-    {
-        SelectionFilter = _ => true;
-    }
-
-    public void SelectInstalled()
-    {
-        SelectionFilter = x => x.Installed;
-    }
-
-    public void SelectUnupdated()
-    {
-        SelectionFilter = x => x.State is InstalledState { Updated: false };
-    }
-
-    public void SelectEnabled()
-    {
-        SelectionFilter = x => x.State is InstalledState { Enabled: true };
-    }
+    public void SelectAll()       => SelectionFilter = ConstTrue;
+    public void SelectInstalled() => SelectionFilter = x => x.Installed;
+    public void SelectUnupdated() => SelectionFilter = x => x.State is InstalledState { Updated: false };
+    public void SelectEnabled()   => SelectionFilter = x => x.State is InstalledState { Enabled: true };
 
     public async Task UpdateAllAsync()
     {
