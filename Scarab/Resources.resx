@@ -279,4 +279,13 @@
   <data name="XAML_ModsFilter_OutOfDate_Update" xml:space="preserve">
     <value>Update All</value>
   </data>
+  <data name="NOTIFY_Installed" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="NOTIFY_Updated" xml:space="preserve">
+    <value>Updated</value>
+  </data>
+  <data name="NOTIFY_Uninstalled" xml:space="preserve">
+    <value>Uninstalled</value>
+  </data>
 </root>

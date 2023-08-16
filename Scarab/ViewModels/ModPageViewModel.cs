@@ -31,6 +31,13 @@ namespace Scarab.ViewModels;
 
 public partial class ModPageViewModel : ViewModelBase
 {
+    public enum ModAction
+    {
+        Install,
+        Update,
+        Uninstall
+    }
+
     private static readonly Func<object, bool> ConstTrue = _ => true;
     public static ImmutableArray<Tag> Tags { get; } = Enum.GetValues<Tag>().ToImmutableArray();
     
@@ -42,6 +49,8 @@ public partial class ModPageViewModel : ViewModelBase
     private readonly IModSource _mods;
     private readonly ISettings _settings;
     private readonly ReverseDependencySearch _reverseDependencySearch;
+
+    public event Action<ModAction, ModItem>? CompletedAction;
     
     public ReactiveCommand<Unit, Unit> UpdateAll { get; }
     public ReactiveCommand<Unit, Unit> ToggleApi { get; }
@@ -216,7 +225,7 @@ public partial class ModPageViewModel : ViewModelBase
         RaisePropertyChanged(nameof(ApiOutOfDate));
     }
 
-    private async Task InternalUpdateInstallAsync(ModItem item, Func<IInstaller, Action<ModProgressArgs>, Task> f)
+    private async Task InternalUpdateInstallAsync(ModAction type, ModItem item, Func<IInstaller, Action<ModProgressArgs>, Task> f)
     {
         static bool IsHollowKnight(Process p)
         {
@@ -294,14 +303,16 @@ public partial class ModPageViewModel : ViewModelBase
             return ModToOrderedTuple(x).CompareTo(ModToOrderedTuple(y));
         }
 
+        CompletedAction?.Invoke(type, item);
+
         _items.SortBy(Comparer);
     }
 
     [UsedImplicitly]
-    private Task OnUpdateAsync(ModItem item) => InternalUpdateInstallAsync(item, item.OnUpdate);
+    private Task OnUpdateAsync(ModItem item) => InternalUpdateInstallAsync(ModAction.Update, item, item.OnUpdate);
 
     [UsedImplicitly]
-    private Task OnInstallAsync(ModItem item) => InternalUpdateInstallAsync(item, item.OnInstall);
+    private Task OnInstallAsync(ModItem item) => InternalUpdateInstallAsync(ModAction.Install, item, item.OnInstall);
 
     private async Task<bool> CheckDependents(ModItem item, bool onlyEnabled = false)
     {
@@ -321,7 +332,7 @@ public partial class ModPageViewModel : ViewModelBase
         if (!await CheckDependents(item))
             return;
 
-        await InternalUpdateInstallAsync(item, item.OnUninstall);
+        await InternalUpdateInstallAsync(ModAction.Uninstall, item, item.OnUninstall);
     }
 
     private static async Task DisplayHashMismatch(HashMismatchException e)

@@ -368,5 +368,23 @@ namespace Scarab {
                 return ResourceManager.GetString("XAML_ModsFilter_OutOfDate_Update", resourceCulture);
             }
         }
+        
+        internal static string NOTIFY_Installed {
+            get {
+                return ResourceManager.GetString("NOTIFY_Installed", resourceCulture);
+            }
+        }
+        
+        internal static string NOTIFY_Updated {
+            get {
+                return ResourceManager.GetString("NOTIFY_Updated", resourceCulture);
+            }
+        }
+        
+        internal static string NOTIFY_Uninstalled {
+            get {
+                return ResourceManager.GetString("NOTIFY_Uninstalled", resourceCulture);
+            }
+        }
     }
 }
