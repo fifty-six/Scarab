@@ -162,7 +162,7 @@ public class Installer : IInstaller
 
         if (_installed.ApiInstall is InstalledState { Version: var version })
         {
-            if (version.Major > manifest.Version)
+            if (version.Major >= manifest.Version)
                 return;
 
             was_vanilla = false;
