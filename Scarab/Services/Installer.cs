@@ -289,7 +289,7 @@ public class Installer : IInstaller
             if (dep.State is InstalledState { Updated: true, Enabled: var enabled })
             {
                 if (!enabled)
-                    await Toggle(dep);
+                    await _Toggle(dep);
                     
                 continue;
             }
