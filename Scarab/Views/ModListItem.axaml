@@ -41,11 +41,13 @@
             </Style>
 
             <!-- Maybe remove this one; we want to be able to queue mods -->
+            <!--
             <Style Selector="^ #mli:installing">
                 <Style Selector="^ Button#InstallUpdateButton">
                     <Setter Property="IsEnabled" Value="False" />
                 </Style>
             </Style>
+        -->
         </Style>
     </UserControl.Styles>
 

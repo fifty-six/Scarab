@@ -6,12 +6,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Reactive;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
@@ -35,7 +32,8 @@ public partial class ModPageViewModel : ViewModelBase
     {
         Install,
         Update,
-        Uninstall
+        Uninstall,
+        Toggle
     }
 
     private static readonly Func<object, bool> ConstTrue = _ => true;
@@ -49,8 +47,13 @@ public partial class ModPageViewModel : ViewModelBase
     private readonly IModSource _mods;
     private readonly ISettings _settings;
     private readonly ReverseDependencySearch _reverseDependencySearch;
+    
+    public delegate void ExceptionHandler(ModAction act, Exception e, ModItem? mod);
 
-    public event Action<ModAction, ModItem>? CompletedAction;
+    public delegate void CompletionHandler(ModAction act, ModItem mod);
+
+    public event CompletionHandler? CompletedAction;
+    public event ExceptionHandler? ExceptionRaised;
     
     public ReactiveCommand<Unit, Unit> UpdateAll { get; }
     public ReactiveCommand<Unit, Unit> ToggleApi { get; }
@@ -203,7 +206,8 @@ public partial class ModPageViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            await DisplayGenericError("toggling", item.Name, e);
+            _logger.LogError(e, "Error when enabling {Mod}!", item.Name);
+            ExceptionRaised?.Invoke(ModAction.Toggle, e, item);
         }
     }
 
@@ -213,13 +217,10 @@ public partial class ModPageViewModel : ViewModelBase
         {
             await Task.Run(_installer.InstallApi);
         }
-        catch (HashMismatchException e)
-        {
-            await DisplayHashMismatch(e);
-        }
         catch (Exception e)
         {
-            await DisplayGenericError("updating", "the API", e);
+            _logger.LogError(e, "Error when updating API!");
+            ExceptionRaised?.Invoke(ModAction.Toggle, e, null);
         }
 
         RaisePropertyChanged(nameof(ApiOutOfDate));
@@ -278,24 +279,20 @@ public partial class ModPageViewModel : ViewModelBase
                 }
             ));
         }
-        catch (HashMismatchException e)
-        {
-            _logger.LogError("Mod {m} had a hash mismatch! Expected: {expected}, got {actual}", item.Name, e.Expected,
-                e.Actual);
-            await DisplayHashMismatch(e);
-        }
-        catch (HttpRequestException e)
-        {
-            await DisplayNetworkError(item.Name, e);
-        }
         catch (Exception e)
         {
-            _logger.LogError("Failed to install mod {name}. State = {state}, Link = {link}", item.Name, item.State,
-                item.Link);
-            await DisplayGenericError("installing or uninstalling", item.Name, e);
+            _logger.LogError(e, "Error when performing {Action} for {Mod}!", type, item.Name);
+
+            ExceptionRaised?.Invoke(type, e, item);
+            
+            // Even if we threw, stop the progress bar.
+            ProgressBarVisible = false;
+
+            // Don't need to sort as we didn't successfully install anything
+            // and we don't want to send the successfully completed action event.
+            return;
         }
 
-        // Even if we threw, stop the progress bar.
         ProgressBarVisible = false;
 
         static int Comparer(ModItem x, ModItem y)
@@ -333,40 +330,6 @@ public partial class ModPageViewModel : ViewModelBase
             return;
 
         await InternalUpdateInstallAsync(ModAction.Uninstall, item, item.OnUninstall);
-    }
-
-    private static async Task DisplayHashMismatch(HashMismatchException e)
-    {
-        await MessageBoxManager.GetMessageBoxStandardWindow
-        (
-            Resources.MLVM_DisplayHashMismatch_Msgbox_Title,
-            string.Format(Resources.MLVM_DisplayHashMismatch_Msgbox_Text, e.Name, e.Actual, e.Expected),
-            icon: Icon.Error
-        ).Show();
-    }
-
-    private async Task DisplayGenericError(string action, string name, Exception e)
-    {
-        _logger.LogError(e, "Error while performing {action} on {name}", action, name);
-
-        await MessageBoxManager.GetMessageBoxStandardWindow
-        (
-            "Error!",
-            $"An exception occured while {action} {name}.",
-            icon: Icon.Error
-        ).Show();
-    }
-
-    private async Task DisplayNetworkError(string name, HttpRequestException e)
-    {
-        _logger.LogError(e, "Failed to download mod {name}", name);
-
-        await MessageBoxManager.GetMessageBoxStandardWindow
-        (
-            Resources.MLVM_DisplayNetworkError_Msgbox_Title,
-            string.Format(Resources.MLVM_DisplayNetworkError_Msgbox_Text, name),
-            icon: Icon.Error
-        ).Show();
     }
 
     // asks user for confirmation on whether or not they want to uninstall/disable mod.
