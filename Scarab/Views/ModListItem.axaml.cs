@@ -1,10 +1,12 @@
 using System;
 using System.Diagnostics;
+using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
+using Scarab.Extensions;
 using Scarab.Models;
 
 namespace Scarab.Views;
@@ -15,13 +17,13 @@ public partial class ModListItem : ReactiveUserControl<ModItem>
     public ModListItem()
     {
         InitializeComponent();
-    }
 
-    protected override void OnInitialized()
-    {
-        Debug.Assert(ViewModel is not null);
-        
-        ViewModel.WhenAnyValue(x => x.State).Subscribe(OnStateChange);
+        this.WhenActivatedVM((vm, d) =>
+        {
+            vm.WhenAnyValue(x => x.State)
+              .Subscribe(OnStateChange)
+              .DisposeWith(d);
+        });
     }
 
     private void OnStateChange(ModState state)

@@ -1,6 +1,8 @@
 using System;
+using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
+using Scarab.Extensions;
 using Scarab.ViewModels;
 
 namespace Scarab.Views;
@@ -11,22 +13,14 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         InitializeComponent();
 
-        // Need to wait for the data context to be initialized,
-        // as it's set shortly *after* the constructor.
-        DataContextChanged += OnDataContextSet;
-    }
-
-    private void OnDataContextSet(object? _, EventArgs _e)
-    {
-        if (DataContext is null)
-            return;
-
-        var vm = (MainWindowViewModel) DataContext;
-
-        vm.WhenAnyValue(x => x.Content).Subscribe(v =>
+        this.WhenActivatedVM((vm, d) =>
         {
-            if (v is not null)
-                ModListTab.Content = v;
+            vm.WhenAnyValue(x => x.Content).Subscribe(v =>
+              {
+                  if (v is not null)
+                      ModListTab.Content = v;
+              })
+              .DisposeWith(d);
         });
     }
 }

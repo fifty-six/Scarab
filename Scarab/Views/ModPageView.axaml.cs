@@ -1,16 +1,15 @@
 using System;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Threading.Tasks;
+using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
-using MessageBox.Avalonia;
-using MessageBox.Avalonia.Enums;
 using ReactiveUI;
+using Scarab.Extensions;
 using Scarab.Models;
 using Scarab.Services;
 using Scarab.ViewModels;
@@ -28,36 +27,23 @@ public partial class ModPageView : ReactiveUserControl<ModPageViewModel>
     {
         InitializeComponent();
 
-        this.WhenAnyValue(x => x.DataContext)
-            .BindTo(this, x => x.ViewModel);
-
-        this.WhenAnyValue(x => x.ViewModel)
-            .Subscribe(vm =>
-            {
-                if (vm is null) 
-                    return;
-
-                vm.CompletedAction += OnComplete;
-                vm.ExceptionRaised += OnError;
-            });
-
-        this.WhenAnyValue(x => x.TagBox.SelectionBoxItem)
-            .Subscribe(x =>
-            {
-                // It's non-nullable by NRTs, but we initialize it after the constructor, and we can't
-                // pass it in earlier as the XAML requires a (public) parameterless constructor
-                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-                if (ViewModel is not null)
-                    ViewModel.SelectedTag = (Tag) (x ?? Models.Tag.All);
-            });
-
         UserControl.KeyDown += OnKeyDown;
+
+        this.WhenActivatedVM((vm, d) =>
+        {
+            vm.CompletedAction += OnComplete;
+            vm.ExceptionRaised += OnError;
+
+            this.WhenAnyValue(x => x.TagBox.SelectionBoxItem)
+                .Subscribe(x => vm.SelectedTag = (Tag) (x ?? Models.Tag.All))
+                .DisposeWith(d);
+        });
     }
 
     private void OnError(ModPageViewModel.ModAction act, Exception e, ModItem? m)
     {
         Trace.TraceError($"Failed action {act} for {m?.Name ?? "null item"}, ex: {e}");
-        
+
         switch (e)
         {
             case HttpRequestException:
@@ -67,7 +53,7 @@ public partial class ModPageView : ReactiveUserControl<ModPageViewModel>
                     string.Format(Localization.MLVM_DisplayNetworkError_Msgbox_Text, m?.Name ?? "the API"),
                     NotificationType.Error
                 ));
-                
+
                 break;
             }
 
@@ -96,7 +82,7 @@ public partial class ModPageView : ReactiveUserControl<ModPageViewModel>
                     e.ToString(),
                     NotificationType.Error
                 ));
-                
+
                 break;
             }
         }
