@@ -17,11 +17,6 @@ public partial class ModDetailsView : ReactiveUserControl<ModPageViewModel>
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
-    
     [UsedImplicitly]
     private void RepositoryTextClick(object? sender, PointerReleasedEventArgs _)
     {

@@ -46,9 +46,4 @@ public partial class ModListItem : ReactiveUserControl<ModItem>
                 throw new ArgumentOutOfRangeException(nameof(state));
         }
     }
-
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

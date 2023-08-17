@@ -10,9 +10,4 @@ public partial class ModListView : ReactiveUserControl<ModPageViewModel>
     {
         InitializeComponent();
     }
-
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }
