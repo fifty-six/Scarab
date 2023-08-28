@@ -9,7 +9,7 @@ using Scarab.Interfaces;
 
 namespace Scarab.Models;
 
-public partial class ModItem : INotifyPropertyChanged, IEquatable<ModItem>
+public sealed partial record ModItem : INotifyPropertyChanged
 {
     public ModItem(ModState state,
         Version version,
@@ -52,7 +52,7 @@ public partial class ModItem : INotifyPropertyChanged, IEquatable<ModItem>
     public string Description { get; }
     public string Repository { get; }
     public string[] Integrations { get; }
-    public string[] Authors { get; set; }
+    public string[] Authors { get; }
 
     [Notify] 
     private ModState _state;
@@ -153,7 +153,6 @@ public partial class ModItem : INotifyPropertyChanged, IEquatable<ModItem>
     }
 
     #region Equality
-
     public bool Equals(ModItem? other)
     {
         if (ReferenceEquals(null, other)) return false;
@@ -167,28 +166,25 @@ public partial class ModItem : INotifyPropertyChanged, IEquatable<ModItem>
                && Description == other.Description;
     }
 
-    public override bool Equals(object? obj)
-    {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-
-        return obj.GetType() == GetType() && Equals((ModItem)obj);
-    }
-
     public override int GetHashCode()
     {
-        return HashCode.Combine(Version, Dependencies, Link, Name, Description);
+        var hashCode = new HashCode();
+        hashCode.Add(Name);
+        hashCode.Add(Version);
+        hashCode.Add(Dependencies);
+        hashCode.Add(Link);
+        hashCode.Add(Sha256);
+        hashCode.Add((int) Tags);
+        hashCode.Add(Description);
+        hashCode.Add(Repository);
+        hashCode.Add(Integrations);
+        hashCode.Add(Authors);
+        return hashCode.ToHashCode();
     }
-
-    public static bool operator ==(ModItem? left, ModItem? right)
-    {
-        return Equals(left, right);
-    }
-
-    public static bool operator !=(ModItem? left, ModItem? right)
-    {
-        return !Equals(left, right);
-    }
-
     #endregion
+
+    public override string ToString()
+    {
+        return $"ModItem {{ {nameof(Name)}: {Name}, {nameof(State)}: {State}, {nameof(Version)}: {Version} }}";
+    }
 }

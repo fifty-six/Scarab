@@ -147,6 +147,8 @@ public partial class ModPageViewModel : ViewModelBase
 
     private async Task ToggleApiCommand()
     {
+        _logger.LogInformation("Toggling API, current state: {State}", _mods.ApiInstall);
+        
         if (_mods.ApiInstall is not InstalledState)
             await _installer.InstallApi();
         else 
@@ -176,6 +178,8 @@ public partial class ModPageViewModel : ViewModelBase
 
     public async Task UpdateAllAsync()
     {
+        _logger.LogInformation("Updating all mods!");
+        
         Updating = true;
 
         var outOfDate = _items.Where(x => x.State is InstalledState { Updated: false }).ToList();
@@ -228,6 +232,8 @@ public partial class ModPageViewModel : ViewModelBase
 
     private async Task InternalUpdateInstallAsync(ModAction type, ModItem item, Func<IInstaller, Action<ModProgressArgs>, Task> f)
     {
+        _logger.LogInformation("Performing {Type} for {Mod}.", type, item);
+        
         static bool IsHollowKnight(Process p)
         {
             return p.ProcessName.StartsWith("hollow_knight")
@@ -303,6 +309,8 @@ public partial class ModPageViewModel : ViewModelBase
         CompletedAction?.Invoke(type, item);
 
         _items.SortBy(Comparer);
+        
+        _logger.LogInformation("Completed {Type} for {Mod}", type, item.Name);
     }
 
     [UsedImplicitly]
