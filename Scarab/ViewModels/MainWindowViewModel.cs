@@ -61,7 +61,10 @@ public partial class MainWindowViewModel : ViewModelBase
         settings.Apply();
 
         if (!PathUtil.ValidateExisting(settings.ManagedFolder))
-            settings = await ResetSettings(settings);
+        {
+            Log.Information("Settings path {Previous} is invalid, forcing re-selection.", settings.ManagedFolder);
+            settings = await ResetSettings();
+        }
 
         Log.Information("Fetching links");
             
@@ -229,10 +232,8 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
         
-    private static async Task<Settings> ResetSettings(ISettings settings)
+    private static async Task<Settings> ResetSettings()
     {
-        Log.Information("Settings path {Previous} is invalid, forcing re-selection.", settings.ManagedFolder);
-
         await MessageBoxManager.GetMessageBoxStandardWindow
         (
             new MessageBoxStandardParams {
@@ -251,6 +252,8 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         if (!Settings.TryAutoDetect(out ValidPath? path))
         {
+            Log.Information("Unable to detect installation path for settings, selecting manually.");
+            
             IMsBoxWindow<ButtonResult> info = MessageBoxManager.GetMessageBoxStandardWindow
             (
                 new MessageBoxStandardParams

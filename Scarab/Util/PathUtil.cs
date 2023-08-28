@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -10,6 +9,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using MessageBox.Avalonia;
 using MessageBox.Avalonia.DTO;
+using Serilog;
 
 namespace Scarab.Util;
 
@@ -21,7 +21,7 @@ public static class PathUtil
         
     public static async Task<string> SelectPath(bool fail = false)
     {
-        Debug.WriteLine("Selecting path...");
+        Log.Information("Selecting path...");
 
         Window parent = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow
                         ?? throw new InvalidOperationException();
@@ -36,19 +36,35 @@ public static class PathUtil
                 AllowMultiple = false,
                 Title = Resources.PU_SelectPath
             })).FirstOrDefault();
-            
+
 
             if (result is null)
-                await MessageBoxManager.GetMessageBoxStandardWindow(Resources.PU_InvalidPathTitle, Resources.PU_NoSelect).Show();
+            {
+                await MessageBoxManager.GetMessageBoxStandardWindow(
+                        Resources.PU_InvalidPathTitle,
+                        Resources.PU_NoSelect
+                    )
+                    .Show();
+            }
             else if (ValidateWithSuffix(result.Path.LocalPath) is not var (managed, suffix))
-                await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
-                    ContentTitle = Resources.PU_InvalidPathTitle,
-                    ContentHeader = Resources.PU_InvalidPathHeader,
-                    ContentMessage = Resources.PU_InvalidPath,
-                    MinHeight = 140
-                }).Show();
+            {
+                await MessageBoxManager.GetMessageBoxStandardWindow(
+                        new MessageBoxStandardParams
+                        {
+                            ContentTitle = Resources.PU_InvalidPathTitle,
+                            ContentHeader = Resources.PU_InvalidPathHeader,
+                            ContentMessage = Resources.PU_InvalidPath,
+                            MinHeight = 140
+                        }
+                    )
+                    .Show();
+                
+                Log.Information("User selected invalid path {Path}", result.Path.LocalPath);
+            }
             else
+            {
                 return Path.Combine(managed, suffix);
+            }
 
             if (fail)
                 return null!;
@@ -102,10 +118,23 @@ public static class PathUtil
             
         string? suffix = SUFFIXES.FirstOrDefault(s => Directory.Exists(Path.Combine(root, s)));
 
-        if (suffix is null || !File.Exists(Path.Combine(root, suffix, "Assembly-CSharp.dll")))
+        if (suffix is null)
+        {
+            Log.Information("Selected path root {Root} had no valid suffix with Managed folder!", root);
             return null;
+        }
 
-        return new ValidPath(root, suffix);
+        if (File.Exists(Path.Combine(root, suffix, "Assembly-CSharp.dll"))) 
+            return new ValidPath(root, suffix);
+        
+        Log.Information(
+            "Selected path root {Path} with suffix {Suffix} was missing Assembly-CSharp.dll!",
+            root,
+            suffix
+        );
+            
+        return null;
+
     }
 
     public static bool ValidateExisting(string managed)

@@ -13,6 +13,7 @@ using Microsoft.Win32;
 using Scarab.Extensions;
 using Scarab.Interfaces;
 using Scarab.Util;
+using Serilog;
 
 namespace Scarab;
 
@@ -179,7 +180,7 @@ public class Settings : ISettings
         if (!File.Exists(ConfigPath))
             return null;
 
-        Debug.WriteLine($"ConfigPath: File @ {ConfigPath} exists.");
+        Log.Debug("ConfigPath: File @ {ConfigPath} exists.", ConfigPath);
 
         string content = File.ReadAllText(ConfigPath);
 
