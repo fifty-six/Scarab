@@ -7,6 +7,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reactive;
+using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -29,8 +31,12 @@ using Serilog;
 
 namespace Scarab.ViewModels;
 
-public partial class MainWindowViewModel : ViewModelBase
+public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
 {
+    public ViewModelActivator Activator { get; } = new();
+
+    private readonly ReactiveCommand<Unit, Unit> _initialization;
+    
     private static bool _Debug
     {
         get {
@@ -288,7 +294,16 @@ public partial class MainWindowViewModel : ViewModelBase
             : await PathUtil.SelectPath();
     }
 
-    public MainWindowViewModel() => Dispatcher.UIThread.InvokeAsync(async () => 
+    public MainWindowViewModel()
+    {
+        _initialization = ReactiveCommand.CreateFromTask(OnInitialized);
+
+        this.WhenActivated(
+            disposable => _initialization.Execute().Subscribe().DisposeWith(disposable)
+        );
+    }
+
+    private async Task OnInitialized()
     {
         try
         {
@@ -300,10 +315,10 @@ public partial class MainWindowViewModel : ViewModelBase
 
             if (Debugger.IsAttached)
                 Debugger.Break();
-                
+
             Environment.Exit(-1);
-                
+
             throw;
         }
-    });
+    }
 }
