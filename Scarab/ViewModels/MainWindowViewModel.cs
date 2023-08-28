@@ -12,7 +12,7 @@ using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Threading;
+using Avalonia.Logging;
 using DryIoc;
 using MessageBox.Avalonia;
 using MessageBox.Avalonia.BaseWindows.Base;
@@ -149,8 +149,16 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
 
         con.ValidateAndThrow();
         
-        Avalonia.Logging.Logger.Sink = new MicrosoftLogSink(
-            con.Resolve<ILoggerFactory>().CreateLogger("Avalonia")
+        Logger.Sink = new MicrosoftLogSink(
+            con.Resolve<ILoggerFactory>().CreateLogger("Avalonia"),
+            LogArea.Platform,
+            LogArea.macOSPlatform,
+            LogArea.X11Platform,
+            LogArea.Binding,
+            LogArea.Animations,
+            LogArea.Control,
+            LogArea.Property,
+            LogArea.Visual
         );
         
         Log.Information("Displaying model");
