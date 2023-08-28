@@ -1,9 +1,6 @@
-using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
 using System.Reflection;
-using ReactiveUI;
 
 namespace Scarab.ViewModels;
 

@@ -1,14 +1,5 @@
-using System;
-using System.Reactive;
-using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using JetBrains.Annotations;
 using MessageBox.Avalonia;
-using PropertyChanged.SourceGenerator;
-using ReactiveUI;
-using Scarab.Interfaces;
-using Scarab.Util;
 
 namespace Scarab.ViewModels;
 

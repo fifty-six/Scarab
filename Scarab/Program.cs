@@ -1,16 +1,9 @@
-using System;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Media;
-using Avalonia.ReactiveUI;
 using Avalonia.Svg.Skia;
-using JetBrains.Annotations;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.FontAwesome;
-using Serilog;
 using Splat;
 using Splat.Serilog;
 

@@ -1,9 +1,3 @@
-using System;
-using System.Diagnostics.Contracts;
-using System.Reactive.Disposables;
-using Avalonia.ReactiveUI;
-using ReactiveUI;
-
 namespace Scarab.Extensions;
 
 public static class ReactiveExtensions

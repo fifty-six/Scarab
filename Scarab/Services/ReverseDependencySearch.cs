@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Scarab.Models;
-
-namespace Scarab.Services;
+﻿namespace Scarab.Services;
 
 public class ReverseDependencySearch
 {

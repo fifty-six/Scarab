@@ -1,9 +1,4 @@
-using System.Linq;
 using FakeItEasy;
-using Microsoft.Extensions.Logging;
-using Scarab.Interfaces;
-using Scarab.Models;
-using Scarab.ViewModels;
 
 namespace Scarab.Mock;
 

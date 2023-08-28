@@ -1,6 +1,4 @@
-using System;
 using Avalonia.Data.Converters;
-using Scarab.Models;
 
 namespace Scarab.Converters;
 

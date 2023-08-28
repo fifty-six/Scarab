@@ -1,5 +1,3 @@
-using System.IO;
-
 namespace Scarab.Interfaces;
 
 public interface ISettings

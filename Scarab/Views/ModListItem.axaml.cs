@@ -1,13 +1,4 @@
-using System;
-using System.Diagnostics;
-using System.Reactive.Disposables;
-using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
-using ReactiveUI;
-using Scarab.Extensions;
-using Scarab.Models;
 
 namespace Scarab.Views;
 

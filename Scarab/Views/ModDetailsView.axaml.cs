@@ -1,12 +1,5 @@
-using System;
 using System.Diagnostics;
-using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
-using JetBrains.Annotations;
-using Scarab.ViewModels;
-using Serilog;
 
 namespace Scarab.Views;
 

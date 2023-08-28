@@ -1,8 +1,5 @@
-using System;
 using System.Diagnostics;
-using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using Scarab.ViewModels;
 
 namespace Scarab;
 

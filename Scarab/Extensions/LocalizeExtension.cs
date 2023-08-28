@@ -1,5 +1,4 @@
 ﻿using Avalonia.Markup.Xaml;
-using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;

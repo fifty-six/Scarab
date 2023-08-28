@@ -1,8 +1,5 @@
-using System;
 using DryIoc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Serilog;
 
 namespace Scarab.Util;
 

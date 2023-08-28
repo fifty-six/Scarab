@@ -1,14 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using Scarab.Interfaces;
-using Scarab.Models;
 
 namespace Scarab.Services;
 

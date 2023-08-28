@@ -1,16 +1,8 @@
-using System;
 using System.Diagnostics;
-using System.IO;
 using System.IO.Abstractions;
 using System.Reflection;
 using System.Text.Json;
-using System.Threading.Tasks;
-using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Reactive;
-using System.Reactive.Disposables;
-using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Logging;
 using DryIoc;
@@ -20,14 +12,6 @@ using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 using MessageBox.Avalonia.Models;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using PropertyChanged.SourceGenerator;
-using ReactiveUI;
-using Scarab.Interfaces;
-using Scarab.Models;
-using Scarab.Services;
-using Scarab.Util;
-using Serilog;
 
 namespace Scarab.ViewModels;
 

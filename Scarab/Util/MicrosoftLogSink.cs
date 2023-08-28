@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Avalonia.Logging;
-using Microsoft.Extensions.Logging;
 
 namespace Scarab.Util;
 

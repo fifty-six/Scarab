@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Immutable;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using Avalonia.Threading;
-using PropertyChanged.SourceGenerator;
-using Scarab.Interfaces;
 
 namespace Scarab.Models;
 

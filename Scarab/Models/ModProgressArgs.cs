@@ -1,5 +1,3 @@
-using Scarab.Util;
-
 namespace Scarab.Models;
 
 public record struct ModProgressArgs

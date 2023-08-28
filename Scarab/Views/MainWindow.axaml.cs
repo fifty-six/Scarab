@@ -1,10 +1,3 @@
-using System;
-using System.Reactive.Disposables;
-using Avalonia.ReactiveUI;
-using ReactiveUI;
-using Scarab.Extensions;
-using Scarab.ViewModels;
-
 namespace Scarab.Views;
 
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>

@@ -1,18 +1,6 @@
-using System;
 using System.Diagnostics;
-using System.Net.Http;
-using System.Reactive.Disposables;
-using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using Avalonia.Input;
-using Avalonia.ReactiveUI;
-using JetBrains.Annotations;
-using ReactiveUI;
-using Scarab.Extensions;
-using Scarab.Models;
-using Scarab.Services;
-using Scarab.ViewModels;
 // Resources is a field in Avalonia UserControls, so alias it for brevity
 using Localization = Scarab.Resources;
 

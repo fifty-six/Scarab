@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using ReactiveUI;
 
 namespace Scarab.ViewModels;
 

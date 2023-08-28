@@ -1,28 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reactive;
-using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Threading;
-using DynamicData;
-using DynamicData.Binding;
-using JetBrains.Annotations;
 using MessageBox.Avalonia;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
-using Microsoft.Extensions.Logging;
-using PropertyChanged.SourceGenerator;
-using ReactiveUI;
-using Scarab.Interfaces;
-using Scarab.Models;
-using Scarab.Services;
-using Scarab.Util;
 
 namespace Scarab.ViewModels;
 

@@ -1,15 +1,8 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using MessageBox.Avalonia;
 using MessageBox.Avalonia.DTO;
-using Serilog;
 
 namespace Scarab.Util;
 

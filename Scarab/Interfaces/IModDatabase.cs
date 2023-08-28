@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using Scarab.Models;
-
 namespace Scarab.Interfaces;
 
 public interface IModDatabase

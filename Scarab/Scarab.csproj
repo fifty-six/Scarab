@@ -9,6 +9,7 @@
         <UseAppHost>true</UseAppHost>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <ImplicitUsings>true</ImplicitUsings>
     </PropertyGroup>
     
     <ItemGroup>

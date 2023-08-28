@@ -1,16 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.IO;
 using System.IO.Abstractions;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Scarab.Interfaces;
-using Scarab.Models;
-using Serilog;
 
 namespace Scarab.Services;
 

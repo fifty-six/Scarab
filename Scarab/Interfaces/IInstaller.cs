@@ -1,7 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using Scarab.Models;
-
 namespace Scarab.Interfaces;
 
 public interface IInstaller
