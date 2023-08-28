@@ -205,7 +205,9 @@ public partial class ModPageViewModel : ViewModelBase
             if (!item.Enabled || await CheckDependents(item, onlyEnabled: true))
                 await _installer.Toggle(item);
 
-            // to reset the visuals of the toggle to the correct value
+            // Reset the visuals of the toggle, as otherwise
+            // it remains 'toggled', despite possibly being cancelled by
+            // CheckDependents - leading to an incorrectly shown state
             item.CallOnPropertyChanged(nameof(item.Enabled));
         }
         catch (Exception e)
@@ -353,7 +355,7 @@ public partial class ModPageViewModel : ViewModelBase
             @enum: ButtonEnum.YesNo
         ).Show();
 
-        // return whether or not yes was clicked. Also don't remove mod when box is closed with the x
+        // Make sure we also don't return true if X was clicked instead of No
         return result.HasFlag(ButtonResult.Yes) && !result.HasFlag(ButtonResult.None);
     }
 

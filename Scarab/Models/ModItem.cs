@@ -142,6 +142,9 @@ public sealed partial record ModItem : INotifyPropertyChanged
         }
     }
 
+    // Needs to run on the UI thread, as property changed events
+    // cause *UI* changes, and so otherwise we'll get an invalid
+    // thread access exception
     private void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         Dispatcher.UIThread.Invoke(() => PropertyChanged?.Invoke(this, e));
