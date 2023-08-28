@@ -1,5 +1,6 @@
 using System.Linq;
 using FakeItEasy;
+using Microsoft.Extensions.Logging;
 using Scarab.Interfaces;
 using Scarab.Models;
 using Scarab.ViewModels;
@@ -11,7 +12,7 @@ public class DesignModPageViewModel : ModPageViewModel
     public DesignModPageViewModel(ISettings settings,
         IModDatabase db,
         IInstaller inst,
-        IModSource mods) : base(settings, db, inst, mods)
+        IModSource mods) : base(settings, db, inst, mods, A.Fake<ILogger>())
     {
         Database = db;
     }

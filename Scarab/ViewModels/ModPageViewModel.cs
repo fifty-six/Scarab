@@ -19,6 +19,7 @@ using JetBrains.Annotations;
 using MessageBox.Avalonia;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
+using Microsoft.Extensions.Logging;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using Scarab.Interfaces;
@@ -80,18 +81,21 @@ public partial class ModPageViewModel : ViewModelBase
 
     [Notify]
     private bool _updating;
-    
+
+    private readonly ILogger _logger;
+
     public ModState Api      => _mods.ApiInstall;
     public bool ApiOutOfDate => _mods.ApiInstall is InstalledState { Version: var v } && v.Major < _db.Api.Version;
     public bool CanUpdateAll => _items.Any(x => x.State is InstalledState { Updated: false }) && !_updating;
     public ReadOnlyObservableCollection<ModItem> FilteredItems => _filteredItems;
 
-    public ModPageViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods)
+    public ModPageViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods, ILogger logger)
     {
         _settings = settings;
         _installer = inst;
         _mods = mods;
         _db = db;
+        _logger = logger;
 
         _items = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
 
@@ -267,7 +271,8 @@ public partial class ModPageViewModel : ViewModelBase
         }
         catch (HashMismatchException e)
         {
-            Trace.WriteLine($"Mod {item.Name} had a hash mismatch! Expected: {e.Expected}, got {e.Actual}");
+            _logger.LogError("Mod {m} had a hash mismatch! Expected: {expected}, got {actual}", item.Name, e.Expected,
+                e.Actual);
             await DisplayHashMismatch(e);
         }
         catch (HttpRequestException e)
@@ -276,7 +281,8 @@ public partial class ModPageViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            Trace.WriteLine($"Failed to install mod {item.Name}. State = {item.State}, Link = {item.Link}");
+            _logger.LogError("Failed to install mod {name}. State = {state}, Link = {link}", item.Name, item.State,
+                item.Link);
             await DisplayGenericError("installing or uninstalling", item.Name, e);
         }
 
@@ -328,9 +334,9 @@ public partial class ModPageViewModel : ViewModelBase
         ).Show();
     }
 
-    private static async Task DisplayGenericError(string action, string name, Exception e)
+    private async Task DisplayGenericError(string action, string name, Exception e)
     {
-        Trace.TraceError(e.ToString());
+        _logger.LogError("Error while performing {action} on {name}: {e}", action, name, e);
 
         await MessageBoxManager.GetMessageBoxStandardWindow
         (
@@ -340,9 +346,9 @@ public partial class ModPageViewModel : ViewModelBase
         ).Show();
     }
 
-    private static async Task DisplayNetworkError(string name, HttpRequestException e)
+    private async Task DisplayNetworkError(string name, HttpRequestException e)
     {
-        Trace.WriteLine($"Failed to download {name}, {e}");
+        _logger.LogError("Failed to download mod {name}, {e}", name, e);
 
         await MessageBoxManager.GetMessageBoxStandardWindow
         (

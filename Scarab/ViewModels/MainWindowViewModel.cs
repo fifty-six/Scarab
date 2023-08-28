@@ -11,12 +11,14 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
+using DryIoc;
 using MessageBox.Avalonia;
 using MessageBox.Avalonia.BaseWindows.Base;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 using MessageBox.Avalonia.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 using Scarab.Interfaces;
@@ -50,8 +52,8 @@ public partial class MainWindowViewModel : ViewModelBase
         Trace.WriteLine("Checking if up to date...");
             
         await CheckUpToDate();
-            
-        var sc = new ServiceCollection();
+
+        var con = new Container();
 
         Trace.WriteLine("Loading settings.");
         Settings settings = Settings.Load() ?? Settings.Create(await GetSettingsPath());
@@ -118,35 +120,34 @@ public partial class MainWindowViewModel : ViewModelBase
 
         Trace.WriteLine("Fetched links successfully");
 
-        sc
-            .AddSingleton(hc)
-            .AddSingleton<ISettings>(_ => settings)
-            .AddSingleton<IFileSystem, FileSystem>();
-
+        con.AddLogging();
+        con.RegisterInstance(hc);
+        con.RegisterDelegate<ISettings>(_ => settings);
+        con.Register<IFileSystem, FileSystem>();
+        
         var mods = await InstalledMods.Load(
-            sc.BuildServiceProvider().GetRequiredService<IFileSystem>(),
+            con.GetRequiredService<IFileSystem>(),
             settings,
             content.ml
         );
 
-        sc.AddSingleton<IModSource>(_ => mods)
-          .AddSingleton<IModDatabase, ModDatabase>(sp =>
-              new ModDatabase(sp.GetRequiredService<IModSource>(), content)
-          )
-          .AddSingleton<IInstaller, Installer>()
-          .AddSingleton<ModPageViewModel>()
-          .AddSingleton<SettingsViewModel>();
-            
-        Trace.WriteLine("Building service provider");
-        ServiceProvider sp = sc.BuildServiceProvider(new ServiceProviderOptions
-        {
-            ValidateOnBuild = true
-        });
-        Trace.WriteLine("Built service provider");
+        con.RegisterInstance<IModSource>(mods);
+        con.RegisterDelegate<IModSource, IModDatabase>(src => new ModDatabase(src, content));
+        con.Register<IInstaller, Installer>();
+        con.Register<ModPageViewModel>();
+        con.Register<SettingsViewModel>();
 
+        con.ValidateAndThrow();
+        
         Trace.WriteLine("Displaying model");
-        SettingsPage = sp.GetRequiredService<SettingsViewModel>();
-        Content = sp.GetRequiredService<ModPageViewModel>();
+
+        
+        Avalonia.Logging.Logger.Sink = new MicrosoftLogSink(
+            con.Resolve<ILoggerFactory>().CreateLogger("Avalonia")
+        );
+        
+        SettingsPage = con.GetRequiredService<SettingsViewModel>();
+        Content = con.GetRequiredService<ModPageViewModel>();
     }
 
     private static async Task CheckUpToDate()

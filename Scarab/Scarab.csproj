@@ -32,10 +32,16 @@
         <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.0" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0" />
         <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0" />
+        <PackageReference Include="DryIoc.dll" Version="5.4.1" />
+        <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.2.0" />
         <PackageReference Include="FakeItEasy" Version="8.0.0-alpha.1.10" />
         <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" />
         <PackageReference Include="MessageBox.Avalonia" Version="2.3.1-rc1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.TraceSource" Version="7.0.0" />
         <PackageReference Include="Microsoft.Toolkit.HighPerformance" Version="7.1.2" />
         <PackageReference Include="Projektanker.Icons.Avalonia" Version="6.6.0-rc1.1" />
         <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="6.6.0-rc1.1" />
@@ -45,6 +51,8 @@
         </PackageReference>
         <PackageReference Include="Semi.Avalonia" Version="11.0.0" />
         <PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" Version="14.6.37" />
+        <PackageReference Include="Splat.Microsoft.Extensions.Logging" Version="14.7.1" />
+        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="7.0.2" />
         <PackageReference Include="System.IO.Abstractions" Version="19.2.29" />
     </ItemGroup>
     
