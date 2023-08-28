@@ -1,9 +1,8 @@
 using System;
-using System.Diagnostics;
 using DryIoc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Splat.Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Scarab.Util;
 
@@ -13,16 +12,7 @@ public static class ContainerExt
     {
         var sc = new ServiceCollection();
 
-        sc.AddLogging(l =>
-        {
-            l.AddSplat();
-            l.AddConsole();
-            
-            foreach (TraceListener listener in Trace.Listeners)
-                l.AddTraceSource("trace", listener);
-
-            l.AddDebug();
-        });
+        sc.AddLogging(l => l.AddSerilog());
 
         con.Register(
             Made.Of(

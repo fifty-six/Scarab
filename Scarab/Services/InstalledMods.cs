@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Scarab.Interfaces;
 using Scarab.Models;
+using Serilog;
 
 namespace Scarab.Services;
 
@@ -85,7 +86,7 @@ public record InstalledMods : IModSource
                 // Fix it being enabled or disabled when it's in the opposite state
                 if (state.Enabled != enabled)
                 {
-                    Trace.TraceWarning($"Fixing incorrect enabled state of {name}, changing to {enabled}.");
+                    Log.Warning("Fixing incorrect enabled state of {Name}, changing to {Enabled}.", name, enabled);
                         
                     db.Mods[name] = state with { Enabled = enabled };
 
@@ -94,8 +95,8 @@ public record InstalledMods : IModSource
 
                 continue;
             }
-                
-            Trace.TraceWarning($"Removing missing mod {name}!");
+
+            Log.Warning("Removing missing mod {Name}!", name);
                 
             db.Mods.Remove(name);
 
@@ -114,7 +115,7 @@ public record InstalledMods : IModSource
             !fs.File.Exists(Path.Combine(config.ManagedFolder, Installer.Current))
         ) 
         {
-            Trace.TraceWarning("Assembly missing, marking API as uninstalled!");
+            Log.Warning("Assembly missing, marking API as uninstalled!");
             db.ApiInstall = new NotInstalledState();
 
             changed = true;

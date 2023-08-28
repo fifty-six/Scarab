@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Scarab.Util;
 
@@ -65,7 +66,7 @@ public static class WorkaroundHttpClient
             catch (TaskCanceledException)
             {
                 hc.Dispose();
-                Trace.WriteLine("Failed with normal client, trying workaround.");
+                Log.Warning("Failed with normal client, trying workaround.");
             }
         }
 

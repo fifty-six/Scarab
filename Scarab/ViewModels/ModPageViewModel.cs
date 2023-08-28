@@ -336,7 +336,7 @@ public partial class ModPageViewModel : ViewModelBase
 
     private async Task DisplayGenericError(string action, string name, Exception e)
     {
-        _logger.LogError("Error while performing {action} on {name}: {e}", action, name, e);
+        _logger.LogError(e, "Error while performing {action} on {name}", action, name);
 
         await MessageBoxManager.GetMessageBoxStandardWindow
         (
@@ -348,7 +348,7 @@ public partial class ModPageViewModel : ViewModelBase
 
     private async Task DisplayNetworkError(string name, HttpRequestException e)
     {
-        _logger.LogError("Failed to download mod {name}, {e}", name, e);
+        _logger.LogError(e, "Failed to download mod {name}", name);
 
         await MessageBoxManager.GetMessageBoxStandardWindow
         (

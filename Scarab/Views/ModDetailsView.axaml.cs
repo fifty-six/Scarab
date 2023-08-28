@@ -6,6 +6,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using Scarab.ViewModels;
+using Serilog;
 
 namespace Scarab.Views;
 
@@ -26,11 +27,12 @@ public partial class ModDetailsView : ReactiveUserControl<ModPageViewModel>
     {
         if (sender is not TextBlock txt)
         {
-            Trace.TraceWarning($"{nameof(RepositoryTextClick)} called with non TextBlock sender!");
+            Log.Warning(
+                $"{nameof(RepositoryTextClick)} called with non TextBlock sender {{SenderType}}!",
+                sender?.GetType().Name ?? "null"
+            );
             return;
         }
-
-        Trace.WriteLine(txt.Text);
 
         if (string.IsNullOrEmpty(txt.Text))
             return;
@@ -47,7 +49,7 @@ public partial class ModDetailsView : ReactiveUserControl<ModPageViewModel>
         }
         catch (Exception e)
         {
-            Trace.TraceError($"{nameof(RepositoryTextClick)} process spawn failed with error {e}");
+            Log.Error(e, $"{nameof(RepositoryTextClick)} process spawn failed!`");
         }
     }
 }

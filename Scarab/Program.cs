@@ -10,6 +10,9 @@ using Avalonia.Svg.Skia;
 using JetBrains.Annotations;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.FontAwesome;
+using Serilog;
+using Splat;
+using Splat.Serilog;
 
 namespace Scarab;
 
@@ -22,10 +25,11 @@ internal class Program
     public static void Main(string[] args)
     {
         SetupLogging();
-
+        SetupExceptionHandling();
+        
         PosixSignalRegistration.Create(PosixSignal.SIGTERM, Handler);
         PosixSignalRegistration.Create(PosixSignal.SIGINT, Handler);
-            
+
         try
         {
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
@@ -34,27 +38,14 @@ internal class Program
         {
             WriteExceptionToLog(e);
         }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
     }
 
-    private static void Handler(PosixSignalContext? c) => Environment.Exit(-1);
-
-    private static void SetupLogging()
+    private static void SetupExceptionHandling()
     {
-        var fileListener = new TextWriterTraceListener
-        (
-            Path.Combine
-            (
-                Settings.GetOrCreateDirPath(),
-                "ModInstaller.log"
-            )
-        );
-
-        fileListener.TraceOutputOptions = TraceOptions.DateTime;
-
-        Trace.AutoFlush = true;
-
-        Trace.Listeners.Add(fileListener);
-
         AppDomain.CurrentDomain.UnhandledException += (_, eArgs) =>
         {
             // Can't open a UI as this is going to crash, so we'll save to a log file.
@@ -62,32 +53,39 @@ internal class Program
         };
 
         TaskScheduler.UnobservedTaskException += (_, eArgs) => { WriteExceptionToLog(eArgs.Exception); };
+    }
 
-        Trace.WriteLine("Launching...");
+    private static void Handler(PosixSignalContext? c) => Environment.Exit(-1);
+
+    private static void SetupLogging()
+    {
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel
+#if DEBUG
+            .Debug()
+#else
+            .Information()
+#endif
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .WriteTo.Debug()
+            .WriteTo.File(
+                Path.Combine(Settings.GetOrCreateDirPath(), "ModInstaller-.log"),
+                rollingInterval: RollingInterval.Day
+            )
+            .CreateLogger();
+
+        Locator.CurrentMutable.UseSerilogFullLogger();
+
+        Log.Logger.Information("Launching...");
     }
 
     private static void WriteExceptionToLog(Exception e)
     {
-        string date = DateTime.Now.ToString("yy-MM-dd HH-mm-ss");
-
-        string dirName = AppContext.BaseDirectory;
-
-        string dir = dirName switch
-        {
-            // ModInstaller.app/Contents/MacOS/Executable
-            "MacOS" => "../../../",
-            _ => string.Empty
-        };
-            
         if (Debugger.IsAttached)
             Debugger.Break();
 
-        Trace.TraceError(e.ToString());
-
-        File.WriteAllText(dir + $"ModInstaller_Error_{date}.log", e.ToString());
-        File.WriteAllText(Path.Combine(Settings.GetOrCreateDirPath(), $"ModInstaller_Error_{date}.log"), e.ToString());
-
-        Trace.Flush();
+        Log.Logger.Fatal(e, "Fatal error!");
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
@@ -100,7 +98,7 @@ internal class Program
         GC.KeepAlive(typeof(SvgImageExtension).Assembly);
         GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
 #endif
-            
+        
         return AppBuilder.Configure<App>()
                          .UsePlatformDetect()
                          .WithInterFont()
@@ -108,7 +106,6 @@ internal class Program
                          {
                              DefaultFamilyName = "avares://Avalonia.Fonts.Inter/Assets#Inter"
                          })
-                         .LogToTrace()
                          .UseReactiveUI();
     }
 }

@@ -25,6 +25,7 @@ using Scarab.Interfaces;
 using Scarab.Models;
 using Scarab.Services;
 using Scarab.Util;
+using Serilog;
 
 namespace Scarab.ViewModels;
 
@@ -49,20 +50,20 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private async Task Impl()
     {
-        Trace.WriteLine("Checking if up to date...");
+        Log.Information("Checking if up to date...");
             
         await CheckUpToDate();
 
         var con = new Container();
 
-        Trace.WriteLine("Loading settings.");
+        Log.Information("Loading settings.");
         Settings settings = Settings.Load() ?? Settings.Create(await GetSettingsPath());
         settings.Apply();
 
         if (!PathUtil.ValidateExisting(settings.ManagedFolder))
-            settings = await ResetSettings();
+            settings = await ResetSettings(settings);
 
-        Trace.WriteLine("Fetching links");
+        Log.Information("Fetching links");
             
         (ModLinks ml, ApiLinks al) content;
 
@@ -118,7 +119,7 @@ public partial class MainWindowViewModel : ViewModelBase
             throw;
         }
 
-        Trace.WriteLine("Fetched links successfully");
+        Log.Information("Fetched links successfully");
 
         con.AddLogging();
         con.RegisterInstance(hc);
@@ -139,12 +140,11 @@ public partial class MainWindowViewModel : ViewModelBase
 
         con.ValidateAndThrow();
         
-        Trace.WriteLine("Displaying model");
-
-        
         Avalonia.Logging.Logger.Sink = new MicrosoftLogSink(
             con.Resolve<ILoggerFactory>().CreateLogger("Avalonia")
         );
+        
+        Log.Information("Displaying model");
         
         SettingsPage = con.GetRequiredService<SettingsViewModel>();
         Content = con.GetRequiredService<ModPageViewModel>();
@@ -154,7 +154,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         Version? current_version = Assembly.GetExecutingAssembly().GetName().Version;
             
-        Debug.WriteLine($"Current version of installer is {current_version}");
+        Log.Information("Current version of installer is {Version}", current_version);
 
         if (_Debug)
             return; 
@@ -221,13 +221,17 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         else
         {
-            Trace.WriteLine($"Installer out of date! Version {current_version} with latest {version}!");
+            Log.Warning(
+                "Installer out of date! Version {Current_version} with latest {Version}!",
+                current_version,
+                version
+            );
         }
     }
         
-    private static async Task<Settings> ResetSettings()
+    private static async Task<Settings> ResetSettings(ISettings settings)
     {
-        Trace.WriteLine("Settings path is invalid, forcing re-selection.");
+        Log.Information("Settings path {Previous} is invalid, forcing re-selection.", settings.ManagedFolder);
 
         await MessageBoxManager.GetMessageBoxStandardWindow
         (
@@ -262,7 +266,7 @@ public partial class MainWindowViewModel : ViewModelBase
             return await PathUtil.SelectPath();
         }
 
-        Trace.WriteLine($"Settings doesn't exist. Creating it at detected path {path}.");
+        Log.Information("Settings doesn't exist. Creating it at detected path {Path}.", path);
 
         IMsBoxWindow<ButtonResult> window = MessageBoxManager.GetMessageBoxStandardWindow
         (
@@ -289,8 +293,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            Trace.TraceError(e.ToString());
-            Trace.Flush();
+            Log.Fatal(e, "Fatal error in MainWindowViewModel startup!");
 
             if (Debugger.IsAttached)
                 Debugger.Break();
