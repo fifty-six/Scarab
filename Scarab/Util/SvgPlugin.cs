@@ -35,7 +35,7 @@ public class SvgPlugin : IMdAvPlugin
             // But, we need to create the avalonia image on the UI thread
             // as otherwise it's an invalid operation
             return await Dispatcher.UIThread.InvokeAsync(
-                () => Task.FromResult<IImage>(new SvgImage { Source = src })
+                () => Task.FromResult(src is null ? null : new SvgImage { Source = src })
             );
         }
 

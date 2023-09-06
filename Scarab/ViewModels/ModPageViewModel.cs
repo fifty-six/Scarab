@@ -2,6 +2,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using MessageBox.Avalonia;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
@@ -24,7 +27,7 @@ public partial class ModPageViewModel : ViewModelBase
     private readonly ReadOnlyObservableCollection<ModItem> _filteredItems;
     private readonly SortableObservableCollection<ModItem> _items;
 
-    private readonly Dictionary<ModItem, string?> _readmes = new();
+    private readonly Dictionary<ModItem, (string? branch, string content)?> _readmes = new();
     private readonly HttpClient _hc;
     private readonly IModDatabase _db;
     private readonly IInstaller _installer;
@@ -352,25 +355,26 @@ public partial class ModPageViewModel : ViewModelBase
         );
     }
 
-    public async Task<string?> FetchReadme(ModItem item)
+    public async Task<(string? repo, string content)?> FetchReadme(ModItem item)
     {
-        if (_readmes.TryGetValue(item, out string? res))
-            return res;
+        if (_readmes.TryGetValue(item, out var cached))
+            return cached;
         
-        return await Task.Run(async () => {
-            string? res = await FetchReadmeRaw(item);
-
-            if (!string.IsNullOrEmpty(res))
-                return res;
-
+        return await Task.Run(async () =>
+        {
             // If we couldn't get it from the raw, we fall back
             // to the actual gh API, as this handles more cases
             // (e.g. non-MD readmes, non-main/master branches, etc.)
-            return await FetchGithubReadme(item);
+            var res = await FetchReadmeRaw(item) ?? await FetchGithubReadme(item);
+
+            if (res is not null)
+                _readmes[item] = res;
+            
+            return res;
         });
     }
 
-    private async Task<string?> FetchReadmeRaw(ModItem item)
+    private async Task<(string repo, string content)?> FetchReadmeRaw(ModItem item)
     {
         var raws = new[]
         {
@@ -380,20 +384,24 @@ public partial class ModPageViewModel : ViewModelBase
 
         var res = await Task.WhenAll(raws);
 
-        return res.FirstOrDefault(x => x is not null && !x.StartsWith("404"));
+        return res.FirstOrDefault(x => x is { } readme && !readme.content.StartsWith("404"));
     }
 
-    private async Task<string?> FetchReadmeRaw(ModItem item, string branch)
+    private async Task<(string repo, string content)?> FetchReadmeRaw(ModItem item, string branch)
     {
-        var repo = new UriBuilder(item.Repository) {
+        var uri = new UriBuilder(item.Repository) {
             Host = "raw.githubusercontent.com"
         };
 
-        repo.Path = $"{repo.Path.TrimEnd('/')}/{branch}/README.md";
+        uri.Path = $"{uri.Path.TrimEnd('/')}/{branch}/";
 
+        var repo = uri.Uri;
+
+        uri.Path += "README.md";
+        
         var req = new HttpRequestMessage
         {
-            RequestUri = repo.Uri,
+            RequestUri = uri.Uri,
             Method = HttpMethod.Get
         };
 
@@ -402,10 +410,10 @@ public partial class ModPageViewModel : ViewModelBase
         if (msg.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.Forbidden)
             return null;
             
-        return await msg.Content.ReadAsStringAsync();
+        return (repo.ToString(), await msg.Content.ReadAsStringAsync());
     }
 
-    private async Task<string?> FetchGithubReadme(ModItem item)
+    private async Task<(string repo, string content)?> FetchGithubReadme(ModItem item)
     {
         var repo = new UriBuilder(item.Repository) {
             Host = "api.github.com"
@@ -418,16 +426,28 @@ public partial class ModPageViewModel : ViewModelBase
             Method = HttpMethod.Get
         };
 
-        req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.raw"));
+        req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.json"));
         req.Headers.Add("X-GitHub-Api-Version", "2022-11-28");
 
         var msg = await _hc.SendAsync(req);
 
-       // Forbidden means we've hit the rate limit, but in that case the other requests
-       // failed, so realistically it's just not there - so we return null.
+        // Forbidden means we've hit the rate limit, but in that case the other requests
+        // failed, so realistically it's just not there - so we return null.
         if (msg.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.NotFound)
             return null;
 
-        return await msg.Content.ReadAsStringAsync();
+        if (await msg.Content.ReadFromJsonAsync<JsonElement?>() is not { } elem)
+            return null;
+        
+        var download_url = elem.GetProperty("download_url").GetString() 
+                           ?? throw new InvalidDataException("Response is missing download_url!");
+        
+        var base64 = elem.GetProperty("content").GetString() 
+                     ?? throw new InvalidDataException("Response is missing content!");
+
+        return (
+            download_url[..(download_url.LastIndexOf('/') + 1)], 
+            Encoding.UTF8.GetString(Convert.FromBase64String(base64))
+        );
     }
 }

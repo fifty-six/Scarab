@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Net;
 using Avalonia.Controls.Notifications;
 using Avalonia.Input;
 using HttpRequestException = System.Net.Http.HttpRequestException;
@@ -52,6 +51,7 @@ public partial class ModDetailsView : ReactiveUserControl<ModPageViewModel>
                          // or we have a mod, as it's preferable to have an empty screen
                          // than a wrong one
                          MdReadme.Markdown = null;
+                         MdReadme.AssetPathRoot = null;
 
                          // If we've swapped to something where it isn't selected,
                          // or unselected a mod - then we're done
@@ -76,9 +76,17 @@ public partial class ModDetailsView : ReactiveUserControl<ModPageViewModel>
 
         try
         {
-            var content = await ViewModel.FetchReadme(item);
+            var res = await ViewModel.FetchReadme(item);
             
-            MdReadme.Markdown = content ?? "No README found!";
+            if (res is var (repo, content)) {
+                MdReadme.Markdown = content;
+                MdReadme.AssetPathRoot = repo;
+            }
+            else
+            {
+                MdReadme.Markdown = "No README found!";
+                MdReadme.AssetPathRoot = null;
+            }
         }
         catch (HttpRequestException e)
         {
