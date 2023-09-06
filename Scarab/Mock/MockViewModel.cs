@@ -7,7 +7,7 @@ public class DesignModPageViewModel : ModPageViewModel
     public DesignModPageViewModel(ISettings settings,
         IModDatabase db,
         IInstaller inst,
-        IModSource mods) : base(settings, db, inst, mods, A.Fake<ILogger>())
+        IModSource mods) : base(settings, db, inst, mods, A.Fake<ILogger>(), new HttpClient())
     {
         Database = db;
     }

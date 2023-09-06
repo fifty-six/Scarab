@@ -3,13 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:models="clr-namespace:Scarab.Models"
              xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
              xmlns:ext="clr-namespace:Scarab.Extensions"
              xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
              xmlns:conv="clr-namespace:Scarab.Converters"
              xmlns:viewModels="clr-namespace:Scarab.ViewModels"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
+             xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia"
              mc:Ignorable="d"
              d:DesignWidth="480"
              d:DesignHeight="550"
@@ -17,6 +18,7 @@
              x:DataType="viewModels:ModPageViewModel">
     <Border IsVisible="{Binding SelectedModItem, Converter={x:Static ObjectConverters.IsNotNull}}">
         <StackPanel
+            Name="DetailsPanel"
             Margin="10 0"
             DataContext="{Binding SelectedModItem}">
             <TextBlock
@@ -32,7 +34,7 @@
                         <Setter Property="FontSize" Value="16" />
                     </Style>
                 </StackPanel.Styles>
-                
+
                 <StackPanel x:Name="VersionBlock" Orientation="Horizontal">
                     <StackPanel.Resources>
                         <SolidColorBrush x:Key="Highlight" Color="#f49107" />
@@ -62,7 +64,8 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <i:Icon FontSize="6" Value="fa-solid fa-circle" VerticalAlignment="Center" />
-                                    <TextBlock Margin="4 0 0 0" Text="{Binding ., DataType={x:Type system:String}}" VerticalAlignment="Center" />
+                                    <TextBlock Margin="4 0 0 0" Text="{Binding ., DataType={x:Type system:String}}"
+                                               VerticalAlignment="Center" />
                                 </StackPanel>
                             </DataTemplate>
                         </Setter>
@@ -94,6 +97,28 @@
                     IsVisible="{Binding !!Authors.Length}"
                     Header="Authors">
                     <ItemsControl Classes="Bulleted" ItemsSource="{Binding Authors}" />
+                </TabItem>
+
+                <TabItem Header="README" Name="ReadmeTab">
+                    <mdxaml:MarkdownScrollViewer
+                        Name="MdReadme"
+                        Height="{Binding #DetailsPanel.Bounds.Height}">
+                        <mdxaml:MarkdownScrollViewer.Styles>
+                            <Style Selector="ctxt|CTextBlock">
+                                <Setter Property="FontFamily" Value="{StaticResource InterFont}" />
+                            </Style>
+                            
+                            <Style Selector="ctxt|CTextBlock.Heading1">
+                                <Setter Property="FontSize" Value="22" />
+                                <Setter Property="FontWeight" Value="DemiBold" />
+                            </Style>
+                            
+                            <Style Selector="ctxt|CTextBlock.Heading2">
+                                <Setter Property="FontSize" Value="18" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                            </Style>
+                        </mdxaml:MarkdownScrollViewer.Styles>
+                    </mdxaml:MarkdownScrollViewer>
                 </TabItem>
 
                 <TabItem Header="Repository">

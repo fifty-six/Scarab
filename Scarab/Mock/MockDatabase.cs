@@ -14,7 +14,7 @@ public class MockDatabase : IModDatabase
             "sha",
             "NormalEx",
             "An example",
-            "github.com/fifty-six/no",
+            "https://github.com/fifty-six/HollowKnight.QoL",
             ImmutableArray.Create(Tag.Boss, Tag.Utility),
             new[] { "ILove", "Having", "Integrations" },
             new[] { "56", "57", "58" }

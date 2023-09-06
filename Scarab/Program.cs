@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Avalonia.Media;
-using Avalonia.Svg.Skia;
+using Avalonia.Svg;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.FontAwesome;
 using Splat;
@@ -89,12 +89,13 @@ internal class Program
         // Used to make Avalonia.Svg.Skia controls work in the previewer
 #if DEBUG
         GC.KeepAlive(typeof(SvgImageExtension).Assembly);
-        GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
+        GC.KeepAlive(typeof(Avalonia.Svg.Svg).Assembly);
 #endif
         
         return AppBuilder.Configure<App>()
                          .UsePlatformDetect()
                          .WithInterFont()
+                         .UseSkia()
                          .With(new FontManagerOptions
                          {
                              DefaultFamilyName = "avares://Avalonia.Fonts.Inter/Assets#Inter"

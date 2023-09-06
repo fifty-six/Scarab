@@ -8,6 +8,7 @@
                         xmlns:rx="http://reactiveui.net"
                         xmlns:models="clr-namespace:Scarab.Models"
                         xmlns:ext="clr-namespace:Scarab.Extensions"
+                        xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
                         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="45"
                         d:DataContext="{x:Static mock:MockViewModel.DesignMod}"
                         x:Name="mli"
@@ -65,7 +66,8 @@
                 Grid.Column="0"
                 CornerRadius="5"
                 ClipToBounds="True">
-                <Svg
+                <svg:Svg
+                    EnableCache="True"
                     Path="avares://Scarab/Assets/placeholder.svg"
                     Height="40"
                     Width="40"

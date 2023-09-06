@@ -1,5 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Http.Headers;
 using MessageBox.Avalonia;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
@@ -21,7 +23,9 @@ public partial class ModPageViewModel : ViewModelBase
     
     private readonly ReadOnlyObservableCollection<ModItem> _filteredItems;
     private readonly SortableObservableCollection<ModItem> _items;
-    
+
+    private readonly Dictionary<ModItem, string?> _readmes = new();
+    private readonly HttpClient _hc;
     private readonly IModDatabase _db;
     private readonly IInstaller _installer;
     private readonly IModSource _mods;
@@ -81,13 +85,14 @@ public partial class ModPageViewModel : ViewModelBase
     public bool CanUpdateAll => _items.Any(x => x.State is InstalledState { Updated: false }) && !_updating;
     public ReadOnlyObservableCollection<ModItem> FilteredItems => _filteredItems;
 
-    public ModPageViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods, ILogger logger)
+    public ModPageViewModel(ISettings settings, IModDatabase db, IInstaller inst, IModSource mods, ILogger logger, HttpClient hc)
     {
         _settings = settings;
         _installer = inst;
         _mods = mods;
         _db = db;
         _logger = logger;
+        _hc = hc;
 
         _items = new SortableObservableCollection<ModItem>(db.Items.OrderBy(ModToOrderedTuple));
 
@@ -345,5 +350,84 @@ public partial class ModPageViewModel : ViewModelBase
             m.State is InstalledState { Updated : false } ? -1 : 1,
             m.Name
         );
+    }
+
+    public async Task<string?> FetchReadme(ModItem item)
+    {
+        if (_readmes.TryGetValue(item, out string? res))
+            return res;
+        
+        return await Task.Run(async () => {
+            string? res = await FetchReadmeRaw(item);
+
+            if (!string.IsNullOrEmpty(res))
+                return res;
+
+            // If we couldn't get it from the raw, we fall back
+            // to the actual gh API, as this handles more cases
+            // (e.g. non-MD readmes, non-main/master branches, etc.)
+            return await FetchGithubReadme(item);
+        });
+    }
+
+    private async Task<string?> FetchReadmeRaw(ModItem item)
+    {
+        var raws = new[]
+        {
+            FetchReadmeRaw(item, branch: "master"),
+            FetchReadmeRaw(item, branch: "main"),
+        };
+
+        var res = await Task.WhenAll(raws);
+
+        return res.FirstOrDefault(x => x is not null && !x.StartsWith("404"));
+    }
+
+    private async Task<string?> FetchReadmeRaw(ModItem item, string branch)
+    {
+        var repo = new UriBuilder(item.Repository) {
+            Host = "raw.githubusercontent.com"
+        };
+
+        repo.Path = $"{repo.Path.TrimEnd('/')}/{branch}/README.md";
+
+        var req = new HttpRequestMessage
+        {
+            RequestUri = repo.Uri,
+            Method = HttpMethod.Get
+        };
+
+        var msg = await _hc.SendAsync(req);
+
+        if (msg.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.Forbidden)
+            return null;
+            
+        return await msg.Content.ReadAsStringAsync();
+    }
+
+    private async Task<string?> FetchGithubReadme(ModItem item)
+    {
+        var repo = new UriBuilder(item.Repository) {
+            Host = "api.github.com"
+        };
+        repo.Path = $"repos/{repo.Path.TrimEnd('/').TrimStart('/')}/readme";
+
+        var req = new HttpRequestMessage()
+        {
+            RequestUri = repo.Uri,
+            Method = HttpMethod.Get
+        };
+
+        req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.raw"));
+        req.Headers.Add("X-GitHub-Api-Version", "2022-11-28");
+
+        var msg = await _hc.SendAsync(req);
+
+       // Forbidden means we've hit the rate limit, but in that case the other requests
+       // failed, so realistically it's just not there - so we return null.
+        if (msg.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.NotFound)
+            return null;
+
+        return await msg.Content.ReadAsStringAsync();
     }
 }
