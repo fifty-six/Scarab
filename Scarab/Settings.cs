@@ -12,38 +12,38 @@ public class Settings : ISettings
 {
     public string ManagedFolder { get; set; } = null!;
 
-    public bool AutoRemoveDeps { get; } = false;
+    public bool AutoRemoveDeps { get; }
 
     public bool RequiresWorkaroundClient { get; set; }
 
     public string PreferredCulture { get; set; } = CultureInfo.CurrentUICulture.Name;
 
-        // @formatter:off
-        private static readonly ImmutableList<string> STATIC_PATHS = new List<string>
-        {
-            "Program Files/Steam/steamapps/common/Hollow Knight",
-            "Program Files (x86)/Steam/steamapps/common/Hollow Knight",
-            "Program Files/GOG Galaxy/Games/Hollow Knight",
-            "Program Files (x86)/GOG Galaxy/Games/Hollow Knight",
-            "Steam/steamapps/common/Hollow Knight",
-            "GOG Galaxy/Games/Hollow Knight",
-            "XboxGames/Hollow Knight/Content"
-        }
-        .SelectMany(path => DriveInfo.GetDrives().Select(d => Path.Combine(d.Name, path))).ToImmutableList();
+    // @formatter:off
+    private static readonly ImmutableList<string> STATIC_PATHS = new List<string>
+    {
+        "Program Files/Steam/steamapps/common/Hollow Knight",
+        "Program Files (x86)/Steam/steamapps/common/Hollow Knight",
+        "Program Files/GOG Galaxy/Games/Hollow Knight",
+        "Program Files (x86)/GOG Galaxy/Games/Hollow Knight",
+        "Steam/steamapps/common/Hollow Knight",
+        "GOG Galaxy/Games/Hollow Knight",
+        "XboxGames/Hollow Knight/Content"
+    }
+    .SelectMany(path => DriveInfo.GetDrives().Select(d => Path.Combine(d.Name, path))).ToImmutableList();
 
-        private static readonly ImmutableList<string> USER_SUFFIX_PATHS = new List<string>
-        {
-            // Default locations on linux
-            ".local/share/Steam/steamapps/common/Hollow Knight",
-            ".steam/steam/steamapps/common/Hollow Knight",
-            // Flatpak
-            ".var/app/com.valvesoftware.Steam/data/Steam/steamapps/common/Hollow Knight",
-            // Symlinks to the Steam root on linux
-            ".steam/root/steamapps/common/Hollow Knight",
-            // Default for macOS
-            "Library/Application Support/Steam/steamapps/common/Hollow Knight/hollow_knight.app"
-        }
-        .ToImmutableList();
+    private static readonly ImmutableList<string> USER_SUFFIX_PATHS = new List<string>
+    {
+        // Default locations on linux
+        ".local/share/Steam/steamapps/common/Hollow Knight",
+        ".steam/steam/steamapps/common/Hollow Knight",
+        // Flatpak
+        ".var/app/com.valvesoftware.Steam/data/Steam/steamapps/common/Hollow Knight",
+        // Symlinks to the Steam root on linux
+        ".steam/root/steamapps/common/Hollow Knight",
+        // Default for macOS
+        "Library/Application Support/Steam/steamapps/common/Hollow Knight/hollow_knight.app"
+    }
+    .ToImmutableList();
     // @formatter:on
 
     private static string ConfigPath => Path.Combine
