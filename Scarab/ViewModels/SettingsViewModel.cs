@@ -46,9 +46,11 @@ public partial class SettingsViewModel : ViewModelBase
             ? ThemeVariant.Dark
             : ThemeVariant.Light;
 
-        this.WhenAnyValue(x => x.Selected)
-            .Subscribe(item =>
+        this.ObservableForProperty(x => x.Selected)
+            .Subscribe(o =>
             {
+                var item = o.GetValue();
+                
                 if (string.IsNullOrEmpty(item))
                     return;
 
