@@ -38,6 +38,8 @@ public static class PathUtil
                         Resources.PU_NoSelect
                     )
                     .Show();
+                
+                Log.Information("No path was selected!");
             }
             else if (ValidateWithSuffix(result.Path.LocalPath) is not var (managed, suffix))
             {
@@ -78,16 +80,29 @@ public static class PathUtil
             )).FirstOrDefault();
 
             if (result is null)
-                await MessageBoxManager.GetMessageBoxStandardWindow(Resources.PU_InvalidPathTitle, Resources.PU_NoSelectMac).Show();
-            else if (ValidateWithSuffix(result.Path.AbsolutePath) is not var (managed, suffix))
+            {
+                await MessageBoxManager.GetMessageBoxStandardWindow(
+                                           Resources.PU_InvalidPathTitle,
+                                           Resources.PU_NoSelectMac
+                                       )
+                                       .Show();
+                
+                Log.Information("No path was selected!");
+            }
+            // Don't need to log these, as ValidateWithSuffix does so for us
+            else if (ValidateWithSuffix(result.Path.AbsolutePath) is not var (managed, suffix)) 
+            {
                 await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
                     ContentTitle = Resources.PU_InvalidPathTitle,
                     ContentHeader = Resources.PU_InvalidAppHeader,
                     ContentMessage = Resources.PU_InvalidApp,
                     MinHeight = 200
                 }).Show();
+            }
             else
+            {
                 return Path.Combine(managed, suffix);
+            }
 
             if (fail)
                 return null!;
@@ -117,9 +132,12 @@ public static class PathUtil
             return null;
         }
 
-        if (File.Exists(Path.Combine(root, suffix, "Assembly-CSharp.dll"))) 
+        if (File.Exists(Path.Combine(root, suffix, "Assembly-CSharp.dll")))
+        {
+            Log.Information("Found valid path {Root} / {Suffix}", root, suffix);
             return new ValidPath(root, suffix);
-        
+        }
+
         Log.Information(
             "Selected path root {Path} with suffix {Suffix} was missing Assembly-CSharp.dll!",
             root,
