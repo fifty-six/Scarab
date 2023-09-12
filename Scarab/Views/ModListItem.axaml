@@ -14,6 +14,19 @@
                         x:Name="mli"
                         x:DataType="models:ModItem"
                         x:Class="Scarab.Views.ModListItem">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <svg:Svg x:Key="Icon" Path="avares://Scarab/Assets/placeholder_light.svg" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <svg:SvgImage x:Key="Icon" Source="avares://Scarab/Assets/placeholder.svg" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
     <UserControl.Styles>
         <Style Selector="#mli:installed">
             <Style Selector="^ i|Icon#InstallIcon">
@@ -66,13 +79,14 @@
                 Grid.Column="0"
                 CornerRadius="5"
                 ClipToBounds="True">
-                <svg:Svg
-                    EnableCache="True"
-                    Path="avares://Scarab/Assets/placeholder.svg"
-                    Height="40"
-                    Width="40"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Center" />
+                <Panel Background="#232429">
+                    <Image
+                        Source="{DynamicResource Icon}"
+                        Height="40"
+                        Width="40"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center" />
+                </Panel>
             </Border>
 
             <TextBlock

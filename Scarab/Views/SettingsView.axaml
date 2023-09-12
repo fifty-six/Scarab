@@ -21,7 +21,7 @@
             Settings
         </TextBlock>
 
-        <Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="*,*,*" Margin="20">
+        <Grid ColumnDefinitions="Auto,Auto,*" RowDefinitions="*,*,*,*" Margin="20">
             <Grid.Styles>
                 <Style Selector=":is(Control)">
                     <Setter Property="Margin" Value="0 3 0 3" />
@@ -84,6 +84,19 @@
             <CheckBox Grid.Column="1" Grid.Row="2">
                 Automatically remove dependencies when uninstalling mods
             </CheckBox>
+            
+            <TextBlock Grid.Column="0" Grid.Row="3" FontWeight="Bold">
+                Theme:
+            </TextBlock>
+            
+            <ComboBox 
+                Grid.Column="1" 
+                Grid.Row="3" 
+                HorizontalAlignment="Stretch" 
+                Grid.ColumnSpan="2"
+                SelectedItem="{Binding Theme}"
+                ItemsSource="{Binding Themes}"
+            />
         </Grid>
     </StackPanel>
 </reactiveUi:ReactiveUserControl>

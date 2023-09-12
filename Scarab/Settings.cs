@@ -1,8 +1,10 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text.Json;
+using Avalonia.Styling;
 using Microsoft.Win32;
 
 namespace Scarab;
@@ -17,6 +19,8 @@ public class Settings : ISettings
     public bool RequiresWorkaroundClient { get; set; }
 
     public string PreferredCulture { get; set; } = CultureInfo.CurrentUICulture.Name;
+
+    public Theme PreferredTheme { get; set; } = Theme.Dark;
 
     // @formatter:off
     private static readonly ImmutableList<string> STATIC_PATHS = new List<string>
@@ -208,6 +212,12 @@ public class Settings : ISettings
 
     public void Apply()
     {
+        Debug.Assert(Application.Current is not null);
+        
+        Application.Current.RequestedThemeVariant = PreferredTheme == Theme.Dark
+            ? ThemeVariant.Dark
+            : ThemeVariant.Light;
+        
         LocalizeExtension.ChangeLanguage(new CultureInfo(PreferredCulture));
     }
 }
