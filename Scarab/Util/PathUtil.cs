@@ -140,4 +140,11 @@ public static class PathUtil
                && File.Exists(Path.Combine(managed, "Assembly-CSharp.dll"))
                && File.Exists(Path.Combine(managed, "UnityEngine.dll"));
     }
+
+    public static string BasePath(string managed)
+    {
+        return SUFFIXES.Select(s => managed.EndsWith(s) ? managed[..^s.Length] : null)
+                       .FirstOrDefault(x => x is not null) 
+               ?? managed;
+    }
 }

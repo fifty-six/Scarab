@@ -6,6 +6,7 @@
                                 xmlns:mock="clr-namespace:Scarab.Mock"
                                 xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
                                 xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:conv="clr-namespace:Scarab.Converters"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="Scarab.Views.SettingsView"
                                 x:DataType="viewModels:SettingsViewModel"
@@ -45,7 +46,7 @@
                         HorizontalAlignment="Left"
                         DockPanel.Dock="Left"
                         FontWeight="SemiBold"
-                        Text="test"
+                        Text="{Binding Settings, Converter={x:Static conv:ISettingsConverters.ToBasePath}}"
                         Background="{DynamicResource ButtonBackground}" />
                     <i:Icon
                         HorizontalAlignment="Right"

@@ -42,7 +42,7 @@ public static class MockViewModel
         get
         {
             var settings = A.Fake<ISettings>();
-            A.CallTo(() => settings.ManagedFolder).Returns("/home/home/src/test/Managed");
+            A.CallTo(() => settings.ManagedFolder).Returns("/home/home/src/test/hollow_knight_Data/Managed");
 
             return new SettingsViewModel(settings, A.Fake<IModSource>());
         }
