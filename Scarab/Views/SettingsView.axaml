@@ -55,19 +55,6 @@
                 </DockPanel>
             </Button>
 
-            <!--
-            <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Settings.ManagedFolder}">
-                <TextBox.Styles>
-                    <Style Selector="TextBox /template/ DataValidationErrors">
-                        <Setter Property="Theme" Value="{DynamicResource TooltipDataValidationErrors}" />
-                    </Style>
-                </TextBox.Styles>
-                <DataValidationErrors.Errors>
-                    <system:Exception />
-                </DataValidationErrors.Errors>
-            </TextBox>
-            -->
-
             <TextBlock Grid.Column="0" Grid.Row="1" FontWeight="Bold">
                 Language:
             </TextBlock>
