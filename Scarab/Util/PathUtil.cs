@@ -124,7 +124,14 @@ public static class PathUtil
         if (!Directory.Exists(root))
             return null;
             
-        string? suffix = SUFFIXES.FirstOrDefault(s => Directory.Exists(Path.Combine(root, s)));
+        string? suffix = SUFFIXES.FirstOrDefault(s =>
+        {
+            string p = Path.Combine(root, s);
+            
+            Log.Information("Trying path {Path}", p);
+            
+            return Directory.Exists(p);
+        });
 
         if (suffix is null)
         {
