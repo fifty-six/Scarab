@@ -11,23 +11,33 @@
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia"
              xmlns:ctxt="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia"
+             xmlns:models="clr-namespace:Scarab.Models"
              mc:Ignorable="d"
              d:DesignWidth="480"
              d:DesignHeight="550"
              d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
              x:DataType="viewModels:ModPageViewModel">
-    <Border IsVisible="{Binding SelectedModItem, Converter={x:Static ObjectConverters.IsNotNull}}">
-        <StackPanel
+    <Border
+        IsVisible="{Binding ., Converter={x:Static ObjectConverters.IsNotNull}}"
+        DataContext="{Binding SelectedModItem}">
+        <Grid
             Name="DetailsPanel"
             Margin="10 0"
-            DataContext="{Binding SelectedModItem}">
+            RowDefinitions="Auto,Auto,Auto"
+            ColumnDefinitions="*,Auto"
+            x:DataType="models:ModItem">
+            
             <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
                 Text="{Binding Name}"
                 FontSize="24"
                 FontWeight="Black"
                 Margin="0 15 0 5"
                 TextTrimming="CharacterEllipsis" />
-            <StackPanel Margin="0 0 0 8">
+            
+            <!-- Version -->
+            <StackPanel Grid.Column="0" Margin="0 0 0 8" Grid.Row="1">
                 <StackPanel.Styles>
                     <Style Selector="TextBlock">
                         <Setter Property="FontWeight" Value="Bold" />
@@ -53,7 +63,34 @@
                     </TextBlock>
                 </StackPanel>
             </StackPanel>
-            <TabControl>
+            
+            <!-- Repository Button -->
+            <Button
+                Grid.Row="0"
+                Grid.Column="1"
+                Margin="0 12 0 5"
+                FontSize="14"
+                Command="{Binding OpenRepository}"
+                Background="Transparent">
+                <Button.Styles>
+                    <Style Selector="StackPanel:pointerover TextBlock">
+                        <Setter Property="FontWeight" Value="ExtraBold" />
+                    </Style>
+                    <Style Selector="StackPanel:pointerover i|Icon">
+                        <Setter Property="FontSize" Value="15" />
+                    </Style>
+                </Button.Styles>
+                <Border BorderThickness="1">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Repository</TextBlock>
+                    <i:Icon
+                        Margin="5 0 0 0"
+                        Value="fa-solid fa-arrow-up-right-from-square" />
+                </StackPanel>
+                    </Border>
+            </Button>
+            
+            <TabControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
                 <TabControl.Styles>
                     <Style Selector="TabControl /template/ Panel">
                         <Setter Property="Margin" Value="0 0 0 10" />
@@ -108,25 +145,25 @@
                                 <Setter Property="FontFamily" Value="{StaticResource InterFont}" />
                                 <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />
                             </Style>
-                            
+
                             <Style Selector="ctxt|CTextBlock.Heading1">
                                 <Setter Property="FontSize" Value="22" />
                                 <Setter Property="FontWeight" Value="DemiBold" />
                                 <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />
                             </Style>
-                            
+
                             <Style Selector="ctxt|CTextBlock.Heading2">
                                 <Setter Property="FontSize" Value="18" />
                                 <Setter Property="FontWeight" Value="SemiBold" />
                                 <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />
                             </Style>
-                            
+
                             <Style Selector="ctxt|CTextBlock.Heading3">
                                 <Setter Property="FontSize" Value="16" />
                                 <Setter Property="FontWeight" Value="SemiBold" />
                                 <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />
                             </Style>
-                            
+
                             <Style Selector="ctxt|CTextBlock.Heading4">
                                 <Setter Property="FontSize" Value="14" />
                                 <Setter Property="FontWeight" Value="SemiBold" />
@@ -135,23 +172,7 @@
                         </mdxaml:MarkdownScrollViewer.Styles>
                     </mdxaml:MarkdownScrollViewer>
                 </TabItem>
-
-                <TabItem Header="Repository">
-                    <StackPanel>
-                        <TextBlock Text="{ext:Localize XAML_Repository}" FontWeight="Bold" />
-                        <TextBlock
-                            Text="{Binding Repository}"
-                            MaxWidth="{Binding $parent.Bounds.Width}"
-                            TextTrimming="CharacterEllipsis"
-                            PointerReleased="RepositoryTextClick"
-                            Foreground="{DynamicResource Highlight}">
-                            <TextBlock.Resources>
-                                <SolidColorBrush x:Key="Highlight" Color="#1ebbff" />
-                            </TextBlock.Resources>
-                        </TextBlock>
-                    </StackPanel>
-                </TabItem>
             </TabControl>
-        </StackPanel>
+        </Grid>
     </Border>
 </UserControl>

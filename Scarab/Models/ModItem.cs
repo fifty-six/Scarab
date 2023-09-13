@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace Scarab.Models;
 
@@ -62,6 +63,18 @@ public sealed partial record ModItem : INotifyPropertyChanged
         NotInstalledState => Version.ToString(),
         _ => throw new ArgumentOutOfRangeException(nameof(_state))
     };
+
+    public void OpenRepository()
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(Repository) { UseShellExecute = true });
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Unable to open repository!");
+        }
+    }
 
     public async Task OnUpdate(IInstaller inst, Action<ModProgressArgs> setProgress)
     {
