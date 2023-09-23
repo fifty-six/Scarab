@@ -15,7 +15,7 @@
              mc:Ignorable="d"
              d:DesignWidth="480"
              d:DesignHeight="550"
-             d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
+             d:DataContext="{x:Static mock:MockModPageViewModel.DesignInstance}"
              x:DataType="viewModels:ModPageViewModel">
     <Border
         IsVisible="{Binding ., Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}"

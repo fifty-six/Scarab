@@ -268,7 +268,7 @@
     <value>缺少Managed或Assembly-CSharp.dll</value>
   </data>
   <data name="PU_SelectPath" xml:space="preserve">
-    <value>选择您的空洞骑士文件夹</value>
+    <value>选择你的空洞骑士 {0}</value>
   </data>
   <data name="PU_InvalidPathTitle" xml:space="preserve">
     <value>路径</value>

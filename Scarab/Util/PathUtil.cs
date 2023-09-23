@@ -1,115 +1,83 @@
 using System.Runtime.InteropServices;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
-using MessageBox.Avalonia;
-using MessageBox.Avalonia.DTO;
+using Scarab.Views;
 
 namespace Scarab.Util;
 
 public static class PathUtil
 {
-    // There isn't any [return: MaybeNullWhen(param is null)] so this overload will have to do
-    // Not really a huge point but it's nice to have the nullable static analysis
-    public static async Task<string?> SelectPathFallible() => await SelectPath(true);
-        
-    public static async Task<string> SelectPath(bool fail = false)
+    public static async Task<string> SelectPath(Window? parent = null)
     {
         Log.Information("Selecting path...");
 
-        Window parent = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow
-                        ?? throw new InvalidOperationException();
+        parent ??= (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow
+                   ?? throw new InvalidOperationException();
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            return await SelectMacApp(parent, fail);
+        PathResult res = await TrySelection(parent);
 
         while (true)
         {
-            IStorageFolder? result = (await parent.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+            if (res is not ValidPath (var managed, var suffix))
             {
-                AllowMultiple = false,
-                Title = Resources.PU_SelectPath
-            })).FirstOrDefault();
-
-
-            if (result is null)
-            {
-                await MessageBoxManager.GetMessageBoxStandardWindow(
-                        Resources.PU_InvalidPathTitle,
-                        Resources.PU_NoSelect
-                    )
-                    .Show();
+                Log.Information("Invalid path selection! {Result}", res);
                 
-                Log.Information("No path was selected!");
-            }
-            else if (ValidateWithSuffix(result.Path.LocalPath) is not var (managed, suffix))
-            {
-                await MessageBoxManager.GetMessageBoxStandardWindow(
-                        new MessageBoxStandardParams
-                        {
-                            ContentTitle = Resources.PU_InvalidPathTitle,
-                            ContentHeader = Resources.PU_InvalidPathHeader,
-                            ContentMessage = Resources.PU_InvalidPath,
-                            MinHeight = 140
-                        }
-                    )
-                    .Show();
-                
-                Log.Information("User selected invalid path {Path}", result.Path.LocalPath);
+                var w = new PathWindow { ViewModel = new PathViewModel(res) };
+
+                // The dialog asks the user to select again, so we check
+                // if we got a non-null path back from it
+                if (await w.ShowDialog<string?>(parent) is { } p)
+                    return p;
             }
             else
             {
                 return Path.Combine(managed, suffix);
             }
-
-            if (fail)
-                return null!;
         }
     }
 
-    // ReSharper disable once SuggestBaseTypeForParameter
-    private static async Task<string> SelectMacApp(Window parent, bool fail)
+    public static async Task<PathResult> TrySelection(Window? parent = null)
     {
-        while (true)
+        string LocalizeToOS()
         {
-            IStorageFile? result = (await parent.StorageProvider.OpenFilePickerAsync(
-                new FilePickerOpenOptions
-                {
-                    AllowMultiple = false,
-                    FileTypeFilter = new[] { new FilePickerFileType("app") { Patterns = new[] { "*.app" } } }
-                }
-            )).FirstOrDefault();
-
-            if (result is null)
-            {
-                await MessageBoxManager.GetMessageBoxStandardWindow(
-                                           Resources.PU_InvalidPathTitle,
-                                           Resources.PU_NoSelectMac
-                                       )
-                                       .Show();
-                
-                Log.Information("No path was selected!");
-            }
-            // Don't need to log these, as ValidateWithSuffix does so for us
-            else if (ValidateWithSuffix(result.Path.LocalPath) is not var (managed, suffix)) 
-            {
-                await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
-                    ContentTitle = Resources.PU_InvalidPathTitle,
-                    ContentHeader = Resources.PU_InvalidAppHeader,
-                    ContentMessage = Resources.PU_InvalidApp,
-                    MinHeight = 200
-                }).Show();
-            }
-            else
-            {
-                return Path.Combine(managed, suffix);
-            }
-
-            if (fail)
-                return null!;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                return string.Format(Resources.PU_SelectPath, "app");
+            
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                return string.Format(Resources.PU_SelectPath, "exe");
+            
+            // Default to the linux one, 
+            return string.Format(Resources.PU_SelectPath, "hollow_knight.x86_64");
         }
-    }
+        
+        parent ??= Application.Current?.ApplicationLifetime is
+            IClassicDesktopStyleApplicationLifetime { MainWindow: { } main }
+            ? main
+            : throw new InvalidOperationException("No window found!");
+        
+        IStorageFile? result = (await parent.StorageProvider.OpenFilePickerAsync(
+            new FilePickerOpenOptions
+            {
+                Title = LocalizeToOS(),
+                AllowMultiple = false,
+                FileTypeFilter = new[] { new FilePickerFileType("Hollow Knight file") {
+                    Patterns = new[] { "*.app", "*.exe", "*.x86_64" }
+                } }
+            }
+        )).FirstOrDefault();
 
-    private static readonly string[] SUFFIXES =
+        if (result is not { Path.LocalPath: var localPath })
+            return new PathNotSelectedError();
+
+        var path = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+            ? localPath
+            : Path.GetDirectoryName(localPath)!;
+
+        return ValidateWithSuffix(path);
+    }
+    
+    internal static readonly string[] SUFFIXES =
     {
         // GoG
         "Hollow Knight_Data/Managed",
@@ -119,10 +87,13 @@ public static class PathUtil
         "Contents/Resources/Data/Managed"
     };
 
-    public static ValidPath? ValidateWithSuffix(string root)
+    public static PathResult ValidateWithSuffix(string? root)
     {
+        if (root is null)
+            return new PathNotSelectedError();
+        
         if (!Directory.Exists(root))
-            return null;
+            return new RootNotFoundError();
             
         string? suffix = SUFFIXES.FirstOrDefault(s =>
         {
@@ -136,7 +107,8 @@ public static class PathUtil
         if (suffix is null)
         {
             Log.Information("Selected path root {Root} had no valid suffix with Managed folder!", root);
-            return null;
+
+            return new SuffixNotFoundError(root, SUFFIXES.Select(s => Path.Combine(root, s)).ToArray());
         }
 
         if (File.Exists(Path.Combine(root, suffix, "Assembly-CSharp.dll")))
@@ -151,7 +123,10 @@ public static class PathUtil
             suffix
         );
             
-        return null;
+        return new AssemblyNotFoundError(
+            Path.Combine(root, suffix),
+            new[] { Path.Combine(root, suffix, "Assembly-CSharp.dll") }
+        );
 
     }
 

@@ -1,6 +1,8 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Styling;
 using MessageBox.Avalonia;
+using MessageBox.Avalonia.Enums;
+using Scarab.Views;
 
 namespace Scarab.ViewModels;
 
@@ -78,11 +80,28 @@ public partial class SettingsViewModel : ViewModelBase
 
     private async Task ChangePathAsync()
     {
-        string? path = await PathUtil.SelectPathFallible();
+        var main = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow
+                   ?? throw new InvalidOperationException();
+        
+        var res = await PathUtil.TrySelection(main);
 
-        if (path is null)
+        string? path;
+
+        if (res is not ValidPath (var root, var suffix))
+        {
+            var w = new PathWindow { ViewModel = new PathViewModel(res) };
+            
+            path = await w.ShowDialog<string?>(main);
+        }
+        else
+        {
+            path = Path.Combine(root, suffix);
+        }
+
+        // User closed out of the dialog
+        if (string.IsNullOrEmpty(path))
             return;
-
+        
         Settings.ManagedFolder = path;
         Settings.Save();
 

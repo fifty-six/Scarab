@@ -10,7 +10,7 @@
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="Scarab.Views.SettingsView"
                                 x:DataType="viewModels:SettingsViewModel"
-                                d:DataContext="{x:Static mock:MockViewModel.SettingsInstance}">
+                                d:DataContext="{x:Static mock:MockModPageViewModel.SettingsInstance}">
     <StackPanel Margin="8">
         <StackPanel.Styles>
             <Style Selector="CheckBox">

@@ -9,7 +9,7 @@
              xmlns:mock="clr-namespace:Scarab.Mock;assembly=Scarab"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="550"
              x:DataType="viewModels:ModPageViewModel"
-             d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
+             d:DataContext="{x:Static mock:MockModPageViewModel.DesignInstance}"
              Name="UserControl">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled">
         <ListBox SelectedItem="{Binding SelectedModItem}"

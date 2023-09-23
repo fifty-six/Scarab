@@ -268,7 +268,7 @@
     <value>A pasta Managed ou o Assembly-CSharp está ausente!</value>
   </data>
   <data name="PU_SelectPath" xml:space="preserve">
-    <value>Selecione a sua pasta do Hollow Knight.</value>
+    <value>Selecione a sua {0} do Hollow Knight.</value>
   </data>
   <data name="PU_InvalidPathTitle" xml:space="preserve">
     <value>Caminho</value>

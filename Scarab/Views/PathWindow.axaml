@@ -1,0 +1,95 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:scarab="clr-namespace:Scarab"
+        xmlns:vm="clr-namespace:Scarab.ViewModels"
+        xmlns:mock="clr-namespace:Scarab.Mock"
+        xmlns:i="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Scarab.Views.PathWindow"
+        Title="PathWindow"
+        d:DataContext="{x:Static mock:MockPathViewModel.DesignInstance}"
+        x:DataType="vm:PathViewModel">
+    <Grid RowDefinitions="Auto,Auto,*,Auto" ColumnDefinitions="*,Auto" Margin="25">
+        <TextBlock
+            FontSize="24"
+            Margin="0 4 0 4"
+            Foreground="{DynamicResource ButtonDefaultPrimaryForeground}"
+            FontWeight="DemiBold">
+            Unable to verify path!
+        </TextBlock>
+
+        <!-- In the case we have no content for an expander -->
+        <TextBlock
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
+            Margin="1 2 0 0"
+            FontSize="16"
+            FontWeight="DemiBold"
+            Grid.Column="0"
+            x:Name="VerificationBlock" />
+            
+        <!-- Otherwise, we have an expander for showing files -->
+        <Expander
+            x:Name="VerificationExpander"
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
+            Grid.Column="0"
+            Margin="-11 0 0 0"
+            HorizontalAlignment="Stretch">
+            <Expander.Styles>
+                <Style Selector="Expander:down Border#ExpanderContent">
+                    <Setter Property="BorderThickness" Value="0" />
+                </Style>
+            </Expander.Styles>
+            <StackPanel
+                x:Name="VerificationPanel">
+                <StackPanel.Styles>
+                    <Style Selector="i|Icon[(Grid.Column)=0]">
+                        <Setter Property="FontWeight" Value="DemiBold" />
+                        <Setter Property="VerticalAlignment" Value="Stretch" />
+                    </Style>
+                    <Style Selector='i|Icon[Value=fa-solid fa-xmark]'>
+                        <Setter Property="Foreground" Value="{DynamicResource DataValidationErrorsForeground}" />
+                    </Style>
+                    <Style Selector="i|Icon[Value=fa-solid fa-check]">
+                        <Setter Property="Foreground" Value="{DynamicResource NotificationCardSuccessIconForeground}" />
+                    </Style>
+                    <Style Selector="TextBlock[(Grid.Column)=1]">
+                        <Setter Property="VerticalAlignment" Value="Stretch" />
+                        <Setter Property="Margin" Value="10 0 0 2" />
+                    </Style>
+                </StackPanel.Styles>
+            </StackPanel>
+        </Expander>
+
+        <StackPanel
+            Grid.Column="0"
+            Grid.Row="3">
+            <Button
+                HorizontalContentAlignment="Stretch"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                Command="{Binding ChangePath}">
+                <DockPanel>
+                    <TextBlock
+                        HorizontalAlignment="Left"
+                        DockPanel.Dock="Left"
+                        FontWeight="SemiBold"
+                        Text="{Binding Selection}"
+                        Background="{DynamicResource ButtonBackground}" />
+                    <i:Icon
+                        HorizontalAlignment="Right"
+                        DockPanel.Dock="Right"
+                        Value="fa-regular fa-folder-open" />
+                </DockPanel>
+            </Button>
+
+            <TextBlock
+                Foreground="{DynamicResource DataValidationErrorsForeground}"
+                Margin="5 4 0 0"
+                Text="Select a valid path!" />
+        </StackPanel>
+    </Grid>
+</Window>
