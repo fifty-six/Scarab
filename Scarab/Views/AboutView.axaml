@@ -9,7 +9,7 @@
             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
             x:DataType="viewModels:AboutViewModel"
             x:Class="Scarab.Views.AboutView"
-            d:DataContext="{x:Static mock:MockViewModel.AboutInstance}">
+            d:DataContext="{x:Static mock:MockModPageViewModel.AboutInstance}">
     <Grid ColumnDefinitions="*,2*" RowDefinitions=".4*,3*,*" Margin="30">
         <Image Grid.Column="0" Grid.RowSpan="3" Source="avares://Scarab/Assets/omegamaggotprime.ico"
                Margin="20 10 0 10" />

@@ -15,7 +15,13 @@ public class DesignModPageViewModel : ModPageViewModel
     public IModDatabase Database { get; }
 }
 
-public static class MockViewModel
+public static class MockPathViewModel
+{
+    public static PathViewModel DesignInstance =>
+        new PathViewModel(new SuffixNotFoundError("/home/home/Downloads", PathUtil.SUFFIXES));
+};
+
+public static class MockModPageViewModel
 {
     public static DesignModPageViewModel DesignInstance
     {

@@ -13,7 +13,7 @@
                                 mc:Ignorable="d" d:DesignWidth="980" d:DesignHeight="550"
                                 x:Class="Scarab.Views.ModPageView"
                                 x:DataType="viewModels:ModPageViewModel"
-                                d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
+                                d:DataContext="{x:Static mock:MockModPageViewModel.DesignInstance}"
                                 Name="UserControl">
     <DockPanel>
         <!-- We disable these because ReSharper doesn't support finding the themes classes/resources afaict -->

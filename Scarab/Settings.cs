@@ -78,21 +78,25 @@ public class Settings : ISettings
 
     internal static bool TryAutoDetect([MaybeNullWhen(false)] out ValidPath path)
     {
-        path = STATIC_PATHS.Select(PathUtil.ValidateWithSuffix).FirstOrDefault(x => x is not null);
+        var p = STATIC_PATHS.Select(PathUtil.ValidateWithSuffix).FirstOrDefault(x => x is not null);
 
         // If that's valid, use it.
-        if (path is not null)
+        if (p is ValidPath v)
+        {
+            path = v;
             return true;
+        }
 
         // Otherwise, we go through the user profile suffixes.
         string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
         path = USER_SUFFIX_PATHS
-               .Select(suffix => Path.Combine(home, suffix))
-               .Select(PathUtil.ValidateWithSuffix)
-               .FirstOrDefault(x => x is not null);
-
-        return path is not null || TryDetectFromRegistry(out path);
+            .Select(suffix => Path.Combine(home, suffix))
+            .Select(PathUtil.ValidateWithSuffix)
+            .Select(x => x as ValidPath)
+            .FirstOrDefault(x => x is not null);
+        
+        return p is not null || TryDetectFromRegistry(out path);
     }
 
     private static bool TryDetectFromRegistry([MaybeNullWhen(false)] out ValidPath path)
@@ -114,7 +118,7 @@ public class Settings : ISettings
             return false;
 
         // Double check, just in case.
-        if (PathUtil.ValidateWithSuffix(gog_path) is not { } validPath)
+        if (PathUtil.ValidateWithSuffix(gog_path) is not ValidPath validPath)
             return false;
 
         path = validPath;
@@ -164,6 +168,7 @@ public class Settings : ISettings
 
         path = library_paths.Select(library_path => Path.Combine(library_path, "steamapps", "common", "Hollow Knight"))
                             .Select(PathUtil.ValidateWithSuffix)
+                            .Select(x => x as ValidPath)
                             .FirstOrDefault(x => x is not null);
 
         return path is not null;

@@ -10,7 +10,7 @@
                         xmlns:ext="clr-namespace:Scarab.Extensions"
                         xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
                         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="45"
-                        d:DataContext="{x:Static mock:MockViewModel.DesignMod}"
+                        d:DataContext="{x:Static mock:MockModPageViewModel.DesignMod}"
                         x:Name="mli"
                         x:DataType="models:ModItem"
                         x:Class="Scarab.Views.ModListItem">

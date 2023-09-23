@@ -268,7 +268,7 @@
     <value>Missing Managed folder or Assembly-CSharp!</value>
   </data>
   <data name="PU_SelectPath" xml:space="preserve">
-    <value>Select your Hollow Knight folder.</value>
+    <value>Select your Hollow Knight {0}.</value>
   </data>
   <data name="PU_InvalidPathTitle" xml:space="preserve">
     <value>Path</value>

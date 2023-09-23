@@ -268,7 +268,7 @@
     <value>Dossier Managed ou Assembly-CSharp non trouvé !</value>
   </data>
   <data name="PU_SelectPath" xml:space="preserve">
-    <value>Sélectionner le dossier de Hollow Knight.</value>
+    <value>Sélectionner le {0} de Hollow Knight.</value>
   </data>
   <data name="PU_InvalidPathTitle" xml:space="preserve">
     <value>Chemin</value>

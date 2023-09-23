@@ -268,7 +268,7 @@
     <value>Hiányzó Managed mappa, vagy Assembly-CSharp!</value>
   </data>
   <data name="PU_SelectPath" xml:space="preserve">
-    <value>Add meg a Hollow Knight mappát!</value>
+    <value>Add meg a Hollow Knight {0}!</value>
   </data>
   <data name="PU_InvalidPathTitle" xml:space="preserve">
     <value>Útvonal</value>
