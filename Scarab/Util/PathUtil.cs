@@ -90,7 +90,7 @@ public static class PathUtil
                 Log.Information("No path was selected!");
             }
             // Don't need to log these, as ValidateWithSuffix does so for us
-            else if (ValidateWithSuffix(result.Path.AbsolutePath) is not var (managed, suffix)) 
+            else if (ValidateWithSuffix(result.Path.LocalPath) is not var (managed, suffix)) 
             {
                 await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams {
                     ContentTitle = Resources.PU_InvalidPathTitle,
