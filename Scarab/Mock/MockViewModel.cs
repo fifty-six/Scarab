@@ -21,12 +21,39 @@ public static class MockViewModel
     {
         get
         {
+            ModState apiInstall = new NotInstalledState();
+            
             var src = A.Fake<IModSource>();
-            A.CallTo(() => src.ApiInstall).Returns(new NotInstalledState());
+            A.CallTo(() => src.ApiInstall).ReturnsLazily(() => apiInstall);
+            
+            var installer = A.Fake<IInstaller>();
+            
+            A.CallTo(() => installer.ToggleApi())
+             .ReturnsLazily(
+                 () =>
+                 {
+                     apiInstall = apiInstall switch
+                     {
+                         InstalledState(true, _, _) i => i with { Enabled = false },
+                         InstalledState(false, _, _) i => i with { Enabled = true },
+                         _ => throw new ArgumentOutOfRangeException(nameof(apiInstall))
+                     };
+
+                     return Task.CompletedTask;
+                 }
+             );
+            A.CallTo(() => installer.InstallApi())
+             .ReturnsLazily(
+                 () =>
+                 {
+                     apiInstall = new InstalledState(true, new Version(1, 0), true);
+                     return Task.CompletedTask;
+                 }
+             );
 
             var db = new MockDatabase();
 
-            return new DesignModPageViewModel(A.Fake<ISettings>(), db, A.Fake<IInstaller>(), src) 
+            return new DesignModPageViewModel(A.Fake<ISettings>(), db, installer, src) 
             {
                 SelectedModItem = db.Items.ToList()[0]
             };
