@@ -18,7 +18,7 @@
              d:DataContext="{x:Static mock:MockViewModel.DesignInstance}"
              x:DataType="viewModels:ModPageViewModel">
     <Border
-        IsVisible="{Binding ., Converter={x:Static ObjectConverters.IsNotNull}}"
+        IsVisible="{Binding ., Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}"
         DataContext="{Binding SelectedModItem}">
         <Grid
             Name="DetailsPanel"
