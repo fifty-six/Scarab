@@ -104,6 +104,7 @@
                     Grid.Column="3"
                     Grid.Row="0"
                     Margin=" 5 0"
+                    Width="120"
                     IsChecked="{Binding Api, Converter={x:Static c:ModStateConverters.IsInstalledAndEnabled}, Mode=OneWay}"
                     Command="{Binding ToggleApi}"
                     VerticalAlignment="Stretch">
