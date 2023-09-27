@@ -7,6 +7,9 @@
     </Application.DataTemplates>
     <Application.Resources>
         <FontFamily x:Key="InterFont">avares://Avalonia.Fonts.Inter/Assets#Inter</FontFamily>
+        <SolidColorBrush x:Key="ToggleSwitchContainerCheckedDefaultBackground" Color="{DynamicResource SemiBlue4Color}" />
+        <SolidColorBrush x:Key="ToggleSwitchContainerCheckedPointeroverBackground" Color="{DynamicResource SemiBlue5Color}" />
+        <SolidColorBrush x:Key="ToggleSwitchContainerCheckedPressedBackground" Color="{DynamicResource SemiBlue6Color}" />
     </Application.Resources>
     <Application.Styles>
         <SimpleTheme/> 
