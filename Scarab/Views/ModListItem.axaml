@@ -110,17 +110,6 @@
                 IsEnabled="{Binding Installed}"
                 HorizontalAlignment="Center"
                 VerticalContentAlignment="Center">
-                <ToggleSwitch.Styles>
-                    <Style Selector="ToggleSwitch:checked /template/ Border#SwitchBackgroundBorder">
-                        <Setter Property="Background" Value="{DynamicResource SemiBlue4Color}" />
-                    </Style>
-                    <Style Selector="ToggleSwitch:checked:pointerover /template/ Border#SwitchBackgroundBorder">
-                        <Setter Property="Background" Value="{DynamicResource SemiBlue5Color}" />
-                    </Style>
-                    <Style Selector="ToggleSwitch:checked:pressed /template/ Border#SwitchBackgroundBorder">
-                        <Setter Property="Background" Value="{DynamicResource SemiBlue6Color}" />
-                    </Style>
-                </ToggleSwitch.Styles>
             </ToggleSwitch>
 
             <Border
