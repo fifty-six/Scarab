@@ -8,6 +8,6 @@ jobs:
     steps:
       - uses: vedantmgoyal2009/winget-releaser@v2
         with:
-          identifier: Package.Identifier
+          identifier: fifty-six.Scarab
           installers-regex: 'windows.zip'
           token: ${{ secrets.WINGET_TOKEN }}
