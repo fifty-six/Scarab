@@ -53,15 +53,6 @@
             <Style Selector="^ #InstallUpdateButton TextBlock">
                 <Setter Property="Text" Value="{ext:Localize MI_InstallText_NotInstalled}" />
             </Style>
-
-            <!-- Maybe remove this one; we want to be able to queue mods -->
-            <!--
-            <Style Selector="^ #mli:installing">
-                <Style Selector="^ Button#InstallUpdateButton">
-                    <Setter Property="IsEnabled" Value="False" />
-                </Style>
-            </Style>
-        -->
         </Style>
     </UserControl.Styles>
 
@@ -125,12 +116,10 @@
                         CornerRadius="3 0 0 3"
                         Command="{ReflectionBinding $parent[views:ModPageView].ViewModel.OnInstall}"
                         VerticalAlignment="Center">
-
                         <StackPanel Orientation="Horizontal" Spacing="5">
                             <i:Icon x:Name="InstallIcon" />
                             <TextBlock />
                         </StackPanel>
-
                     </Button>
 
                     <DropDownButton
@@ -140,21 +129,15 @@
                         Height="31"
                         VerticalAlignment="Center"
                         CornerRadius="0 3 3 0">
-
                         <DropDownButton.Flyout>
-
                             <MenuFlyout Placement="BottomEdgeAlignedRight">
-
                                 <MenuItem
                                     Header="Uninstall"
                                     CommandParameter="{Binding .}"
                                     i:MenuItem.Icon="fa-solid fa-trash-can"
                                     Command="{ReflectionBinding $parent[views:ModPageView].ViewModel.OnUninstall}" />
-
                             </MenuFlyout>
-
                         </DropDownButton.Flyout>
-
                     </DropDownButton>
                 </StackPanel>
             </Border>
