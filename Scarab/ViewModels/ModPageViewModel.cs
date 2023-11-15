@@ -44,6 +44,7 @@ public partial class ModPageViewModel : ViewModelBase
     
     public ReactiveCommand<Unit, Unit> UpdateAll { get; }
     public ReactiveCommand<Unit, Unit> ToggleApi { get; }
+    public ReactiveCommand<Unit, Unit> ReinstallApi { get; }
     public ReactiveCommand<Unit, Unit> UpdateApi { get; }
 
     public ReactiveCommand<ModItem, Unit> OnUpdate    { get; }
@@ -117,6 +118,7 @@ public partial class ModPageViewModel : ViewModelBase
 
         ToggleApi = ReactiveCommand.CreateFromTask(ToggleApiCommand);
         UpdateApi = ReactiveCommand.CreateFromTask(UpdateApiAsync);
+        ReinstallApi = ReactiveCommand.CreateFromTask(ReinstallApiAsync);
         UpdateAll = ReactiveCommand.CreateFromTask(UpdateAllAsync);
 
         OnUpdate = ReactiveCommand.CreateFromTask<ModItem>(OnUpdateAsync);
@@ -131,6 +133,13 @@ public partial class ModPageViewModel : ViewModelBase
             );
 
         this.WhenAnyValue(x => x.SelectedTag).Subscribe(t => { TagFilter = m => m.Tags.HasFlag(t); });
+    }
+
+    private async Task ReinstallApiAsync()
+    {
+        _logger.LogInformation("Reinstalling API, {State}", _mods.ApiInstall);
+        
+        await _installer.InstallApi(IInstaller.ReinstallPolicy.ForceReinstall);
     }
 
     private async Task ToggleApiCommand()
@@ -209,7 +218,7 @@ public partial class ModPageViewModel : ViewModelBase
     {
         try
         {
-            await Task.Run(_installer.InstallApi);
+            await Task.Run(() => _installer.InstallApi());
         }
         catch (Exception e)
         {

@@ -124,9 +124,9 @@ public class Installer : IInstaller
 
         await _installed.RecordInstalledState(mod);
     }
-
+    
     /// <remarks> This enables the API if it's installed! </remarks>
-    public async Task InstallApi()
+    public async Task InstallApi(IInstaller.ReinstallPolicy policy = IInstaller.ReinstallPolicy.SkipUpToDate)
     {
         await _semaphore.WaitAsync();
 
@@ -138,7 +138,7 @@ public class Installer : IInstaller
                 await _ToggleApi(Update.LeaveUnchanged);
             }
 
-            await _InstallApi(_db.Api);
+            await _InstallApi(_db.Api, policy);
         }
         finally
         {
@@ -146,11 +146,14 @@ public class Installer : IInstaller
         }
     }
 
-    private async Task _InstallApi((string Url, int Version, string SHA256) manifest)
+    private async Task _InstallApi(
+        (string Url, int Version, string SHA256) manifest,
+        IInstaller.ReinstallPolicy policy = IInstaller.ReinstallPolicy.SkipUpToDate
+    )
     {
         bool was_vanilla = true;
 
-        if (_installed.ApiInstall is InstalledState { Version: var version })
+        if (_installed.ApiInstall is InstalledState { Version: var version } && policy is not IInstaller.ReinstallPolicy.ForceReinstall)
         {
             if (version.Major >= manifest.Version)
                 return;

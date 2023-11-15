@@ -28,6 +28,7 @@ public static class MockModPageViewModel
         get
         {
             ModState apiInstall = new NotInstalledState();
+                //new InstalledState(true, Version: new Version(1, 0, 0, 0), true);
             
             var src = A.Fake<IModSource>();
             A.CallTo(() => src.ApiInstall).ReturnsLazily(() => apiInstall);
@@ -48,7 +49,7 @@ public static class MockModPageViewModel
                      return Task.CompletedTask;
                  }
              );
-            A.CallTo(() => installer.InstallApi())
+            A.CallTo(() => installer.InstallApi(IInstaller.ReinstallPolicy.SkipUpToDate))
              .ReturnsLazily(
                  () =>
                  {
