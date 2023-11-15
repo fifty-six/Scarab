@@ -9,7 +9,7 @@ public static class ModStateConverters
         {
             InstalledState { Enabled: true  }  => Resources.MLVM_ApiButtonText_DisableAPI,
             InstalledState { Enabled: false }  => Resources.MLVM_ApiButtonText_EnableAPI,
-            NotInstalledState                  => Resources.MI_InstallText_NotInstalled,
+            NotInstalledState                  => Resources.MI_InstallText_NotInstalled + " API",
             _                                  => throw new ArgumentOutOfRangeException(nameof(s))
         }
     );
