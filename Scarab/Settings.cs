@@ -167,8 +167,8 @@ public class Settings : ISettings
 
         path = library_paths.Select(library_path => Path.Combine(library_path, "steamapps", "common", "Hollow Knight"))
                             .Select(PathUtil.ValidateWithSuffix)
-                            .Select(x => x as ValidPath)
-                            .FirstOrDefault(x => x is not null);
+                            .OfType<ValidPath>()
+                            .FirstOrDefault();
 
         return path is not null;
     }
