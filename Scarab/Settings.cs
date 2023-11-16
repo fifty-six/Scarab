@@ -78,14 +78,13 @@ public class Settings : ISettings
 
     internal static bool TryAutoDetect([MaybeNullWhen(false)] out ValidPath path)
     {
-        var p = STATIC_PATHS.Select(PathUtil.ValidateWithSuffix).FirstOrDefault(x => x is not null);
+        path = STATIC_PATHS.Select(PathUtil.ValidateWithSuffix)
+                            .OfType<ValidPath>()
+                            .FirstOrDefault();
 
         // If that's valid, use it.
-        if (p is ValidPath v)
-        {
-            path = v;
+        if (path is not null)
             return true;
-        }
 
         // Otherwise, we go through the user profile suffixes.
         string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -93,10 +92,10 @@ public class Settings : ISettings
         path = USER_SUFFIX_PATHS
             .Select(suffix => Path.Combine(home, suffix))
             .Select(PathUtil.ValidateWithSuffix)
-            .Select(x => x as ValidPath)
-            .FirstOrDefault(x => x is not null);
+            .OfType<ValidPath>()
+            .FirstOrDefault();
         
-        return p is not null || TryDetectFromRegistry(out path);
+        return path is not null || TryDetectFromRegistry(out path);
     }
 
     private static bool TryDetectFromRegistry([MaybeNullWhen(false)] out ValidPath path)
