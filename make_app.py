@@ -15,7 +15,7 @@ publish = Path(argv[2])
 exe = publish / "Scarab"
 
 if app_dir.suffix != ".app":
-    print("Error: " + app_dir + " is not an .app folder.")
+    print("Error: " + str(app_dir) + " is not an .app folder.")
     exit(-1)
 
 if not app_dir.exists():
