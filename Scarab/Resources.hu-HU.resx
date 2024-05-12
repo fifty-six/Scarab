@@ -124,10 +124,10 @@
     <value>Telepítés</value>
   </data>
   <data name="MLVM_ApiButtonText_DisableAPI" xml:space="preserve">
-    <value>API letiltása</value>
+    <value>API ki</value>
   </data>
   <data name="MLVM_ApiButtonText_EnableAPI" xml:space="preserve">
-    <value>API engedélyezése</value>
+    <value>API be</value>
   </data>
   <data name="MLVM_ApiButtonText_ToggleAPI" xml:space="preserve">
     <value>API ki/be</value>
@@ -247,7 +247,7 @@
     <value>Ki</value>
   </data>
   <data name="XAML_Update" xml:space="preserve">
-    <value>Aktualizálni</value>
+    <value>Frissítés</value>
   </data>
   <data name="PU_NoSelect" xml:space="preserve">
     <value>Nincs útvonal kiválasztva!</value>
@@ -277,6 +277,15 @@
     <value>Add meg a Hollow Knight alkalmazást!</value>
   </data>
   <data name="XAML_ModsFilter_OutOfDate_Update" xml:space="preserve">
-    <value>Mindent frissíteni</value>
+    <value>Mindet frissít</value>
+  </data>
+  <data name="NOTIFY_Installed" xml:space="preserve">
+    <value>Telepítve</value>
+  </data>
+  <data name="NOTIFY_Updated" xml:space="preserve">
+    <value>Frissítve</value>
+  </data>
+  <data name="NOTIFY_Uninstalled" xml:space="preserve">
+    <value>Eltávolítva</value>
   </data>
 </root>
