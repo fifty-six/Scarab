@@ -10,6 +10,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <ImplicitUsings>true</ImplicitUsings>
+        <ApplicationIcon>Assets/omegamaggotprime.ico</ApplicationIcon>
     </PropertyGroup>
     
     <ItemGroup>
