@@ -62,7 +62,7 @@ public static class PathUtil
                 Title = LocalizeToOS(),
                 AllowMultiple = false,
                 FileTypeFilter = new[] { new FilePickerFileType("Hollow Knight file") {
-                    Patterns = new[] { "*.app", "*.exe", "*.x86_64" }
+                    Patterns = new[] { "*.app", "*.exe", "*.x86_64", "Hollow Knight" }
                 } }
             }
         )).FirstOrDefault();
