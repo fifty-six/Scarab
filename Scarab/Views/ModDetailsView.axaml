@@ -58,7 +58,7 @@
 
                     <TextBlock Text="{Binding VersionText}" />
                     <TextBlock Classes="Update" IsVisible="{Binding UpdateAvailable}">
-                        <Run Text="-> " />
+                        <Run Text=" -> " />
                         <Run Text="{Binding Version}" />
                     </TextBlock>
                 </StackPanel>
