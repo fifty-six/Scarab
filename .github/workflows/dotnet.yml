@@ -12,7 +12,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
     - name: Restore dependencies
       run: dotnet restore -r win-x64
     - name: Build
@@ -24,7 +24,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Scarab-Windows
-        path: Scarab/bin/Release/net6.0/win-x64/publish/
+        path: Scarab/bin/Release/net8.0/win-x64/publish/
 
   build-linux:
     runs-on: ubuntu-latest
@@ -33,7 +33,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
     - name: Restore dependencies
       run: dotnet restore -r linux-x64
     - name: Build
@@ -45,7 +45,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Scarab-Linux
-        path: Scarab/bin/Release/net6.0/linux-x64/publish/
+        path: Scarab/bin/Release/net8.0/linux-x64/publish/
 
   build-macos:
     runs-on: macos-latest
@@ -56,7 +56,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
     - name: Restore dependencies
       run: dotnet restore -r osx-x64
     - name: Build
@@ -65,7 +65,7 @@ jobs:
         dotnet publish --no-restore -r osx-x64 -p:PublishSingleFile=true -p:Configuration=Release --self-contained true
         cd ..
         mkdir out
-        python3 make_app.py Scarab.app Scarab/bin/Release/net6.0/osx-x64/publish
+        python3 make_app.py Scarab.app Scarab/bin/Release/net8.0/osx-x64/publish
     - name: Upload Binary
       uses: actions/upload-artifact@v4
       with:
