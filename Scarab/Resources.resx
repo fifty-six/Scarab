@@ -184,7 +184,7 @@
     <value>Warning</value>
   </data>
   <data name="MWVM_InvalidSavedPath_Message" xml:space="preserve">
-    <value>The saved Hollow Knight path is invalid, please re-select a valid path.</value>
+    <value>The saved Hollow Knight path is invalid, please re-select a valid path. If this is unexpected, verify your game files.</value>
   </data>
   <data name="MWVM_Info" xml:space="preserve">
     <value>Info</value>
