@@ -12,15 +12,38 @@ namespace Scarab;
 [Serializable]
 public class Settings : ISettings
 {
+    public enum GamePlatform
+    {
+        Linux,
+        Windows,
+        MacOS
+    }
+
+    public bool PlatformChanged { get; private set; }
+
     public string ManagedFolder { get; set; } = null!;
 
     public bool AutoRemoveDeps { get; }
 
     public bool RequiresWorkaroundClient { get; set; }
 
+    public GamePlatform Platform { get; set; } = GetDefaultPlatform();
+
     public string PreferredCulture { get; set; } = CultureInfo.CurrentUICulture.Name;
 
     public Theme PreferredTheme { get; set; } = Theme.Dark;
+    
+    private static GamePlatform GetDefaultPlatform()
+    {
+        if (OperatingSystem.IsLinux())
+            return GamePlatform.Linux;
+        if (OperatingSystem.IsWindows())
+            return GamePlatform.Windows;
+        if (OperatingSystem.IsMacOS())
+            return GamePlatform.MacOS;
+
+        throw new NotSupportedException("Unknown platform!");
+    }
 
     // @formatter:off
     private static readonly ImmutableList<string> STATIC_PATHS = new List<string>
@@ -184,7 +207,10 @@ public class Settings : ISettings
 
         try
         {
-            return JsonSerializer.Deserialize<Settings>(content);
+            var res = JsonSerializer.Deserialize<Settings>(content);
+            res?.DetectLinuxGamePlatform();
+
+            return res;
         }
         // The JSON is malformed, act as if we don't have settings as a backup
         catch (Exception e) when (e is JsonException or ArgumentNullException)
@@ -197,10 +223,52 @@ public class Settings : ISettings
     {
         // Create from ManagedPath.
         var settings = new Settings(path);
+        settings.DetectLinuxGamePlatform();
 
         settings.Save();
 
         return settings;
+    }
+
+    /// <summary>
+    /// If the users is using proton, swap the platform to Windows and vice versa.
+    ///
+    /// Called on both creation and loading of settings in case
+    /// a user swaps after a previous use of the application.
+    /// </summary>
+    private void DetectLinuxGamePlatform()
+    {
+        if (GetDefaultPlatform() != GamePlatform.Linux)
+            return;
+
+        var prev = Platform;
+
+        try
+        {
+            // Managed -> hollow_knight_Data -> Hollow Knight
+            string @base = Path.GetFullPath(Path.Combine(ManagedFolder, "..", ".."));
+
+            Platform = File.Exists(Path.Combine(@base, "hollow_knight.exe"))
+                // We're on proton.
+                ? GamePlatform.Windows
+                // Native
+                : GamePlatform.Linux;
+
+            Log.Logger.Debug("Platform detected: {Platform}", Platform);
+
+            if (prev != Platform)
+            {
+                Log.Logger.Information("Platform changed from {Prev} to {Platform}, forcing re-installs!", prev, Platform);
+                PlatformChanged = true;
+            }
+        }
+        catch (ArgumentException e)
+        {
+            Log.Logger.Error("Failure in path resolution for linux platform detection: {Path} with {Exception}",
+                ManagedFolder,
+                e
+            );
+        }
     }
 
     public void Save()
@@ -223,5 +291,22 @@ public class Settings : ISettings
             : ThemeVariant.Light;
         
         LocalizeExtension.ChangeLanguage(new CultureInfo(PreferredCulture));
+    }
+
+    public Link PlatformLink(Links links)
+    {
+        var link = Platform switch
+        {
+            GamePlatform.Linux => links.Linux,
+            GamePlatform.Windows => links.Windows,
+            GamePlatform.MacOS => links.Mac,
+            _ => throw new ArgumentOutOfRangeException(nameof(links))
+        };
+
+        if (link is not null) 
+            return link;
+        
+        Log.Logger.Error("Link {Links} was missing an entry!", links);
+        throw new InvalidOperationException("Link for mod was missing an entry!");
     }
 }

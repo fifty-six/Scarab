@@ -14,7 +14,16 @@
     </Design.DataContext>
     <TabControl TabStripPlacement="Top" HorizontalAlignment="Stretch">
         <TabItem x:Name="ModListTab" Header="Mods" HorizontalContentAlignment="Stretch">
-            <ProgressBar Theme="{DynamicResource ProgressRing}" Width="100" Height="100" IsIndeterminate="True" />
+            <StackPanel VerticalAlignment="Center" Spacing="25">
+                <TextBlock 
+                    x:Name="InfoBlock" 
+                    FontWeight="Bold" 
+                    FontSize="20" 
+                    Text="{Binding InfoText}"
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding InfoText, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                <ProgressBar Theme="{DynamicResource ProgressRing}" Width="100" Height="100" IsIndeterminate="True" />
+            </StackPanel>
         </TabItem>
 
         <TabItem x:Name="SettingsTab" Header="Settings" Content="{Binding SettingsPage, TargetNullValue=''}" />

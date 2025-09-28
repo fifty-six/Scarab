@@ -86,11 +86,13 @@ public record VersionWrapper : IXmlSerializable
     public override string ToString() => Value.ToString();
 }
 
-public class Links
+public record Links
 {
-    public Link Windows = null!;
-    public Link Mac = null!;
-    public Link Linux = null!;
+    public Link? Windows;
+    public Link? Mac;
+    public Link? Linux;
+
+    public bool HasPlatformSpecificLink => Windows != Linux || Windows != Mac || Mac != Linux;
 
     public override string ToString()
     {
@@ -101,7 +103,20 @@ public class Links
                + "}";
     }
 
-    public string SHA256 
+
+    public static Links FromSingle(string url, string hash)
+    {
+        var link = new Link() { URL = url, SHA256 = hash };
+
+        return new Links
+        {
+            Windows = link,
+            Mac = link,
+            Linux = link
+        };
+    }
+
+    /* public string SHA256 
     {
         get
         {
@@ -129,10 +144,10 @@ public class Links
                 
             throw new NotSupportedException(Environment.OSVersion.Platform.ToString());
         }
-    }
+    } */
 }
 
-public class Link
+public record Link
 {
     [XmlAttribute]
     public string SHA256 = null!;
@@ -147,7 +162,7 @@ public class Link
 }
 
 [Serializable]
-public class ApiManifest
+public record ApiManifest
 {
     public int Version { get; set; }
 
@@ -166,7 +181,7 @@ public class ApiManifest
 }
 
 [XmlRoot(Namespace = SerializationConstants.NAMESPACE)]
-public class ApiLinks
+public record ApiLinks
 {
     public ApiManifest Manifest { get; set; } = null!;
 }
@@ -182,5 +197,17 @@ public class ModLinks
         return "ModLinks {[\n"
                + string.Join("\n", Manifests.Select(x => x.ToString()))
                + "]}";
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+
+        foreach (var manifest in Manifests)
+        {
+            hash.Add(manifest);
+        }
+
+        return hash.ToHashCode();
     }
 }

@@ -288,4 +288,10 @@
   <data name="NOTIFY_Uninstalled" xml:space="preserve">
     <value>Uninstalled</value>
   </data>
+  <data name="MWVM_PlatformChanged" xml:space="preserve">
+    <value>Game platform changed to {0}, reinstalling! This may take a while.</value>
+  </data>
+  <data name="MWVM_Platform_Native" xml:space="preserve">
+    <value>native</value>
+  </data>
 </root>

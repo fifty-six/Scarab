@@ -2,6 +2,8 @@ namespace Scarab.Mock;
 
 public class MockDatabase : IModDatabase
 {
+    private static Links _EmptyLink = Links.FromSingle("link", "sha");
+    
     public IEnumerable<ModItem> Items { get; } = new ModItem[]
     {
         // Installed and up to date
@@ -10,8 +12,7 @@ public class MockDatabase : IModDatabase
             new InstalledState(true, new Version(1, 0), true),
             new Version(1, 0),
             new[] { "ILove", "Having", "Dependencies" },
-            "link",
-            "sha",
+            _EmptyLink,
             "NormalEx",
             "An example",
             "https://github.com/fifty-six/HollowKnight.QoL",
@@ -25,8 +26,7 @@ public class MockDatabase : IModDatabase
             new InstalledState(true, new Version(1, 0), false),
             new Version(2, 0),
             Array.Empty<string>(),
-            "link",
-            "sha",
+            _EmptyLink,
             "OutOfDateEx",
             "An example",
             "https://github.com/fifty-six/yup",
@@ -40,8 +40,7 @@ public class MockDatabase : IModDatabase
             new NotInstalledState(),
             new Version(1, 0),
             Array.Empty<string>(),
-            "link",
-            "sha",
+            _EmptyLink,
             "NotInstalledEx",
             "An example",
             "example.com",
@@ -55,8 +54,7 @@ public class MockDatabase : IModDatabase
             new NotInstalledState(),
             new Version(1, 0),
             Array.Empty<string>(),
-            "link",
-            "sha",
+            _EmptyLink,
             string.Join("", Enumerable.Repeat("Very", 8)) + "LongModName",
             "An example",
             "https://example.com/really/really/really/really/really/long/url/to/test/wrapping/impls/....",
@@ -66,5 +64,5 @@ public class MockDatabase : IModDatabase
         )
     };
 
-    public (string Url, int Version, string SHA256) Api { get; } = ("...", 256, "?");
+    public (Links Link, int Version) Api { get; } = (_EmptyLink, 256);
 }

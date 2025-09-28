@@ -17,4 +17,6 @@ public interface IInstaller
     public Task InstallApi(ReinstallPolicy policy = ReinstallPolicy.SkipUpToDate);
 
     public Task ToggleApi();
+    
+    public Task HandlePlatformChange();
 }

@@ -8,8 +8,8 @@ public sealed partial record ModItem : INotifyPropertyChanged
     public ModItem(ModState state,
         Version version,
         string[] dependencies,
-        string link,
-        string shasum,
+        Links link,
+        // string shasum,
         string name,
         string description,
         string repository,
@@ -20,7 +20,7 @@ public sealed partial record ModItem : INotifyPropertyChanged
     {
         _state = state;
 
-        Sha256 = shasum;
+        // Sha256 = shasum;
         Version = version;
         Dependencies = dependencies;
         Link = link;
@@ -38,8 +38,8 @@ public sealed partial record ModItem : INotifyPropertyChanged
     public string[] Dependencies { get; }
         
     // Download details
-    public string Link { get; }
-    public string Sha256 { get; }
+    public Links Link { get; }
+    // public string Sha256 { get; }
         
     // Displayed info
     public Tag Tags { get; }
@@ -182,7 +182,6 @@ public sealed partial record ModItem : INotifyPropertyChanged
         hashCode.Add(Version);
         hashCode.Add(Dependencies);
         hashCode.Add(Link);
-        hashCode.Add(Sha256);
         hashCode.Add((int) Tags);
         hashCode.Add(Description);
         hashCode.Add(Repository);

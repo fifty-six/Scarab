@@ -33,6 +33,9 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
     }
         
     [Notify]
+    private string? _infoText;
+
+    [Notify]
     private ReactiveObject? _content;
 
     [Notify] 
@@ -146,7 +149,18 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
         );
         
         Log.Information("Displaying model");
-        
+
+        if (settings.PlatformChanged)
+        {
+            string platText = settings.Platform == Settings.GamePlatform.Windows
+                ? "Proton"
+                : Resources.MWVM_Platform_Native;
+            
+            InfoText = string.Format(Resources.MWVM_PlatformChanged, platText);
+            
+            await con.GetRequiredService<IInstaller>().HandlePlatformChange();
+        }
+
         SettingsPage = con.GetRequiredService<SettingsViewModel>();
         Content = con.GetRequiredService<ModPageViewModel>();
     }

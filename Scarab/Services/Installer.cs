@@ -124,7 +124,7 @@ public class Installer : IInstaller
 
         await _installed.RecordInstalledState(mod);
     }
-    
+
     /// <remarks> This enables the API if it's installed! </remarks>
     public async Task InstallApi(IInstaller.ReinstallPolicy policy = IInstaller.ReinstallPolicy.SkipUpToDate)
     {
@@ -147,7 +147,7 @@ public class Installer : IInstaller
     }
 
     private async Task _InstallApi(
-        (string Url, int Version, string SHA256) manifest,
+        (Links Link, int Version) manifest,
         IInstaller.ReinstallPolicy policy = IInstaller.ReinstallPolicy.SkipUpToDate
     )
     {
@@ -161,13 +161,14 @@ public class Installer : IInstaller
             was_vanilla = false;
         }
             
-        (string api_url, int ver, string hash) = manifest;
+        (var links, int ver) = manifest;
+        var url = _config.PlatformLink(links);
 
         string managed = _config.ManagedFolder;
 
-        (ArraySegment<byte> data, string _) = await DownloadFile(api_url, _ => { });
+        (ArraySegment<byte> data, string _) = await DownloadFile(url.URL, _ => { });
             
-        ThrowIfInvalidHash("the API", data, hash);
+        ThrowIfInvalidHash("the API", data, url.SHA256);
 
         // Backup the vanilla assembly
         if (was_vanilla)
@@ -190,6 +191,37 @@ public class Installer : IInstaller
         {
             _semaphore.Release();
         }
+    }
+
+    // TODO: UI
+    public async Task HandlePlatformChange()
+    {
+        if (!_config.PlatformChanged)
+            return;
+
+        // Otherwise, we need to reinstall *the api* and some mods with platform-specific assets.
+        if (_installed.ApiInstall is InstalledState st)
+        {
+            Log.Logger.Information("Platform changed, reinstalling API.");
+        
+            await InstallApi(policy: IInstaller.ReinstallPolicy.ForceReinstall);
+
+            // Put it back where it was as InstallApi currently enables it.
+            if (!st.Enabled)
+                await _ToggleApi(Update.LeaveUnchanged);
+        }
+
+        foreach (var mod in _db.Items.Where(i => i.Installed))
+        {
+            if (mod is not { Installed: true, Link.HasPlatformSpecificLink: true, Enabled: var enabled }) 
+                continue;
+            
+            Log.Logger.Information("Reinstalling {Mod} with platform-specific links.", mod);
+                
+            await Install(mod, _ => { }, enabled);
+        }
+
+        _config.Save();
     }
 
     private async Task _ToggleApi(Update update = Update.ForceUpdate)
@@ -292,9 +324,11 @@ public class Installer : IInstaller
             await _Install(dep, _ => { }, enable || dep.State is NotInstalledState);
         }
 
-        var (data, filename) = await DownloadFile(mod.Link, setProgress);
+        var link = _config.PlatformLink(mod.Link);
 
-        ThrowIfInvalidHash(mod.Name, data, mod.Sha256);
+        var (data, filename) = await DownloadFile(link.URL, setProgress);
+
+        ThrowIfInvalidHash(mod.Name, data, link.SHA256);
 
         // Sometimes our filename is quoted, remove those.
         filename = filename.Trim('"');

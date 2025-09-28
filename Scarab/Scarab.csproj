@@ -60,6 +60,7 @@
         <PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" Version="14.6.37" />
         <PackageReference Include="Splat.Serilog" Version="14.7.1" />
         <PackageReference Include="System.IO.Abstractions" Version="19.2.29" />
+        <PackageReference Include="System.Reflection.MetadataLoadContext" Version="9.0.5" />
     </ItemGroup>
     
     <ItemGroup>

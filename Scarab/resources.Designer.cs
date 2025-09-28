@@ -386,5 +386,17 @@ namespace Scarab {
                 return ResourceManager.GetString("NOTIFY_Uninstalled", resourceCulture);
             }
         }
+        
+        internal static string MWVM_PlatformChanged {
+            get {
+                return ResourceManager.GetString("MWVM_PlatformChanged", resourceCulture);
+            }
+        }
+        
+        internal static string MWVM_Platform_Native {
+            get {
+                return ResourceManager.GetString("MWVM_Platform_Native", resourceCulture);
+            }
+        }
     }
 }

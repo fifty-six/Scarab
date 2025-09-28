@@ -2,6 +2,8 @@ namespace Scarab.Interfaces;
 
 public interface IModSource
 {
+    Dictionary<string, InstalledState> Mods { get; }
+    
     ModState ApiInstall { get; }
 
     Task RecordApiState(ModState st);

@@ -2,6 +2,8 @@ namespace Scarab.Interfaces;
 
 public interface ISettings
 {
+    bool PlatformChanged { get; }
+    
     bool AutoRemoveDeps { get; }
         
     string ManagedFolder { get; set; }
@@ -16,4 +18,6 @@ public interface ISettings
     void Save();
 
     void Apply();
+
+    Link PlatformLink(Links link);
 }

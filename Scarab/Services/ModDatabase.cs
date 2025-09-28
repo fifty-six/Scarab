@@ -10,7 +10,7 @@ public class ModDatabase : IModDatabase
     private const string FALLBACK_MODLINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@latest/ModLinks.xml";
     private const string FALLBACK_APILINKS_URI = "https://cdn.jsdelivr.net/gh/hk-modding/modlinks@latest/ApiLinks.xml";
 
-    public (string Url, int Version, string SHA256) Api { get; }
+    public (Links Link, int Version) Api { get; }
 
     public IEnumerable<ModItem> Items => _items;
 
@@ -26,10 +26,9 @@ public class ModDatabase : IModDatabase
                 
             var item = new ModItem
             (
-                link: mod.Links.OSUrl,
+                link: mod.Links,
                 version: mod.Version.Value,
                 name: mod.Name,
-                shasum: mod.Links.SHA256,
                 description: mod.Description,
                 repository: mod.Repository,
                 dependencies: mod.Dependencies,
@@ -47,7 +46,7 @@ public class ModDatabase : IModDatabase
 
         _items.Sort((a, b) => string.CompareOrdinal(a.Name, b.Name));
 
-        Api = (al.Manifest.Links.OSUrl, al.Manifest.Version, al.Manifest.Links.SHA256);
+        Api = (al.Manifest.Links, al.Manifest.Version);
     }
 
     public ModDatabase(IModSource mods, (ModLinks ml, ApiLinks al) links) : this(mods, links.ml, links.al) { }
