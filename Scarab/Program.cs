@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Avalonia.Media;
 using Avalonia.Svg;
@@ -18,6 +19,12 @@ internal class Program
     public static void Main(string[] args)
     {
         SetupLogging();
+
+        if (args is ["--version"]) {
+            Log.Logger.Information("Scarab: {Version}", Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "version unknown");
+            return;
+        }
+
         SetupExceptionHandling();
         
         PosixSignalRegistration.Create(PosixSignal.SIGTERM, Handler);
