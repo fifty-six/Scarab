@@ -25,8 +25,7 @@ public class SvgPlugin : IMdAvPlugin
                     if (!IsSvgFile(stream))
                         return null;
 
-                    var src = new SvgSource();
-                    src.Load(stream);
+                    var src = SvgSource.LoadFromStream(stream);
 
                     return src;
                 }

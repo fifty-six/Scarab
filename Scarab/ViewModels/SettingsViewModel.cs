@@ -1,7 +1,6 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Styling;
-using MessageBox.Avalonia;
-using MessageBox.Avalonia.Enums;
+using MsBox.Avalonia;
 using Scarab.Views;
 
 namespace Scarab.ViewModels;
@@ -107,8 +106,8 @@ public partial class SettingsViewModel : ViewModelBase
 
         await _mods.Reset();
 
-        await MessageBoxManager.GetMessageBoxStandardWindow(Resources.MLVM_ChangePathAsync_Msgbox_Title,
-            Resources.MLVM_ChangePathAsync_Msgbox_Text).Show();
+        await MessageBoxManager.GetMessageBoxStandard(Resources.MLVM_ChangePathAsync_Msgbox_Title,
+            Resources.MLVM_ChangePathAsync_Msgbox_Text).ShowAsync();
 
         // Shutting down is easier than re-doing the source and all the items.
         (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Shutdown();

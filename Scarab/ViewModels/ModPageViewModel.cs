@@ -5,9 +5,9 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using MessageBox.Avalonia;
-using MessageBox.Avalonia.DTO;
-using MessageBox.Avalonia.Enums;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Dto;
+using MsBox.Avalonia.Enums;
 
 namespace Scarab.ViewModels;
 
@@ -241,14 +241,14 @@ public partial class ModPageViewModel : ViewModelBase
 
         if (Process.GetProcesses().FirstOrDefault(IsHollowKnight) is { } proc)
         {
-            var res = await MessageBoxManager.GetMessageBoxStandardWindow(new MessageBoxStandardParams
+            var res = await MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams
             {
                 ContentTitle = Resources.MLVM_InternalUpdateInstallAsync_Msgbox_W_Title,
                 ContentMessage = Resources.MLVM_InternalUpdateInstallAsync_Msgbox_W_Text,
                 ButtonDefinitions = ButtonEnum.YesNo,
                 MinHeight = 200,
                 SizeToContent = SizeToContent.WidthAndHeight
-            }).Show();
+            }).ShowAsync();
 
             try
             {
@@ -344,13 +344,13 @@ public partial class ModPageViewModel : ViewModelBase
     private static async Task<bool> DisplayHasDependentsWarning(string modName, IEnumerable<ModItem> dependents)
     {
         var dependentsString = string.Join(", ", dependents.Select(x => x.Name));
-        var result = await MessageBoxManager.GetMessageBoxStandardWindow
+        var result = await MessageBoxManager.GetMessageBoxStandard
         (
             "Warning! This mod is required for other mods to function!",
             $"{modName} is required for {dependentsString} to function properly. Do you still want to continue?",
             icon: Icon.Stop,
             @enum: ButtonEnum.YesNo
-        ).Show();
+        ).ShowAsync();
 
         // Make sure we also don't return true if X was clicked instead of No
         return result.HasFlag(ButtonResult.Yes) && !result.HasFlag(ButtonResult.None);

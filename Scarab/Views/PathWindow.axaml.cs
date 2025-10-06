@@ -1,4 +1,5 @@
 using Projektanker.Icons.Avalonia;
+using ObservableExtensions = System.ObservableExtensions;
 
 namespace Scarab.Views;
 
@@ -72,9 +73,8 @@ public partial class PathWindow : ReactiveWindow<PathViewModel>
             }
         }
 
-        vm.WhenAnyValue(x => x.Selection)
-          .Subscribe(OnNext)
-          .DisposeWith(d);
+        ObservableExtensions.Subscribe(vm.WhenAnyValue(x => x.Selection), s => OnNext(s))
+                            .DisposeWith(d);
     }
 
     private void ShowFiles(IEnumerable<(string path, bool success)> files)

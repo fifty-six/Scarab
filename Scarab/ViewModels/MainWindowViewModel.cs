@@ -6,12 +6,12 @@ using System.Net.Http.Headers;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Logging;
 using DryIoc;
-using MessageBox.Avalonia;
-using MessageBox.Avalonia.BaseWindows.Base;
-using MessageBox.Avalonia.DTO;
-using MessageBox.Avalonia.Enums;
-using MessageBox.Avalonia.Models;
 using Microsoft.Extensions.DependencyInjection;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Base;
+using MsBox.Avalonia.Dto;
+using MsBox.Avalonia.Enums;
+using MsBox.Avalonia.Models;
 
 namespace Scarab.ViewModels;
 
@@ -105,12 +105,12 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
                 _ => throw new ArgumentOutOfRangeException()
             };
                 
-            await MessageBoxManager.GetMessageBoxStandardWindow
+            await MessageBoxManager.GetMessageBoxStandard
             (
                 title: Resources.MWVM_Impl_Error_Fetch_ModLinks_Msgbox_Title,
                 text: string.Format(Resources.MWVM_Impl_Error_Fetch_ModLinks_Msgbox_Text, failedOp),
                 icon: Icon.Error
-            ).Show();
+            ).ShowAsync();
 
             throw;
         }
@@ -209,7 +209,7 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
         if (version <= current_version)
             return;
             
-        string? res = await MessageBoxManager.GetMessageBoxCustomWindow
+        string? res = await MessageBoxManager.GetMessageBoxCustom
         (
             new MessageBoxCustomParams {
                 ButtonDefinitions = new[] {
@@ -226,7 +226,7 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
                 ContentMessage = Resources.MWVM_OutOfDate_Message,
                 SizeToContent = SizeToContent.WidthAndHeight
             }
-        ).Show();
+        ).ShowAsync();
 
         if (res == Resources.MWVM_OutOfDate_GetLatest)
         {
@@ -246,7 +246,7 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
         
     private static async Task<Settings> ResetSettings()
     {
-        await MessageBoxManager.GetMessageBoxStandardWindow
+        await MessageBoxManager.GetMessageBoxStandard
         (
             new MessageBoxStandardParams {
                 ContentHeader = Resources.MWVM_Warning,
@@ -255,7 +255,7 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
                 // ensure that the message doesn't get cut off 
                 MinWidth = 550
             }
-        ).Show();
+        ).ShowAsync();
 
         return Settings.Create(await GetSettingsPath());
     }
@@ -266,7 +266,7 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
         {
             Log.Information("Unable to detect installation path for settings, selecting manually.");
             
-            IMsBoxWindow<ButtonResult> info = MessageBoxManager.GetMessageBoxStandardWindow
+            IMsBox<ButtonResult> info = MessageBoxManager.GetMessageBoxStandard
             (
                 new MessageBoxStandardParams
                 {
@@ -276,14 +276,14 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
                 }
             );
 
-            await info.Show();
+            await info.ShowAsync();
                 
             return await PathUtil.SelectPath();
         }
 
         Log.Information("Settings doesn't exist. Creating it at detected path {Path}.", path);
 
-        IMsBoxWindow<ButtonResult> window = MessageBoxManager.GetMessageBoxStandardWindow
+        IMsBox<ButtonResult> window = MessageBoxManager.GetMessageBoxStandard
         (
             new MessageBoxStandardParams
             {
@@ -293,7 +293,7 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
             }
         );
 
-        ButtonResult res = await window.Show();
+        ButtonResult res = await window.ShowAsync();
 
         return res == ButtonResult.Yes
             ? Path.Combine(path.Root, path.Suffix)

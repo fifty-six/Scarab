@@ -1,6 +1,7 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Scarab"
+             xmlns:semi="https://irihi.tech/semi"
              x:Class="Scarab.App">
     <Application.DataTemplates>
         <local:ViewLocator/>
@@ -13,7 +14,7 @@
     </Application.Resources>
     <Application.Styles>
         <SimpleTheme/> 
-        <StyleInclude Source="avares://Semi.Avalonia/Themes/Index.axaml" />
+        <semi:SemiTheme />
         <Style Selector="Window">
             <Setter Property="FontFamily" Value="{StaticResource InterFont}"/>
         </Style>
