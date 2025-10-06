@@ -133,9 +133,4 @@ public partial class ModDetailsView : ReactiveUserControl<ModPageViewModel>
             Log.Error(e, $"{nameof(RepositoryTextClick)} process spawn failed!`");
         }
     }
-
-    private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        Log.Debug("sssssssssssssss");
-    }
 }
