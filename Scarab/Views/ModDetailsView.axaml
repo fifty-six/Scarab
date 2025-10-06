@@ -23,7 +23,7 @@
         <Grid
             Name="DetailsPanel"
             Margin="10 0"
-            RowDefinitions="Auto,Auto,Auto"
+            RowDefinitions="Auto,Auto,*"
             ColumnDefinitions="*,Auto"
             x:DataType="models:ModItem">
             
@@ -137,15 +137,13 @@
                 </TabItem>
 
                 <TabItem Header="README" Name="ReadmeTab">
-                    <mdxaml:MarkdownScrollViewer
-                        Name="MdReadme"
-                        Height="{Binding #DetailsPanel.Bounds.Height}">
+                    <mdxaml:MarkdownScrollViewer ClipToBounds="True" Name="MdReadme">
                         <mdxaml:MarkdownScrollViewer.Styles>
                             <Style Selector="ctxt|CTextBlock">
                                 <Setter Property="FontFamily" Value="{StaticResource InterFont}" />
                                 <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />
-                            </Style>
-
+                            </Style> 
+                            
                             <Style Selector="ctxt|CTextBlock.Heading1">
                                 <Setter Property="FontSize" Value="22" />
                                 <Setter Property="FontWeight" Value="DemiBold" />
