@@ -94,6 +94,7 @@ jobs:
       - name: Create release if a new tag is pushed
         uses: softprops/action-gh-release@v1
         with:
+          body: ${{ github.event.head_commit.message }}
           files: |
             ./windows.zip
             ./artifacts/Scarab-MacOS/mac.zip
