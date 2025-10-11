@@ -177,9 +177,6 @@
   <data name="MWVM_OutOfDate_Title" xml:space="preserve">
     <value>Out of date!</value>
   </data>
-  <data name="MWVM_OutOfDate_Message" xml:space="preserve">
-    <value>This program is out of date! It may not function correctly.</value>
-  </data>
   <data name="MWVM_Warning" xml:space="preserve">
     <value>Warning</value>
   </data>

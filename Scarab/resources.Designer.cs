@@ -165,12 +165,6 @@ namespace Scarab {
             }
         }
         
-        internal static string MWVM_OutOfDate_Message {
-            get {
-                return ResourceManager.GetString("MWVM_OutOfDate_Message", resourceCulture);
-            }
-        }
-        
         internal static string MWVM_Warning {
             get {
                 return ResourceManager.GetString("MWVM_Warning", resourceCulture);

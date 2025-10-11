@@ -195,6 +195,13 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
         if (!doc.RootElement.TryGetProperty("tag_name", out JsonElement tag_elem))
             return;
 
+        string body = string.Empty;
+        if (doc.RootElement.TryGetProperty("body", out JsonElement body_elem))
+        {
+            body = body_elem.GetString() ?? string.Empty;
+            body = string.Join('\n', body.Split('\n')[1..]).Trim();
+        }
+
         string? tag = tag_elem.GetString();
 
         if (tag is null)
@@ -232,7 +239,8 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
                     }
                 },
                 ContentTitle = Resources.MWVM_OutOfDate_Title,
-                ContentMessage = Resources.MWVM_OutOfDate_Message,
+                ContentHeader = "A new version of Scarab is available!",
+                ContentMessage = body,
                 SizeToContent = SizeToContent.WidthAndHeight
             }
         ).ShowAsync();
