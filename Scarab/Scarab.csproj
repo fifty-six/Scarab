@@ -27,6 +27,10 @@
         <AdditionalFiles Include="**\*.xaml" />
     </ItemGroup>
     
+    <PropertyGroup Condition="'$(Flatpak)' != 'True'">
+        <DefineConstants>FLATPAK</DefineConstants>
+    </PropertyGroup>
+    
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.3.7" />
         <PackageReference Include="Avalonia.Desktop" Version="11.3.7" />
