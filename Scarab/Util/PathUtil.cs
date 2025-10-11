@@ -55,7 +55,8 @@ public static class PathUtil
             IClassicDesktopStyleApplicationLifetime { MainWindow: { } main }
             ? main
             : throw new InvalidOperationException("No window found!");
-        
+
+#if !FLATPAK
         IStorageFile? result = (await parent.StorageProvider.OpenFilePickerAsync(
             new FilePickerOpenOptions
             {
@@ -66,6 +67,13 @@ public static class PathUtil
                 } }
             }
         )).FirstOrDefault();
+#else
+        var result = (await parent.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = "Select your hollow_knight_Data folder!",
+            AllowMultiple = false,
+        })).FirstOrDefault();
+#endif
 
         if (result is not { Path.LocalPath: var localPath })
             return new PathNotSelectedError();
