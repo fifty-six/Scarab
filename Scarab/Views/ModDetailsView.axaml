@@ -138,6 +138,22 @@
 
                 <TabItem Header="README" Name="ReadmeTab">
                     <mdxaml:MarkdownScrollViewer ClipToBounds="True" Name="MdReadme">
+                        <!-- https://github.com/whistyun/Markdown.Avalonia/issues/156 :/ -->
+                        <mdxaml:MarkdownScrollViewer.MarkdownStyle>
+                            <Style>
+                                <Style Selector=".Markdown_Avalonia_MarkdownViewer TextBlock.CodeBlock">
+                                    <Style.Setters>
+                                        <Setter Property="Foreground" Value="White" />
+                                    </Style.Setters>
+                                </Style>
+                                <Style Selector=".Markdown_Avalonia_MarkdownViewer ctxt|CCode">
+                                    <Style.Setters>
+                                        <Setter Property="Foreground" Value="White" />
+                                    </Style.Setters>
+                                </Style>
+                            </Style>
+                        </mdxaml:MarkdownScrollViewer.MarkdownStyle>
+                        
                         <mdxaml:MarkdownScrollViewer.Styles>
                             <Style Selector="ctxt|CTextBlock">
                                 <Setter Property="FontFamily" Value="{StaticResource InterFont}" />
