@@ -19,6 +19,8 @@ public class Settings : ISettings
         MacOS
     }
 
+    public Version? IgnoredVersion { get; set; }
+
     public bool PlatformChanged { get; private set; }
 
     public string ManagedFolder { get; set; } = null!;

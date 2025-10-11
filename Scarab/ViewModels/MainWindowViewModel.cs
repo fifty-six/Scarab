@@ -45,13 +45,13 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
     {
         Log.Information("Checking if up to date...");
             
-        await CheckUpToDate();
-
         var con = new Container();
 
         Log.Information("Loading settings.");
         Settings settings = Settings.Load() ?? Settings.Create(await GetSettingsPath());
         settings.Apply();
+        
+        await CheckUpToDate(settings);
 
         if (!PathUtil.ValidateExisting(settings.ManagedFolder))
         {
@@ -165,14 +165,14 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
         Content = con.GetRequiredService<ModPageViewModel>();
     }
 
-    private static async Task CheckUpToDate()
+    private static async Task CheckUpToDate(Settings settings)
     {
         Version? current_version = Assembly.GetExecutingAssembly().GetName().Version;
             
         Log.Information("Current version of installer is {Version}", current_version);
 
-        if (_Debug)
-            return; 
+        if (_Debug) 
+            return;
 
         const string gh_releases = "https://api.github.com/repos/fifty-six/Scarab/releases/latest";
 
@@ -205,10 +205,16 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
 
         if (!Version.TryParse(tag.Length == 1 ? tag + ".0.0.0" : tag, out Version? version))
             return;
-
+        
         if (version <= current_version)
             return;
-            
+
+        if (version <= settings.IgnoredVersion)
+        {
+            Log.Logger.Information("Skipping version {Version}", version);
+            return;
+        }
+
         string? res = await MessageBoxManager.GetMessageBoxCustom
         (
             new MessageBoxCustomParams {
@@ -220,6 +226,9 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
                     },
                     new ButtonDefinition {
                         Name = Resources.MWVM_OutOfDate_ContinueAnyways
+                    },
+                    new ButtonDefinition {
+                        Name = Resources.MWVM_OutOfDate_SkipVersion
                     }
                 },
                 ContentTitle = Resources.MWVM_OutOfDate_Title,
@@ -233,6 +242,12 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
             Process.Start(new ProcessStartInfo("https://github.com/fifty-six/Scarab/releases/latest") { UseShellExecute = true });
                 
             ((IClassicDesktopStyleApplicationLifetime?) Application.Current?.ApplicationLifetime)?.Shutdown();
+        }
+        else if (res == Resources.MWVM_OutOfDate_SkipVersion)
+        {
+            Log.Information("Ignoring update {Version}", version);
+            settings.IgnoredVersion = version;
+            settings.Save();
         }
         else
         {

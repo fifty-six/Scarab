@@ -398,5 +398,11 @@ namespace Scarab {
                 return ResourceManager.GetString("MWVM_Platform_Native", resourceCulture);
             }
         }
+        
+        internal static string MWVM_OutOfDate_SkipVersion {
+            get {
+                return ResourceManager.GetString("MWVM_OutOfDate_SkipVersion", resourceCulture);
+            }
+        }
     }
 }

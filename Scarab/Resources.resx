@@ -294,4 +294,7 @@
   <data name="MWVM_Platform_Native" xml:space="preserve">
     <value>native</value>
   </data>
+  <data name="MWVM_OutOfDate_SkipVersion" xml:space="preserve">
+    <value>Skip this version.</value>
+  </data>
 </root>
