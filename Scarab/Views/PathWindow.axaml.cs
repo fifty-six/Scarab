@@ -48,7 +48,7 @@ public partial class PathWindow : ReactiveWindow<PathViewModel>
                     VerificationExpander.IsVisible = false;
 
                     VerificationBlock.IsVisible = true;
-                    VerificationBlock.Text = "No path selected!";
+                    VerificationBlock.Text = Scarab.Resources.PU_NoSelect;
                     break;
                 }
 
