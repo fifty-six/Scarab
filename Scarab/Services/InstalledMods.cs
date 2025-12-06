@@ -40,11 +40,11 @@ public record InstalledMods : IModSource
             return Directory.Exists(Path.Combine(config.DisabledFolder, name));
         }
 
-        bool changed = false;
+        var changed = false;
 
         try
         {
-            string text = await File.ReadAllTextAsync(ConfigPath);
+            var text = await File.ReadAllTextAsync(ConfigPath);
                 
             db = JsonSerializer.Deserialize<InstalledMods>(text) ?? throw new InvalidDataException();
         } 
@@ -53,9 +53,9 @@ public record InstalledMods : IModSource
             // If we have malformed JSON or it's a new install, try and recover any installed mods
             db = new InstalledMods();
 
-            foreach (string name in ml.Manifests.Select(x => x.Name))
+            foreach (var name in ml.Manifests.Select(x => x.Name))
             {
-                if (!ModExists(name, out bool enabled)) 
+                if (!ModExists(name, out var enabled)) 
                     continue;
                     
                 // Pretend it's out of date because we aren't sure of the version.
@@ -72,7 +72,7 @@ public record InstalledMods : IModSource
         // We use ToList as we modify the db in the for-each
         foreach (var (name, state) in db.Mods.ToList())
         {
-            if (ModExists(name, out bool enabled))
+            if (ModExists(name, out var enabled))
             {
                 // Fix it being enabled or disabled when it's in the opposite state
                 if (state.Enabled != enabled)

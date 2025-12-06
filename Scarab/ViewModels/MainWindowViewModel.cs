@@ -48,7 +48,7 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
         var con = new Container();
 
         Log.Information("Loading settings.");
-        Settings settings = Settings.Load() ?? Settings.Create(await GetSettingsPath());
+        var settings = Settings.Load() ?? Settings.Create(await GetSettingsPath());
         settings.Apply();
         
         await CheckUpToDate(settings);
@@ -98,7 +98,7 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
         }
         catch (Exception e) when (e is TaskCanceledException { CancellationToken.IsCancellationRequested: true } or HttpRequestException)
         {
-            string failedOp = e switch
+            var failedOp = e switch
             {
                 TaskCanceledException => Resources.MWVM_Impl_Error_Fetch_ModLinks_Timeout,
                 HttpRequestException http => string.Format(Resources.MWVM_Impl_Error_Fetch_ModLinks_Error, http.StatusCode),
@@ -152,7 +152,7 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
 
         if (settings.PlatformChanged)
         {
-            string platText = settings.Platform == Settings.GamePlatform.Windows
+            var platText = settings.Platform == Settings.GamePlatform.Windows
                 ? "Proton"
                 : Resources.MWVM_Platform_Native;
             
@@ -167,7 +167,7 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
 
     private static async Task CheckUpToDate(Settings settings)
     {
-        Version? current_version = Assembly.GetExecutingAssembly().GetName().Version;
+        var current_version = Assembly.GetExecutingAssembly().GetName().Version;
             
         Log.Information("Current version of installer is {Version}", current_version);
 
@@ -190,19 +190,19 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
             return;
         }
 
-        JsonDocument doc = JsonDocument.Parse(json);
+        var doc = JsonDocument.Parse(json);
 
-        if (!doc.RootElement.TryGetProperty("tag_name", out JsonElement tag_elem))
+        if (!doc.RootElement.TryGetProperty("tag_name", out var tag_elem))
             return;
 
-        string body = string.Empty;
-        if (doc.RootElement.TryGetProperty("body", out JsonElement body_elem))
+        var body = string.Empty;
+        if (doc.RootElement.TryGetProperty("body", out var body_elem))
         {
             body = body_elem.GetString() ?? string.Empty;
             body = string.Join('\n', body.Split('\n')[1..]).Trim();
         }
 
-        string? tag = tag_elem.GetString();
+        var tag = tag_elem.GetString();
 
         if (tag is null)
             return;
@@ -210,7 +210,7 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
         if (tag.StartsWith("v"))
             tag = tag[1..];
 
-        if (!Version.TryParse(tag.Length == 1 ? tag + ".0.0.0" : tag, out Version? version))
+        if (!Version.TryParse(tag.Length == 1 ? tag + ".0.0.0" : tag, out var version))
             return;
         
         if (version <= current_version)
@@ -222,7 +222,7 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
             return;
         }
 
-        string? res = await MessageBoxManager.GetMessageBoxCustom
+        var res = await MessageBoxManager.GetMessageBoxCustom
         (
             new MessageBoxCustomParams {
                 ButtonDefinitions = new[] {
@@ -285,11 +285,11 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
 
     private static async Task<string> GetSettingsPath()
     {
-        if (!Settings.TryAutoDetect(out ValidPath? path))
+        if (!Settings.TryAutoDetect(out var path))
         {
             Log.Information("Unable to detect installation path for settings, selecting manually.");
             
-            IMsBox<ButtonResult> info = MessageBoxManager.GetMessageBoxStandard
+            var info = MessageBoxManager.GetMessageBoxStandard
             (
                 new MessageBoxStandardParams
                 {
@@ -306,7 +306,7 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
 
         Log.Information("Settings doesn't exist. Creating it at detected path {Path}.", path);
 
-        IMsBox<ButtonResult> window = MessageBoxManager.GetMessageBoxStandard
+        var window = MessageBoxManager.GetMessageBoxStandard
         (
             new MessageBoxStandardParams
             {
@@ -316,7 +316,7 @@ public partial class MainWindowViewModel : ViewModelBase, IActivatableViewModel
             }
         );
 
-        ButtonResult res = await window.ShowAsync();
+        var res = await window.ShowAsync();
 
         return res == ButtonResult.Yes
             ? Path.Combine(path.Root, path.Suffix)

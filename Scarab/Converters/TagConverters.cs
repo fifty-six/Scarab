@@ -11,7 +11,7 @@ public static class TagConverters
         {
             var l = new List<string>();
 
-            for (int i = 0; i < sizeof(Tag) * 8; i++)
+            for (var i = 0; i < sizeof(Tag) * 8; i++)
             {
                 var tag = (Tag) (1 << i);
 

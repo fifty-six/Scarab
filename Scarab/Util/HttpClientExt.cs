@@ -13,7 +13,7 @@ public static class HttpClientExt
         CancellationToken cts = default
     )
     {
-        HttpResponseMessage resp = await self.SendAsync
+        var resp = await self.SendAsync
         (
             new HttpRequestMessage {
                 Version = self.DefaultRequestVersion,
@@ -28,15 +28,15 @@ public static class HttpClientExt
 
         resp.EnsureSuccessStatusCode();
 
-        HttpContent content = resp.Content;
+        var content = resp.Content;
 
-        await using Stream stream = await content.ReadAsStreamAsync(cts).ConfigureAwait(false);
+        await using var stream = await content.ReadAsStreamAsync(cts).ConfigureAwait(false);
 
-        int dl_size = content.Headers.ContentLength is { } len
+        var dl_size = content.Headers.ContentLength is { } len
             ? (int) len
             : 65536;
 
-        byte[] pool_buffer = ArrayPool<byte>.Shared.Rent(65536);
+        var pool_buffer = ArrayPool<byte>.Shared.Rent(65536);
         
         Memory<byte> buf = pool_buffer;
 
@@ -54,7 +54,7 @@ public static class HttpClientExt
             {
                 cts.ThrowIfCancellationRequested();
 
-                int read = await stream.ReadAsync(buf, cts).ConfigureAwait(false);
+                var read = await stream.ReadAsync(buf, cts).ConfigureAwait(false);
                 
                 await memory.WriteAsync(buf[..read], cts).ConfigureAwait(false);
 
@@ -75,7 +75,7 @@ public static class HttpClientExt
 
         progress.Report(args);
         
-        ArraySegment<byte> res_segment = memory.TryGetBuffer(out ArraySegment<byte> out_buffer)
+        var res_segment = memory.TryGetBuffer(out var out_buffer)
             ? out_buffer
             : memory.ToArray();
 

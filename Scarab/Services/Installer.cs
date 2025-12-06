@@ -96,7 +96,7 @@ public class Installer : IInstaller
         // Enable dependents when enabling a mod
         if (!state.Enabled) 
         {
-            foreach (ModItem dep in mod.Dependencies.Select(x => _db.Items.First(i => i.Name == x)))
+            foreach (var dep in mod.Dependencies.Select(x => _db.Items.First(i => i.Name == x)))
             {
                 if (dep.State is InstalledState { Enabled: true } or NotInstalledState)
                     continue;
@@ -151,7 +151,7 @@ public class Installer : IInstaller
         IInstaller.ReinstallPolicy policy = IInstaller.ReinstallPolicy.SkipUpToDate
     )
     {
-        bool was_vanilla = true;
+        var was_vanilla = true;
 
         if (_installed.ApiInstall is InstalledState { Version: var version } && policy is not IInstaller.ReinstallPolicy.ForceReinstall)
         {
@@ -161,12 +161,12 @@ public class Installer : IInstaller
             was_vanilla = false;
         }
             
-        (var links, int ver) = manifest;
+        (var links, var ver) = manifest;
         var url = _config.PlatformLink(links);
 
-        string managed = _config.ManagedFolder;
+        var managed = _config.ManagedFolder;
 
-        (ArraySegment<byte> data, string _) = await DownloadFile(url.URL, _ => { });
+        (var data, var _) = await DownloadFile(url.URL, _ => { });
             
         ThrowIfInvalidHash("the API", data, url.SHA256);
 
@@ -226,7 +226,7 @@ public class Installer : IInstaller
 
     private async Task _ToggleApi(Update update = Update.ForceUpdate)
     {
-        string managed = _config.ManagedFolder;
+        var managed = _config.ManagedFolder;
 
         Contract.Assert(_installed.ApiInstall is InstalledState);
 
@@ -309,7 +309,7 @@ public class Installer : IInstaller
 
     private async Task _Install(ModItem mod, Action<DownloadProgressArgs> setProgress, bool enable)
     {
-        foreach (ModItem dep in mod.Dependencies.Select(x => _db.Items.First(i => i.Name == x)))
+        foreach (var dep in mod.Dependencies.Select(x => _db.Items.First(i => i.Name == x)))
         {
             if (dep.State is InstalledState { Updated: true, Enabled: var enabled })
             {
@@ -333,14 +333,14 @@ public class Installer : IInstaller
         // Sometimes our filename is quoted, remove those.
         filename = filename.Trim('"');
             
-        string ext = Path.GetExtension(filename.ToLower());
+        var ext = Path.GetExtension(filename.ToLower());
 
         // Default to enabling
-        string base_folder = enable
+        var base_folder = enable
             ? _config.ModsFolder
             : _config.DisabledFolder;
 
-        string mod_folder = Path.Combine(base_folder, mod.Name);
+        var mod_folder = Path.Combine(base_folder, mod.Name);
 
         switch (ext)
         {
@@ -386,9 +386,9 @@ public class Installer : IInstaller
     {
         var sha = SHA256.Create();
 
-        byte[] hash = sha.ComputeHash(data.AsMemory().AsStream());
+        var hash = sha.ComputeHash(data.AsMemory().AsStream());
 
-        string strHash = BitConverter.ToString(hash).Replace("-", string.Empty);
+        var strHash = BitConverter.ToString(hash).Replace("-", string.Empty);
 
         if (!string.Equals(strHash, modSha256, StringComparison.OrdinalIgnoreCase))
             throw new HashMismatchException(name, actual: strHash, expected: modSha256);
@@ -396,12 +396,12 @@ public class Installer : IInstaller
 
     private async Task<(ArraySegment<byte> data, string filename)> DownloadFile(string uri, Action<DownloadProgressArgs> setProgress)
     {
-        (ArraySegment<byte> bytes, HttpResponseMessage response) = await _hc.DownloadBytesWithProgressAsync(
+        (var bytes, var response) = await _hc.DownloadBytesWithProgressAsync(
             new Uri(uri), 
             new Progress<DownloadProgressArgs>(setProgress)
         );
 
-        string? filename = string.Empty;
+        var filename = string.Empty;
 
         if (response.Content.Headers.ContentDisposition is { } disposition)
             filename = disposition.FileName;
@@ -416,11 +416,11 @@ public class Installer : IInstaller
     {
         using var archive = new ZipArchive(data.AsMemory().AsStream());
 
-        string dest_dir_path = CreateDirectoryPath(root);
+        var dest_dir_path = CreateDirectoryPath(root);
 
-        foreach (ZipArchiveEntry entry in archive.Entries)
+        foreach (var entry in archive.Entries)
         {
-            string file_dest = Path.GetFullPath(Path.Combine(dest_dir_path, entry.FullName));
+            var file_dest = Path.GetFullPath(Path.Combine(dest_dir_path, entry.FullName));
 
             if (!file_dest.StartsWith(dest_dir_path))
                 throw new IOException("Extracts outside of directory!");
@@ -454,7 +454,7 @@ public class Installer : IInstaller
 
         using (Stream fs = _fs.FileStream.New(dest, fMode, FileAccess.Write, FileShare.None, 0x1000, false))
         {
-            using (Stream es = src.Open())
+            using (var es = src.Open())
                 es.CopyTo(fs);
         }
 
@@ -465,9 +465,9 @@ public class Installer : IInstaller
     private string CreateDirectoryPath(string path)
     {
         // Note that this will give us a good DirectoryInfo even if destinationDirectoryName exists:
-        IDirectoryInfo di = _fs.Directory.CreateDirectory(path);
+        var di = _fs.Directory.CreateDirectory(path);
 
-        string dest_dir_path = di.FullName;
+        var dest_dir_path = di.FullName;
 
         if (!dest_dir_path.EndsWith(Path.DirectorySeparatorChar))
             dest_dir_path += Path.DirectorySeparatorChar;
@@ -477,7 +477,7 @@ public class Installer : IInstaller
 
     private async Task _Uninstall(ModItem mod)
     {
-        string dir = Path.Combine
+        var dir = Path.Combine
         (
             mod.State is InstalledState { Enabled: true }
                 ? _config.ModsFolder
@@ -501,7 +501,7 @@ public class Installer : IInstaller
         if (!_config.AutoRemoveDeps)
             return;
 
-        foreach (ModItem dep in mod.Dependencies.Select(x => _db.Items.First(i => x == i.Name)))
+        foreach (var dep in mod.Dependencies.Select(x => _db.Items.First(i => x == i.Name)))
         {
             // Make sure no other mods depend on it
             if (_db.Items.Where(x => x.State is InstalledState && x != mod).Any(x => x.Dependencies.Contains(dep.Name)))

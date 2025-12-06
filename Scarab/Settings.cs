@@ -93,7 +93,7 @@ public class Settings : ISettings
 
     public static string GetOrCreateDirPath()
     {
-        string dirPath = Path.GetDirectoryName(ConfigPath) ?? throw new InvalidOperationException();
+        var dirPath = Path.GetDirectoryName(ConfigPath) ?? throw new InvalidOperationException();
 
         // No-op if path already exists.
         Directory.CreateDirectory(dirPath);
@@ -112,7 +112,7 @@ public class Settings : ISettings
             return true;
 
         // Otherwise, we go through the user profile suffixes.
-        string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
         path = USER_SUFFIX_PATHS
             .Select(suffix => Path.Combine(home, suffix))
@@ -181,14 +181,14 @@ public class Settings : ISettings
             if (!line.StartsWith("\"path\""))
                 return null;
 
-            string[] pair = line.Split("\t", 2, StringSplitOptions.RemoveEmptyEntries);
+            var pair = line.Split("\t", 2, StringSplitOptions.RemoveEmptyEntries);
 
             return pair.Length != 2
                 ? null
                 : pair[1].Trim('"');
         }
 
-        IEnumerable<string> library_paths = lines.Select(Parse).OfType<string>();
+        var library_paths = lines.Select(Parse).OfType<string>();
 
         path = library_paths.Select(library_path => Path.Combine(library_path, "steamapps", "common", "Hollow Knight"))
                             .Select(PathUtil.ValidateWithSuffix)
@@ -205,7 +205,7 @@ public class Settings : ISettings
 
         Log.Debug("ConfigPath: File @ {ConfigPath} exists.", ConfigPath);
 
-        string content = File.ReadAllText(ConfigPath);
+        var content = File.ReadAllText(ConfigPath);
 
         try
         {
@@ -248,7 +248,7 @@ public class Settings : ISettings
         try
         {
             // Managed -> hollow_knight_Data -> Hollow Knight
-            string @base = Path.GetFullPath(Path.Combine(ManagedFolder, "..", ".."));
+            var @base = Path.GetFullPath(Path.Combine(ManagedFolder, "..", ".."));
 
             Platform = File.Exists(Path.Combine(@base, "hollow_knight.exe"))
                 // We're on proton.
@@ -275,11 +275,11 @@ public class Settings : ISettings
 
     public void Save()
     {
-        string content = JsonSerializer.Serialize(this);
+        var content = JsonSerializer.Serialize(this);
 
         GetOrCreateDirPath();
 
-        string path = ConfigPath;
+        var path = ConfigPath;
 
         File.WriteAllText(path, content);
     }

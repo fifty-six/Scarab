@@ -14,7 +14,7 @@ public static class PathUtil
         parent ??= (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow
                    ?? throw new InvalidOperationException();
 
-        PathResult res = await TrySelection(parent);
+        var res = await TrySelection(parent);
 
         while (true)
         {
@@ -103,9 +103,9 @@ public static class PathUtil
         if (!Directory.Exists(root))
             return new RootNotFoundError();
             
-        string? suffix = SUFFIXES.FirstOrDefault(s =>
+        var suffix = SUFFIXES.FirstOrDefault(s =>
         {
-            string p = Path.Combine(root, s);
+            var p = Path.Combine(root, s);
             
             Log.Information("Trying path {Path}", p);
             

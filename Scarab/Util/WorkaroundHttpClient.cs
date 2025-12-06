@@ -100,7 +100,7 @@ public static class WorkaroundHttpClient
             // Socket socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
 
             // Defaults to dual-mode sockets, which uses IPv6 for IPv4 stuff.
-            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socket.NoDelay = true;
 
             try

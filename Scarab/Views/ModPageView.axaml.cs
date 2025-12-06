@@ -78,7 +78,7 @@ public partial class ModPageView : ReactiveUserControl<ModPageViewModel>
 
     private void OnComplete(ModPageViewModel.ModAction act, ModItem mod)
     {
-        string act_s = act switch
+        var act_s = act switch
         {
             ModPageViewModel.ModAction.Install => Localization.NOTIFY_Installed,
             ModPageViewModel.ModAction.Update => Localization.NOTIFY_Updated,

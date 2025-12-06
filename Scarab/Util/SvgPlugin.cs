@@ -19,7 +19,7 @@ public class SvgPlugin : IMdAvPlugin
         {
             // We want to process this *off* the UI thread 
             // for the sake of not hanging it
-            SvgSource? src = await Task.Run(
+            var src = await Task.Run(
                 () =>
                 {
                     if (!IsSvgFile(stream))

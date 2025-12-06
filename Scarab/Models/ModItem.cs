@@ -78,7 +78,7 @@ public sealed partial record ModItem : INotifyPropertyChanged
 
     public async Task OnUpdate(IInstaller inst, Action<ModProgressArgs> setProgress)
     {
-        ModState orig = State;
+        var orig = State;
 
         try
         {
@@ -100,7 +100,7 @@ public sealed partial record ModItem : INotifyPropertyChanged
 
     public async Task OnInstall(IInstaller inst, Action<ModProgressArgs> setProgress)
     {
-        ModState origState = State;
+        var origState = State;
 
         try
         {
@@ -135,7 +135,7 @@ public sealed partial record ModItem : INotifyPropertyChanged
 
     public async Task OnUninstall(IInstaller inst, Action<ModProgressArgs> setProgress)
     {
-        ModState origState = State;
+        var origState = State;
 
         try
         {
