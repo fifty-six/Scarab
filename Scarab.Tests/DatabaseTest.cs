@@ -33,7 +33,7 @@ public class DatabaseTest
                     </Dependencies>
 
                     <Repository>
-                        <![CDATA[https://github.com/fifty-six/HollowKnight.QoL/]]>
+                        <![CDATA[https://github.com/fifty-six/HollowKnight.QoL]]>
                     </Repository>
                 </Manifest>
                 <Manifest>
@@ -110,7 +110,7 @@ public class DatabaseTest
                 new NotInstalledState(),
                 new Version(3, 0, 0, 0),
                 new[] { "Vasi" },
-                Links.FromSingle("https://github.com/fifty-six/HollowKnight.QoL/releases/download/v3/QoL.zip", "..."),
+                Links.FromSingle("https://github.com/fifty-six/HollowKnight.QoL/releases/download/v3/QoL.zip", "766555BF9E8F784EB00CEE3AF0A3991E3E3E4BDD73E4816CEDD82840FF432E18"),
                 "QoL",
                 "A collection of various quality of life improvements.",
                 "https://github.com/fifty-six/HollowKnight.QoL",
