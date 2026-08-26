@@ -87,7 +87,7 @@ public sealed partial record ModItem : INotifyPropertyChanged
 
             setProgress(new ModProgressArgs());
 
-            await inst.Install(this, setProgress, enabled);
+            await inst.Install(this, setProgress, enabled, true);
 
             setProgress(new ModProgressArgs { Completed = true });
         }
@@ -111,7 +111,7 @@ public sealed partial record ModItem : INotifyPropertyChanged
 
                 setProgress(new ModProgressArgs());
 
-                await inst.Install(this, setProgress, enabled);
+                await inst.Install(this, setProgress, enabled, true);
 
                 setProgress(new ModProgressArgs { Completed = true });
             }
@@ -121,7 +121,7 @@ public sealed partial record ModItem : INotifyPropertyChanged
 
                 setProgress(new ModProgressArgs());
 
-                await inst.Install(this, setProgress, true);
+                await inst.Install(this, setProgress, true, true);
 
                 setProgress(new ModProgressArgs { Completed = true });
             }

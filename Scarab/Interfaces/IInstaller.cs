@@ -10,7 +10,7 @@ public interface IInstaller
 
     public Task Toggle(ModItem mod);
 
-    public Task Install(ModItem mod, Action<ModProgressArgs> setProgress, bool enable);
+    public Task Install(ModItem mod, Action<ModProgressArgs> setProgress, bool enable, bool removeOldDlls = false);
 
     public Task Uninstall(ModItem mod);
 

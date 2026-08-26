@@ -218,7 +218,7 @@ public class Installer : IInstaller
             
             Log.Logger.Information("Reinstalling {Mod} with platform-specific links.", mod);
                 
-            await Install(mod, _ => { }, enabled);
+            await Install(mod, _ => { }, enabled, true);
         }
 
         _config.Save();
@@ -257,8 +257,9 @@ public class Installer : IInstaller
     /// <param name="mod">Mod to install</param>
     /// <param name="setProgress">Action called to indicate progress asynchronously</param>
     /// <param name="enable">Whether the mod is enabled after installation</param>
+    /// <param name="removeOldDlls">Whether still existing mod dll files are to be removed</param>
     /// <exception cref="HashMismatchException">Thrown if the download doesn't match the given hash</exception>
-    public async Task Install(ModItem mod, Action<ModProgressArgs> setProgress, bool enable)
+    public async Task Install(ModItem mod, Action<ModProgressArgs> setProgress, bool enable, bool removeOldDlls = false)
     {
         await InstallApi();
 
@@ -278,7 +279,7 @@ public class Installer : IInstaller
             // Start our progress
             setProgress(new ModProgressArgs());
 
-            await _Install(mod, DownloadProgressed, enable);
+            await _Install(mod, DownloadProgressed, enable, removeOldDlls);
                 
             setProgress(new ModProgressArgs {
                 Completed = true
@@ -307,7 +308,7 @@ public class Installer : IInstaller
         }
     }
 
-    private async Task _Install(ModItem mod, Action<DownloadProgressArgs> setProgress, bool enable)
+    private async Task _Install(ModItem mod, Action<DownloadProgressArgs> setProgress, bool enable, bool removeOldDlls = false)
     {
         foreach (ModItem dep in mod.Dependencies.Select(x => _db.Items.First(i => i.Name == x)))
         {
@@ -321,7 +322,7 @@ public class Installer : IInstaller
 
             // Enable the dependencies' dependencies if we're enabling this mod
             // Or if the dependency was previously not installed.
-            await _Install(dep, _ => { }, enable || dep.State is NotInstalledState);
+            await _Install(dep, _ => { }, enable || dep.State is NotInstalledState, removeOldDlls);
         }
 
         var link = _config.PlatformLink(mod.Link);
@@ -341,6 +342,10 @@ public class Installer : IInstaller
             : _config.DisabledFolder;
 
         string mod_folder = Path.Combine(base_folder, mod.Name);
+
+        if (removeOldDlls) {
+            CleanOldModDlls(mod_folder);
+        }
 
         switch (ext)
         {
@@ -380,6 +385,24 @@ public class Installer : IInstaller
         };
 
         await _installed.RecordInstalledState(mod);
+    }
+
+    private void CleanOldModDlls(string mod_folder)
+    {
+        if (!Directory.Exists(mod_folder)) 
+            return;
+
+        foreach (var dll_file in Directory.EnumerateFiles(mod_folder).Where(f => f.EndsWith(".dll")))
+        {
+            try
+            {
+                File.Delete(dll_file);
+            }
+            catch
+            {
+                // ignored
+            }
+        }
     }
 
     private static void ThrowIfInvalidHash(string name, ArraySegment<byte> data, string modSha256)
